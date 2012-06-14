@@ -42,14 +42,15 @@ int main(int argc, char *argv[])
           continue;
       }
 
-      flip(frame, image, 1);
+//      flip(frame, image, 1);
 //        frame.copyTo(image);
-      cvtColor(image, gray, CV_BGR2GRAY);
+//      cvtColor(image, gray, CV_BGR2GRAY);
 //      imshow("camera",image);
       sprintf(outFilenameBuf, "%s/frame%05d.png", outFolder.c_str(), frameCnt);
-      imwrite(string(outFilenameBuf), image);
+      imwrite(string(outFilenameBuf), frame);
       ++frameCnt;
       sleep(sleepPeriod);
+      cout << "Frame #"  << frameCnt << endl;
   }
 
   return 0;
