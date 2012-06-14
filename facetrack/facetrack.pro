@@ -15,6 +15,6 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 INCLUDEPATH = /home/raca/include ../../../utilsLib /sw/include/
-LIBS += -L/home/raca/lib -L/sw/lib -L../../../utilsLib-build-desktop -lopencv_core -lopencv_imgproc -lopencv_highgui
+LIBS += -L/home/raca/lib -L/sw/lib -L../../../utilsLib-build-desktop -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_video
 
 SOURCES += main.cpp
