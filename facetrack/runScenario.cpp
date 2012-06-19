@@ -17,7 +17,17 @@ void run_sirFilter(){
 
   CFileUtils::getDirFiles("/cvlabdata1/home/raca/data/classroom/canon_digital/imgs", vecFilenames, true );
 
-  Mat firstImg = imread(vecFilenames(301));
+  Mat firstImg = imread(vecFilenames[301]);
   CSIRFilterPt testPt(vecInitPts[0], firstImg, Point2i(100,100));
-  testPt.predictNextPos(nextImg);
+  int cntr = 0;
+  for(vector<String>::iterator iter = vecFilenames.begin();
+      iter != vecFilenames.end(); ++iter )
+  {
+    ++cntr;
+    if(cntr < 302)
+      continue;
+    nextImg = imread(*iter);
+    testPt.predictNextPos(nextImg);
+    testPt.showAllPoints(nextImg);
+  }
 }

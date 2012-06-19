@@ -8,11 +8,13 @@
 class CSIRFilterPt
 {
 protected:
-  cv::Point2i mArea;
+  cv::Point2i mArea,
+              mCurrentPosition;
   cv::Mat mRefData;
   std::vector<cv::Point2i> mVecPts;
   gsl_rng* mRngR;
-  float mDistX, mDistY;
+  float mDistX, mDistY, mCurrentSimilarity;
+  unsigned int mNumOfParticles;
 
   void generatePoints( unsigned int* pProbs, unsigned int pNumOfPoints, unsigned int pNumOfPtsToGenerate );
   float calcScore(cv::Mat& pImgData, cv::Point2i pt);

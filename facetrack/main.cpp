@@ -1,9 +1,7 @@
 #include "initData.h"
-#include "CSIRFilterPt.h"
+#include "runScenario.h"
 
 int main(int argc, char** argv)
 {
-
+  run_sirFilter();
 }
-
-

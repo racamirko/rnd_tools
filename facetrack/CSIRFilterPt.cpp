@@ -10,6 +10,8 @@ using namespace cv;
 
 CSIRFilterPt::CSIRFilterPt(cv::Point2i pInitPt, cv::Mat &pInitImg, cv::Point2i pAreaSize)
   : mArea(pAreaSize)
+  , mCurrentPosition(pInitPt)
+  , mCurrentSimilarity(0)
 {
   int shiftX = pAreaSize.x/2,
       shiftY = pAreaSize.y/2;
@@ -21,12 +23,13 @@ CSIRFilterPt::CSIRFilterPt(cv::Point2i pInitPt, cv::Mat &pInitImg, cv::Point2i p
   #endif
 
   initRng();
-  mDistX = 10.0f;
-  mDistY = 10.0f;
+  mDistX = 50.0f;
+  mDistY = 50.0f;
+  mNumOfParticles = 1000;
 
   unsigned int initPts[] = {0};
   mVecPts.push_back(pInitPt);
-  generatePoints( initPts, 1, 1000 );
+  generatePoints( initPts, 1, mNumOfParticles );
 }
 
 cv::Rect CSIRFilterPt::pt2rect(cv::Point2i pPt, cv::Point2i pAreaSize){
@@ -73,44 +76,66 @@ void CSIRFilterPt::generatePoints( unsigned int *pProbs, unsigned int pNumOfPoin
 
 void CSIRFilterPt::predictNextPos(cv::Mat &pImgData){
   // evalutate current set of points
-  int* vecProb = new int[mVecPts.size()];
   float* vecScores = new float[mVecPts.size()];
-  unsigned int* vecProbabs = new unsigned int[10000];
+  const unsigned int PROB_SIZE = 10000;
+  unsigned int* vecProbabs = new unsigned int[PROB_SIZE];
   vector<Point2i>::iterator iter;
-  unsigned int idx = 0;
-  float totalScore = 0;
+  unsigned int idx = 0,
+               bestIdx = -1;
+  float totalScore = 0,
+        bestScore = -1;
+  mCurrentSimilarity = 0;
   for( iter = mVecPts.begin(); iter != mVecPts.end(); ++iter ){
     vecScores[idx] = calcScore(pImgData, *iter);
     totalScore += vecScores[idx];
+    if( vecScores[idx] > bestScore ){
+      bestScore = vecScores[idx];
+      bestIdx = idx;
+    }
     ++idx;
   }
+  // set the best point
+  mCurrentPosition = mVecPts[bestIdx];
+  mCurrentSimilarity = bestScore;
   // normalize scores
   unsigned int fillIndex = 0;
   for( idx = 0; idx < mVecPts.size(); ++idx ){
+    if(fillIndex>=mVecPts.size())
+      break; // to account for the possibility of rounding-up too much
     vecScores[idx] /= totalScore;
-    unsigned int endIdx = fillIndex + round(vecScores[idx]*10000);
+    unsigned int endIdx = fillIndex + round(vecScores[idx]*((float)PROB_SIZE));
     for( fillIndex; fillIndex < endIdx; ++fillIndex )
       vecProbabs[fillIndex] = idx;
   }
   // random draw of the points from the array -> generate new points, fill new points vector
+  generatePoints(vecProbabs, PROB_SIZE, mNumOfParticles);
   // cleanup
   delete [] vecScores;
-  delete [] vecProb;
+  delete [] vecProbabs;
 }
 
+/**
+    returns Probability of similarity.
+  */
 float CSIRFilterPt::calcScore(Mat& pImgData, Point2i pt){
   Mat segment;
   getSegment(pImgData, pt2rect(pt, mArea), segment);
-  // todo: if the segment is not the same size as the original image
-
+   // todo: if the segment is not the same size as the original image
+  Mat diff;
+  cv::absdiff(segment, mRefData, diff);
+  Mat::MSize matSize = mRefData.size;
+  float maxDiff = matSize[0]*matSize[1]*3*255;
+  Scalar scalDiff = sum(diff);
+  float curDiff = scalDiff[0]+scalDiff[1]+scalDiff[2];
+  return 1.0f - curDiff/maxDiff;
 }
 
-cv::Point2i CSIRFilterPt::getPosition(){
-
+Point2i CSIRFilterPt::getPosition(){
+  return mCurrentPosition;
 }
 
 float CSIRFilterPt::getSimilarity(){
-
+  return mCurrentSimilarity;
 }
 
 void CSIRFilterPt::showAllPoints(Mat& pImg, bool pDisplay){
