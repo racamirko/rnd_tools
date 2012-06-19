@@ -2,11 +2,16 @@
 
 #include <algorithm>
 #include <opencv2/highgui/highgui.hpp>
+#include <gsl/gsl_randist.h>
 
 using namespace std;
 using namespace cv;
 
-#define DEBUG
+#define _DEBUG
+
+#ifdef _DEBUG
+#include <iostream>
+#endif
 
 CSIRFilterPt::CSIRFilterPt(cv::Point2i pInitPt, cv::Mat &pInitImg, cv::Point2i pAreaSize)
   : mArea(pAreaSize)
@@ -17,7 +22,7 @@ CSIRFilterPt::CSIRFilterPt(cv::Point2i pInitPt, cv::Mat &pInitImg, cv::Point2i p
       shiftY = pAreaSize.y/2;
 
   mRefData = pInitImg(Rect(pInitPt.x-shiftX, pInitPt.y-shiftY, shiftX, shiftY));
-  #ifdef DEBUG
+  #ifdef _DEBUG
     imshow("ctrwnd - Referent data", mRefData);
     waitKey();
   #endif
@@ -25,7 +30,7 @@ CSIRFilterPt::CSIRFilterPt(cv::Point2i pInitPt, cv::Mat &pInitImg, cv::Point2i p
   initRng();
   mDistX = 50.0f;
   mDistY = 50.0f;
-  mNumOfParticles = 1000;
+  mNumOfParticles = 10;
 
   unsigned int initPts[] = {0};
   mVecPts.push_back(pInitPt);
@@ -40,7 +45,23 @@ cv::Rect CSIRFilterPt::pt2rect(cv::Point2i pPt, cv::Point2i pAreaSize){
 }
 
 void CSIRFilterPt::getSegment(cv::Mat& pImgData, cv::Rect pRegion, cv::Mat& pSegment){
-  // TODO: edge avoidance here
+  #ifdef _DEBUG
+  Rect origRect = pRegion;
+  #endif
+
+  pRegion.x = min(max(pRegion.x,0), pImgData.cols-1);
+  pRegion.y = min(max(pRegion.y,0), pImgData.rows-1);
+  pRegion.width = max(min(pRegion.width, pImgData.cols - pRegion.x),1);
+  pRegion.height = max(min(pRegion.height, pImgData.rows - pRegion.y),1);
+  #ifdef _DEBUG
+  if( origRect.x != pRegion.x || origRect.y != pRegion.y ||
+      origRect.width != pRegion.width || origRect.height != pRegion.height )
+  {
+    cout << "Original region " << origRect.x << ", " << origRect.y << ", " << origRect.width << ", " << origRect.height << endl;
+    cout << "Region size changed: " << pRegion.x << ", " << pRegion.y << ", " << pRegion.width << ", " << pRegion.height << endl;
+  }
+  #endif
+
   pSegment = pImgData(pRegion);
 }
 
@@ -62,8 +83,8 @@ void CSIRFilterPt::generatePoints( unsigned int *pProbs, unsigned int pNumOfPoin
   int ptIdx = 0;
   for(int i = 0; i < pNumOfPtsToGenerate; ++i){
     ptIdx = (int) (pNumOfPoints-1)*gsl_rng_uniform(mRngR);
-    float stepX = (gsl_rng_uniform(mRngR) - 0.5)*mDistX,
-          stepY = (gsl_rng_uniform(mRngR) - 0.5)*mDistY;
+    float stepX = gsl_ran_gaussian(mRngR, 0.2)*mDistX,
+          stepY = gsl_ran_gaussian(mRngR, 0.2)*mDistY;
     Point2i startPt = mVecPts[ptIdx];
     int newX = startPt.x+stepX,
         newY = startPt.y+stepY;
@@ -87,6 +108,9 @@ void CSIRFilterPt::predictNextPos(cv::Mat &pImgData){
   mCurrentSimilarity = 0;
   for( iter = mVecPts.begin(); iter != mVecPts.end(); ++iter ){
     vecScores[idx] = calcScore(pImgData, *iter);
+    #ifdef _DEBUG
+      cout << "Point #" << idx << "score: " << vecScores[idx] << endl;
+    #endif
     totalScore += vecScores[idx];
     if( vecScores[idx] > bestScore ){
       bestScore = vecScores[idx];
@@ -118,11 +142,31 @@ void CSIRFilterPt::predictNextPos(cv::Mat &pImgData){
     returns Probability of similarity.
   */
 float CSIRFilterPt::calcScore(Mat& pImgData, Point2i pt){
-  Mat segment;
+  Mat segment, resizeRefData;
+  bool usingResizeData = false;
   getSegment(pImgData, pt2rect(pt, mArea), segment);
-   // todo: if the segment is not the same size as the original image
+  // todo: if the segment is not the same size as the original image
+
+  if( segment.rows < mRefData.rows || segment.cols < mRefData.cols ){
+    usingResizeData = true;
+    unsigned int offsetY = (mRefData.rows - segment.rows)/2,
+                 offsetX = (mRefData.cols - segment.cols)/2;
+    resizeRefData = mRefData(Rect(offsetX, offsetY, segment.cols, segment.rows));
+  }
+#ifdef _DEBUG
+  if(!usingResizeData)
+    imshow("origImage", mRefData);
+  else
+    imshow("origImage",resizeRefData);
+  imshow("PointSampleImage",segment);
+#endif
+
   Mat diff;
-  cv::absdiff(segment, mRefData, diff);
+  if(!usingResizeData)
+    cv::absdiff(segment, mRefData, diff);
+  else
+    cv::absdiff(segment, resizeRefData, diff);
+
   Mat::MSize matSize = mRefData.size;
   float maxDiff = matSize[0]*matSize[1]*3*255;
   Scalar scalDiff = sum(diff);
@@ -141,9 +185,11 @@ float CSIRFilterPt::getSimilarity(){
 void CSIRFilterPt::showAllPoints(Mat& pImg, bool pDisplay){
   vector<Point2i>::iterator iter;
   Scalar ptClr(255, 0, 0, 255);
+  Scalar ptMainClr(0, 0, 255, 255);
   for( iter = mVecPts.begin(); iter != mVecPts.end(); ++iter ){
     circle(pImg, *iter, 2, ptClr);
   }
+  circle(pImg, mCurrentPosition, 4, ptMainClr);
   if( pDisplay ){
     imshow("Ctrl window", pImg);
     waitKey();

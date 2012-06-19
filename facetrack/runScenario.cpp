@@ -19,6 +19,7 @@ void run_sirFilter(){
 
   Mat firstImg = imread(vecFilenames[301]);
   CSIRFilterPt testPt(vecInitPts[0], firstImg, Point2i(100,100));
+  testPt.showAllPoints(firstImg);
   int cntr = 0;
   for(vector<String>::iterator iter = vecFilenames.begin();
       iter != vecFilenames.end(); ++iter )
