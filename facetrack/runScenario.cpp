@@ -37,16 +37,33 @@ void run_sirFilter(){
 
 void run_testOpenCVSubtract(){
   Mat m1 = Mat(2,2,CV_32FC3);
-  m1.at<float>(0,0) = 1.0;
-  m1.at<float>(0,1) = 2.0;
-  m1.at<float>(1,0) = 3.0;
-  m1.at<float>(1,1) = 4.0;
+  m1.at<Vec3f>(0,0)[0] = 1.0;
+  m1.at<Vec3f>(0,0)[1] = 1.0;
+  m1.at<Vec3f>(0,0)[2] = 1.0;
+  m1.at<Vec3f>(0,1)[0] = 2.0;
+  m1.at<Vec3f>(0,1)[1] = 2.0;
+  m1.at<Vec3f>(0,1)[2] = 2.0;
+  m1.at<Vec3f>(1,0)[0] = 3.0;
+  m1.at<Vec3f>(1,0)[1] = 3.0;
+  m1.at<Vec3f>(1,0)[2] = 3.0;
+  m1.at<Vec3f>(1,1)[0] = 4.0;
+  m1.at<Vec3f>(1,1)[1] = 4.0;
+  m1.at<Vec3f>(1,1)[2] = 4.0;
+
   //
-  Mat m2 = Mat(2,2,CV_32F);
-  m2.at<float>(0,0) = 4.0;
-  m2.at<float>(0,1) = 3.0;
-  m2.at<float>(1,0) = 2.0;
-  m2.at<float>(1,1) = 1.0;
+  Mat m2 = Mat(2,2,CV_32FC3);
+  m2.at<Vec3f>(0,0)[0] = 1.0;
+  m2.at<Vec3f>(0,0)[1] = 1.0;
+  m2.at<Vec3f>(0,0)[2] = 2.0;
+  m2.at<Vec3f>(0,1)[0] = 2.0;
+  m2.at<Vec3f>(0,1)[1] = 2.0;
+  m2.at<Vec3f>(0,1)[2] = 2.0;
+  m2.at<Vec3f>(1,0)[0] = 3.0;
+  m2.at<Vec3f>(1,0)[1] = 3.0;
+  m2.at<Vec3f>(1,0)[2] = 3.0;
+  m2.at<Vec3f>(1,1)[0] = 4.0;
+  m2.at<Vec3f>(1,1)[1] = 4.0;
+  m2.at<Vec3f>(1,1)[2] = 4.0;
 
   Mat m3 = m1-m2;
   Mat m4;
@@ -67,6 +84,10 @@ void run_testOpenCVSubtract(){
   cout << "| " << m4.at<float>(0,0) << ", " << m4.at<float>(0,1) << " |" << endl;
   cout << "| " << m4.at<float>(1,0) << ", " << m4.at<float>(1,1) << " |" << endl;
 
-  Scalar suma = sum(m4);
-  cout << "Sum: " << suma[0] << ", " << suma[1] << ", " << suma[2] << ", " << suma[3] << endl;
+  Scalar suma = sum(m3);
+  cout << "m3 sum: " << suma[0] << ", " << suma[1] << ", " << suma[2] << ", " << suma[3] << endl;
+
+
+  suma = sum(m4);
+  cout << "m4 sum: " << suma[0] << ", " << suma[1] << ", " << suma[2] << ", " << suma[3] << endl;
 }

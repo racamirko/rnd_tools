@@ -80,12 +80,24 @@ void CSIRFilterPt::initRng(){
 void CSIRFilterPt::generatePoints( unsigned int *pProbs, unsigned int pNumOfPoints, unsigned int pNumOfPtsToGenerate ){
   vector<Point2i> vecNewPts;
 
+#ifdef _DEBUG
+  cout << "Original point array" << endl;
+  for( vector<Point2i>::iterator iter = mVecPts.begin(); iter != mVecPts.end(); ++iter ){
+    cout << "[" << iter->x << ", " << iter->y << "] ";
+  }
+  cout << endl;
+#endif
+
   int ptIdx = 0;
   for(int i = 0; i < pNumOfPtsToGenerate; ++i){
     ptIdx = (int) (pNumOfPoints-1)*gsl_rng_uniform(mRngR);
     float stepX = gsl_ran_gaussian(mRngR, 0.2)*mDistX,
           stepY = gsl_ran_gaussian(mRngR, 0.2)*mDistY;
-    Point2i startPt = mVecPts[ptIdx];
+    unsigned int ptNum = pProbs[ptIdx];
+#ifdef _DEBUG
+    cout << "using point: " << ptNum << endl;
+#endif
+    Point2i startPt = mVecPts[ptNum];
     int newX = startPt.x+stepX,
         newY = startPt.y+stepY;
     vecNewPts.push_back(Point2i(newX, newY));
@@ -93,7 +105,13 @@ void CSIRFilterPt::generatePoints( unsigned int *pProbs, unsigned int pNumOfPoin
   // replace the points
   mVecPts.clear();
   copy( vecNewPts.begin(), vecNewPts.end(), back_inserter(mVecPts) );
-}
+#ifdef _DEBUG
+  for( vector<Point2i>::iterator iter = mVecPts.begin(); iter != mVecPts.end(); ++iter ){
+    cout << "[" << iter->x << ", " << iter->y << "] ";
+  }
+  cout << "Check point array" << endl;
+#endif
+ }
 
 void CSIRFilterPt::predictNextPos(cv::Mat &pImgData){
   // evalutate current set of points
@@ -168,10 +186,10 @@ float CSIRFilterPt::calcScore(Mat& pImgData, Point2i pt){
     cv::absdiff(segment, resizeRefData, diff);
 
   Mat::MSize matSize = mRefData.size;
-  float maxDiff = matSize[0]*matSize[1]*3*255;
+  float maxDiff = matSize[0]*matSize[1]*3*20; // 20 per channel is a heuristic
   Scalar scalDiff = sum(diff);
   float curDiff = scalDiff[0]+scalDiff[1]+scalDiff[2];
-  return 1.0f - curDiff/maxDiff;
+  return max(1.0f - curDiff/maxDiff, 0.0f);
 }
 
 Point2i CSIRFilterPt::getPosition(){

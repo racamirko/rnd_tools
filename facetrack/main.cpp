@@ -3,6 +3,6 @@
 
 int main(int argc, char** argv)
 {
-  run_testOpenCVSubtract();
-//  run_sirFilter();
+//  run_testOpenCVSubtract();
+  run_sirFilter();
 }
