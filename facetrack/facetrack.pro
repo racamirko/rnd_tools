@@ -14,17 +14,21 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-INCLUDEPATH = /home/raca/include ../../../utilsLib /sw/include/
-LIBS += -L/home/raca/lib -L/sw/lib -L../../../utilsLib-build-desktop -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_video -lgsl -lgslcblas
+INCLUDEPATH = /home/raca/include ../../../../repo/cvlab-code/trunk/raca/utilsLib /sw/include/
+LIBS += -L/home/raca/lib -L/sw/lib -L../../../../repo/cvlab-code/trunk/raca/utilsLib-build-desktop -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_video -lgsl -lgslcblas -lutilsLib
 
 SOURCES += main.cpp \
     CSIRFilterPt.cpp \
     test_OpenCv_Kalman.cpp \
-    initData.cpp
+    initData.cpp \
+    runScenario.cpp
 
 HEADERS += \
     CSIRFilterPt.h \
-    initData.h
+    initData.h \
+    runScenario.h
+
+
 
 
 

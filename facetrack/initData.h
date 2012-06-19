@@ -4,6 +4,6 @@
 #include <vector>
 #include <opencv2/core/core.hpp>
 
-void initStartCoord( std::vector<cv::Point2i> pPersonPoints );
+void initStartCoord( std::vector<cv::Point2i>& pPersonPoints );
 
 #endif // INITDATA_H

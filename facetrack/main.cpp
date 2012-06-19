@@ -1,7 +1,7 @@
 #include "initData.h"
 #include "CSIRFilterPt.h"
 
-int main(int, char**)
+int main(int argc, char** argv)
 {
 
 }

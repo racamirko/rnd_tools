@@ -3,7 +3,7 @@
 using namespace std;
 using namespace cv;
 
-void initStartCoord( vector<Point2i> pPersonPoints ){
+void initStartCoord( vector<Point2i>& pPersonPoints ){
   pPersonPoints.clear();
   pPersonPoints.push_back(Point2i(215, 788));
   pPersonPoints.push_back(Point2i(232, 729));
