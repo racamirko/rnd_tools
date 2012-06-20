@@ -16,12 +16,9 @@ using namespace cv;
 CSIRFilterPt::CSIRFilterPt(cv::Point2i pInitPt, cv::Mat &pInitImg, cv::Point2i pAreaSize)
   : mArea(pAreaSize)
   , mCurrentPosition(pInitPt)
-  , mCurrentSimilarity(0.9)
+  , mCurrentSimilarity(0.9) // need to set it because of the gauss variance which is connected
 {
-  int shiftX = pAreaSize.x/2,
-      shiftY = pAreaSize.y/2;
-
-  mRefData = pInitImg(Rect(pInitPt.x-shiftX, pInitPt.y-shiftY, shiftX, shiftY));
+  mRefData = pInitImg(pt2rect(pInitPt, pAreaSize));
   #ifdef _DEBUG
     imshow("ctrwnd - Referent data", mRefData);
     waitKey();
