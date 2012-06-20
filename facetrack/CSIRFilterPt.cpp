@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <opencv2/highgui/highgui.hpp>
 #include <gsl/gsl_randist.h>
+#include <opencv2/imgproc/imgproc.hpp>
 
 using namespace std;
 using namespace cv;

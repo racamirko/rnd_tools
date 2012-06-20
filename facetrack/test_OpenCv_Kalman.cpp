@@ -1,5 +1,6 @@
-#include "opencv2/video/tracking.hpp"
-#include "opencv2/highgui/highgui.hpp"
+#include <opencv2/video/tracking.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 #include <stdio.h>
 
@@ -27,7 +28,7 @@ void help()
       );
 }
 
-int main_func(int argc, char** argv){
+int main_func_kal(int argc, char** argv){
   help();
   Mat img(500, 500, CV_8UC3);
   KalmanFilter KF(2, 1, 0);
@@ -104,7 +105,7 @@ int main_func(int argc, char** argv){
  * taken from
  *        http://opencv.willowgarage.com/documentation/cpp/imgproc_histograms.html?highlight=histogram
  */
-int main_func( int argc, char** argv )
+int main_func_hist( int argc, char** argv )
 {
     Mat src, hsv;
     if( argc != 2 || !(src=imread(argv[1], 1)).data )

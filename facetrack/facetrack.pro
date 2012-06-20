@@ -21,12 +21,18 @@ SOURCES += main.cpp \
     CSIRFilterPt.cpp \
     test_OpenCv_Kalman.cpp \
     initData.cpp \
-    runScenario.cpp
+    runScenario.cpp \
+    CUtils.cpp
 
 HEADERS += \
     CSIRFilterPt.h \
     initData.h \
-    runScenario.h
+    runScenario.h \
+    CUtils.h \
+    test_OpenCv_Kalman.h
+
+
+
 
 
 

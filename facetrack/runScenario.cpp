@@ -1,12 +1,14 @@
 #include "runScenario.h"
 
-#include "CSIRFilterPt.h"
-#include "initData.h"
-#include <CFileUtils.h>
 #include <opencv2/highgui/highgui.hpp>
-
 #include <iostream>
 
+#include <CFileUtils.h>
+
+#include "test_OpenCv_Kalman.h"
+#include "CSIRFilterPt.h"
+#include "initData.h"
+#include "CUtils.h"
 
 using namespace std;
 using namespace cv;
@@ -33,6 +35,32 @@ void run_sirFilter(){
     testPt.predictNextPos(nextImg);
     testPt.showAllPoints(nextImg);
   }
+}
+
+void run_HistTest(){
+  char* argv[] = { "execname" ,"/cvlabdata1/home/raca/data/classroom/canon_digital/imgs/frame000001.png" };
+  main_func_hist(2, argv);
+}
+
+void run_testHistNorm(){
+  Mat image = imread("/cvlabdata1/home/raca/data/classroom/canon_digital/imgs/frame000001.png");
+  MatND hist, histNorm;
+  Rect roi(175,738,100,100);
+  Mat testSample = image(roi);
+  CUtils::genGrayscaleHist(testSample, hist);
+  histNorm = hist.clone();
+  CUtils::normHistBasedOnPatchSize(histNorm, testSample);
+  CUtils::dispHist(hist, "orig_hist");
+  CUtils::dispHist(histNorm, "new_hist");
+  waitKey();
+}
+
+void run_testGrayscaleHist(){
+  Mat image = imread("/cvlabdata1/home/raca/data/classroom/canon_digital/imgs/frame000001.png");
+  MatND hist;
+  CUtils::genGrayscaleHist(image, hist);
+  CUtils::dispHist(hist);
+  waitKey();
 }
 
 void run_testOpenCVSubtract(){
