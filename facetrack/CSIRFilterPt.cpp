@@ -4,6 +4,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <gsl/gsl_randist.h>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <algorithm>
 
 using namespace std;
 using namespace cv;
@@ -199,6 +200,38 @@ float CSIRFilterPt::calcScore(Mat& pImgData, Point2i pt){
   float curDiff = scalDiff[0]+scalDiff[1]+scalDiff[2];
   return max(1.0f - (curDiff+penalty)/maxDiff, 0.0f);
 }
+
+float CSIRFilterPt::histSimilarity(MatND& hist1, MatND& hist2){
+//  Score same: 1
+//  Score diff: 0.948292
+//  Worst diff: 0.692497
+
+  float histScore = compareHist(hist1, hist2, CV_COMP_CORREL);
+  return std::max(0.0f, histScore);
+}
+
+float CSIRFilterPt::histSimilarity2(MatND& hist1, MatND& hist2){
+//  Score same: 1
+//  Score diff: 0.989226
+//  Worst diff: 0.833977
+
+  float histScore = compareHist(hist1, hist2, CV_COMP_CHISQR);
+  // sum of hists
+  Scalar s1 = sum(hist1),
+         s2 = sum(hist2);
+  Scalar totalSum = s1+s2;
+  return (1.0f-histScore/(totalSum[0]+totalSum[1]+totalSum[2]));
+}
+
+float CSIRFilterPt::histSimilarity3(MatND& hist1, MatND& hist2){
+//  Score same: 1
+//  Score diff: 0.925835
+//  Worst diff: 0.676101
+
+  float histScore = compareHist(hist1, hist2, CV_COMP_BHATTACHARYYA);
+  return max(0.0f, 1.0f-histScore);
+}
+
 
 Point2i CSIRFilterPt::getPosition(){
   return mCurrentPosition;

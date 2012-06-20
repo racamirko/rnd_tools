@@ -55,6 +55,40 @@ void run_testHistNorm(){
   waitKey();
 }
 
+void run_testHistCmp(){
+  Mat image = imread("/cvlabdata1/home/raca/data/classroom/canon_digital/imgs/frame000001.png");
+  Rect roi(175,738,50,50),
+       roi2(185,748,50,50),
+       roi3(385,748,50,50);
+  Mat testSample = image(roi),
+      cmpSample = image(roi2),
+      totallyDifferentSample = image(roi3);
+
+  MatND hist1, hist2, hist3;
+  CUtils::genGrayscaleHist(testSample, hist1);
+  CUtils::normHistBasedOnPatchSize(hist1, testSample);
+
+  CUtils::genGrayscaleHist(cmpSample, hist2);
+  CUtils::normHistBasedOnPatchSize(hist2, cmpSample);
+
+  CUtils::genGrayscaleHist(totallyDifferentSample, hist3);
+  CUtils::normHistBasedOnPatchSize(hist3, totallyDifferentSample);
+  //  display
+  CUtils::dispHist(hist1, "origHist");
+  CUtils::dispHist(hist2, "shiftedHist");
+  CUtils::dispHist(hist3, "differentHist");
+
+  float scoreSame = CSIRFilterPt::histSimilarity3(hist1, hist1),
+        scoreDiff = CSIRFilterPt::histSimilarity3(hist1, hist2),
+        worstCaseDiff = CSIRFilterPt::histSimilarity3(hist1, hist3);
+
+  cout << "Score same: " << scoreSame << endl;
+  cout << "Score diff: " << scoreDiff << endl;
+  cout << "Worst diff: " << worstCaseDiff << endl;
+
+  waitKey();
+}
+
 void run_testGrayscaleHist(){
   Mat image = imread("/cvlabdata1/home/raca/data/classroom/canon_digital/imgs/frame000001.png");
   MatND hist;

@@ -32,6 +32,11 @@ public:
 
   void showAllPoints(cv::Mat& pImg, bool pDisplay = true);
   void showAllPointsAreas(cv::Mat& pImg);
+
+  // while testing
+  static float histSimilarity(cv::MatND& hist1, cv::MatND& hist2);
+  static float histSimilarity2(cv::MatND& hist1, cv::MatND& hist2);
+  static float histSimilarity3(cv::MatND& hist1, cv::MatND& hist2);
 };
 
 #endif // CSIRFILTERPT_H
