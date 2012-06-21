@@ -8,12 +8,14 @@
 class CSIRFilterPt
 {
 protected:
+  static gsl_rng* sRngR;
+
+
   cv::Point2i mArea,
               mCurrentPosition;
   cv::Mat mRefData;
   cv::MatND mRefHist;
   std::vector<cv::Point2i> mVecPts;
-  gsl_rng* mRngR;
   float mDistX, mDistY, mCurrentSimilarity;
   unsigned int mNumOfParticles;
 
@@ -21,11 +23,12 @@ protected:
   float calcScore(cv::Mat& pImgData, cv::Point2i pt);
   cv::Rect pt2rect(cv::Point2i pPt, cv::Point2i pAreaSize);
   void getSegment(cv::Mat& pImgData, cv::Rect pRegion, cv::Mat& pSegment);
-  void initRng();
 
 public:
   CSIRFilterPt(cv::Point2i pInitPt, cv::Mat &pInitImg, cv::Point2i pAreaSize);
   ~CSIRFilterPt();
+  static void initRng();
+  void deinitRng();
 
   void predictNextPos(cv::Mat &pImgData);
   cv::Point2i getPosition();

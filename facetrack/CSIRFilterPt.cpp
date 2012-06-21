@@ -11,11 +11,13 @@
 using namespace std;
 using namespace cv;
 
-#define _DEBUG
+//#define _DEBUG
 
 #ifdef _DEBUG
 #include <iostream>
 #endif
+
+gsl_rng* CSIRFilterPt::sRngR = NULL;
 
 CSIRFilterPt::CSIRFilterPt(cv::Point2i pInitPt, cv::Mat &pInitImg, cv::Point2i pAreaSize)
   : mArea(pAreaSize)
@@ -45,7 +47,7 @@ cv::Rect CSIRFilterPt::pt2rect(cv::Point2i pPt, cv::Point2i pAreaSize){
   int shiftX = pAreaSize.x/2,
       shiftY = pAreaSize.y/2;
 
-  return Rect(pPt.x-shiftX, pPt.y-shiftY, shiftX, shiftY);
+  return Rect(pPt.x-shiftX, pPt.y-shiftY, pAreaSize.x, pAreaSize.y);
 }
 
 void CSIRFilterPt::getSegment(cv::Mat& pImgData, cv::Rect pRegion, cv::Mat& pSegment){
@@ -70,15 +72,21 @@ void CSIRFilterPt::getSegment(cv::Mat& pImgData, cv::Rect pRegion, cv::Mat& pSeg
 }
 
 CSIRFilterPt::~CSIRFilterPt(){
-  gsl_rng_free(mRngR);
 }
 
 void CSIRFilterPt::initRng(){
+  if( sRngR != NULL )
+    return;
+
   const gsl_rng_type * T;
   gsl_rng_env_setup();
 
   T = gsl_rng_default;
-  mRngR = gsl_rng_alloc (T);
+  sRngR = gsl_rng_alloc (T);
+}
+
+void CSIRFilterPt::deinitRng(){
+  gsl_rng_free(sRngR);
 }
 
 void CSIRFilterPt::generatePoints( unsigned int *pProbs, unsigned int pNumOfPoints, unsigned int pNumOfPtsToGenerate ){
@@ -94,9 +102,9 @@ void CSIRFilterPt::generatePoints( unsigned int *pProbs, unsigned int pNumOfPoin
 
   int ptIdx = 0;
   for(int i = 0; i < pNumOfPtsToGenerate; ++i){
-    ptIdx = (int) (pNumOfPoints-1)*gsl_rng_uniform(mRngR);
-    float stepX = gsl_ran_gaussian(mRngR, 1-mCurrentSimilarity)*mDistX,
-          stepY = gsl_ran_gaussian(mRngR, 1-mCurrentSimilarity)*mDistY;
+    ptIdx = (int) (pNumOfPoints-1)*gsl_rng_uniform(sRngR);
+    float stepX = gsl_ran_gaussian(sRngR, 1-mCurrentSimilarity)*mDistX,
+          stepY = gsl_ran_gaussian(sRngR, 1-mCurrentSimilarity)*mDistY;
     unsigned int ptNum = pProbs[ptIdx];
 //#ifdef _DEBUG
 //    cout << "using point: " << ptNum << endl;

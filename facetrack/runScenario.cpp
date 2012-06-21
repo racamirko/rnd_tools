@@ -2,6 +2,7 @@
 
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
+#include <stdio.h>
 
 #include <CFileUtils.h>
 
@@ -43,6 +44,10 @@ void run_sirFilterOnEverything(){
   vector<CSIRFilterPt*> vecTrackPts;
   initStartCoord(vecInitPts);
   Mat nextImg;
+  String outputMask = "/Users/mirkoraca/results/classroom/imgs/frame%06d.png";
+  FILE* pFile = fopen("/Users/mirkoraca/results/classroom/classroom_track.txt","w");
+
+  char outBuf[1000];
 
   CFileUtils::getDirFiles("/cvlabdata1/home/raca/data/classroom/canon_digital/imgs", vecFilenames, true );
 
@@ -53,6 +58,7 @@ void run_sirFilterOnEverything(){
     vecTrackPts.push_back(new CSIRFilterPt(*iterPts, firstImg, Point2i(100,100)));
   }
 
+  int frameNo = 1;
   for( vector<String>::iterator iterImg = vecFilenames.begin();
        iterImg != vecFilenames.end(); ++iterImg )
   {
@@ -62,11 +68,18 @@ void run_sirFilterOnEverything(){
          iterPart != vecTrackPts.end(); ++iterPart )
     {
       (*iterPart)->predictNextPos(nextImg);
+      Point2i curPos = (*iterPart)->getPosition();
+      fprintf(pFile, "%d %d %d\n", frameNo, curPos.x, curPos.y);
       (*iterPart)->showFewPoints(dispImg, false);
     }
-    imshow("frameImg", dispImg);
-    waitKey();
+//    imshow("frameImg", dispImg);
+//    waitKey();
+    sprintf(outBuf, outputMask.c_str(), frameNo);
+    imwrite(String(outBuf),dispImg);
+    ++frameNo;
   }
+
+  fclose(pFile);
 }
 
 void run_HistTest(){
@@ -181,7 +194,27 @@ void run_testOpenCVSubtract(){
   Scalar suma = sum(m3);
   cout << "m3 sum: " << suma[0] << ", " << suma[1] << ", " << suma[2] << ", " << suma[3] << endl;
 
-
   suma = sum(m4);
   cout << "m4 sum: " << suma[0] << ", " << suma[1] << ", " << suma[2] << ", " << suma[3] << endl;
+}
+
+void showInitPts(){
+  vector<Point2i> vecInitPts;
+  vector<String> vecFilenames;
+  initStartCoord(vecInitPts);
+  Scalar ptClr(255, 0, 0, 255);
+  int sizex = 100, sizey = 100;
+
+  CFileUtils::getDirFiles("/cvlabdata1/home/raca/data/classroom/canon_digital/imgs", vecFilenames, true );
+
+  Mat firstImg = imread(vecFilenames[0]);
+  for(vector<Point2i>::iterator iter = vecInitPts.begin();
+      iter != vecInitPts.end(); ++iter )
+  {
+    circle(firstImg, *iter, 2, ptClr);
+    Rect showRect = Rect( iter->x-sizex/2, iter->y-sizey/2, sizex, sizey );
+    rectangle(firstImg, showRect, ptClr);
+  }
+  imshow("testwnd",firstImg);
+  waitKey();
 }

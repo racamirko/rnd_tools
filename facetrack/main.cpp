@@ -10,4 +10,5 @@ int main(int argc, char** argv)
 //  run_testHistNorm(); // passed
 //  run_testHistCmp(); // passed
   run_sirFilterOnEverything();
+//  showInitPts(); // passed
 }

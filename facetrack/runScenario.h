@@ -8,5 +8,6 @@ void run_testGrayscaleHist();
 void run_testHistNorm();
 void run_testHistCmp();
 void run_sirFilterOnEverything();
+void showInitPts();
 
 #endif // RUNSCENARIO_H
