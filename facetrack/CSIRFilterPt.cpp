@@ -6,6 +6,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <algorithm>
 
+#include "CUtils.h"
+
 using namespace std;
 using namespace cv;
 
@@ -21,6 +23,9 @@ CSIRFilterPt::CSIRFilterPt(cv::Point2i pInitPt, cv::Mat &pInitImg, cv::Point2i p
   , mCurrentSimilarity(0.9) // need to set it because of the gauss variance which is connected
 {
   mRefData = pInitImg(pt2rect(pInitPt, pAreaSize));
+  CUtils::genGrayscaleHist(mRefData, mRefHist);
+  CUtils::normHistBasedOnPatchSize(mRefHist, mRefData);
+
   #ifdef _DEBUG
     imshow("ctrwnd - Referent data", mRefData);
     waitKey();
@@ -29,7 +34,7 @@ CSIRFilterPt::CSIRFilterPt(cv::Point2i pInitPt, cv::Mat &pInitImg, cv::Point2i p
   initRng();
   mDistX = 50.0f;
   mDistY = 50.0f;
-  mNumOfParticles = 20;
+  mNumOfParticles = 10000;
 
   unsigned int initPts[] = {0};
   mVecPts.push_back(pInitPt);
@@ -165,40 +170,14 @@ void CSIRFilterPt::predictNextPos(cv::Mat &pImgData){
     returns Probability of similarity.
   */
 float CSIRFilterPt::calcScore(Mat& pImgData, Point2i pt){
-  Mat segment, resizeRefData;
-  bool usingResizeData = false;
+  Mat segment;
+  MatND histNewPart;
   getSegment(pImgData, pt2rect(pt, mArea), segment);
-  // todo: if the segment is not the same size as the original image
 
-  float penalty = 0; // penalty for difference in size
-  float maxPenaltyPerPixelChannel = 20.0f; //TODO: heuristics, 20 per channel is a heuristic
-  if( segment.rows < mRefData.rows || segment.cols < mRefData.cols ){
-    usingResizeData = true;
-    unsigned int offsetY = (mRefData.rows - segment.rows)/2,
-                 offsetX = (mRefData.cols - segment.cols)/2;
-    resizeRefData = mRefData(Rect(offsetX, offsetY, segment.cols, segment.rows));
-    penalty = ( mRefData.rows*mRefData.cols - segment.rows*segment.cols )*maxPenaltyPerPixelChannel;
-  }
-//#ifdef _DEBUG
-//  if(!usingResizeData)
-//    imshow("origImage", mRefData);
-//  else
-//    imshow("origImage",resizeRefData);
-//  imshow("PointSampleImage",segment);
-//  waitKey();
-//#endif
+  CUtils::genGrayscaleHist(segment, histNewPart);
+  CUtils::normHistBasedOnPatchSize(histNewPart, segment);
 
-  Mat diff;
-  if(!usingResizeData)
-    cv::absdiff(segment, mRefData, diff);
-  else
-    cv::absdiff(segment, resizeRefData, diff);
-
-  Mat::MSize matSize = mRefData.size;
-  float maxDiff = matSize[0]*matSize[1]*3*maxPenaltyPerPixelChannel;
-  Scalar scalDiff = sum(diff);
-  float curDiff = scalDiff[0]+scalDiff[1]+scalDiff[2];
-  return max(1.0f - (curDiff+penalty)/maxDiff, 0.0f);
+  return histSimilarity4(mRefHist, histNewPart);
 }
 
 float CSIRFilterPt::histSimilarity(MatND& hist1, MatND& hist2){
@@ -221,6 +200,19 @@ float CSIRFilterPt::histSimilarity2(MatND& hist1, MatND& hist2){
          s2 = sum(hist2);
   Scalar totalSum = s1+s2;
   return (1.0f-histScore/(totalSum[0]+totalSum[1]+totalSum[2]));
+}
+
+float CSIRFilterPt::histSimilarity4(MatND& hist1, MatND& hist2){
+//  Score same:
+//  Score diff:
+//  Worst diff:
+
+  float histScore = compareHist(hist1, hist2, CV_COMP_CHISQR);
+  // sum of hists
+  Scalar s1 = sum(hist1),
+         s2 = sum(hist2);
+  Scalar totalSum = s1+s2;
+  return pow((1.0f-histScore/(totalSum[0]+totalSum[1]+totalSum[2])),6);
 }
 
 float CSIRFilterPt::histSimilarity3(MatND& hist1, MatND& hist2){
@@ -246,6 +238,20 @@ void CSIRFilterPt::showAllPoints(Mat& pImg, bool pDisplay){
   Scalar ptClr(255, 0, 0, 255);
   Scalar ptMainClr(0, 0, 255, 255);
   for( iter = mVecPts.begin(); iter != mVecPts.end(); ++iter ){
+    circle(pImg, *iter, 2, ptClr);
+  }
+  circle(pImg, mCurrentPosition, 4, ptMainClr);
+  if( pDisplay ){
+    imshow("Ctrl window", pImg);
+    waitKey();
+  }
+}
+
+void CSIRFilterPt::showFewPoints(Mat& pImg, bool pDisplay){
+  vector<Point2i>::iterator iter;
+  Scalar ptClr(255, 0, 0, 255);
+  Scalar ptMainClr(0, 0, 255, 255);
+  for( iter = mVecPts.begin(); iter != mVecPts.end(); iter += 100 ){
     circle(pImg, *iter, 2, ptClr);
   }
   circle(pImg, mCurrentPosition, 4, ptMainClr);

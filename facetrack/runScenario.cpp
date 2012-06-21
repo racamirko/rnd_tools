@@ -33,7 +33,39 @@ void run_sirFilter(){
       continue;
     nextImg = imread(*iter);
     testPt.predictNextPos(nextImg);
-    testPt.showAllPoints(nextImg);
+    testPt.showFewPoints(nextImg);
+  }
+}
+
+void run_sirFilterOnEverything(){
+  vector<Point2i> vecInitPts;
+  vector<String> vecFilenames;
+  vector<CSIRFilterPt*> vecTrackPts;
+  initStartCoord(vecInitPts);
+  Mat nextImg;
+
+  CFileUtils::getDirFiles("/cvlabdata1/home/raca/data/classroom/canon_digital/imgs", vecFilenames, true );
+
+  Mat firstImg = imread(vecFilenames[0]);
+  for( vector<Point2i>::iterator iterPts = vecInitPts.begin();
+       iterPts != vecInitPts.end(); ++iterPts )
+  {
+    vecTrackPts.push_back(new CSIRFilterPt(*iterPts, firstImg, Point2i(100,100)));
+  }
+
+  for( vector<String>::iterator iterImg = vecFilenames.begin();
+       iterImg != vecFilenames.end(); ++iterImg )
+  {
+    nextImg = imread(*iterImg);
+    Mat dispImg = nextImg.clone();
+    for(vector<CSIRFilterPt*>::iterator iterPart = vecTrackPts.begin();
+         iterPart != vecTrackPts.end(); ++iterPart )
+    {
+      (*iterPart)->predictNextPos(nextImg);
+      (*iterPart)->showFewPoints(dispImg, false);
+    }
+    imshow("frameImg", dispImg);
+    waitKey();
   }
 }
 
@@ -78,9 +110,9 @@ void run_testHistCmp(){
   CUtils::dispHist(hist2, "shiftedHist");
   CUtils::dispHist(hist3, "differentHist");
 
-  float scoreSame = CSIRFilterPt::histSimilarity3(hist1, hist1),
-        scoreDiff = CSIRFilterPt::histSimilarity3(hist1, hist2),
-        worstCaseDiff = CSIRFilterPt::histSimilarity3(hist1, hist3);
+  float scoreSame = CSIRFilterPt::histSimilarity4(hist1, hist1),
+        scoreDiff = CSIRFilterPt::histSimilarity4(hist1, hist2),
+        worstCaseDiff = CSIRFilterPt::histSimilarity4(hist1, hist3);
 
   cout << "Score same: " << scoreSame << endl;
   cout << "Score diff: " << scoreDiff << endl;

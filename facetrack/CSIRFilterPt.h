@@ -11,6 +11,7 @@ protected:
   cv::Point2i mArea,
               mCurrentPosition;
   cv::Mat mRefData;
+  cv::MatND mRefHist;
   std::vector<cv::Point2i> mVecPts;
   gsl_rng* mRngR;
   float mDistX, mDistY, mCurrentSimilarity;
@@ -32,11 +33,13 @@ public:
 
   void showAllPoints(cv::Mat& pImg, bool pDisplay = true);
   void showAllPointsAreas(cv::Mat& pImg);
+  void showFewPoints(cv::Mat& pImg, bool pDisplay = true);
 
   // while testing
   static float histSimilarity(cv::MatND& hist1, cv::MatND& hist2);
   static float histSimilarity2(cv::MatND& hist1, cv::MatND& hist2);
   static float histSimilarity3(cv::MatND& hist1, cv::MatND& hist2);
+  static float histSimilarity4(cv::MatND& hist1, cv::MatND& hist2);
 };
 
 #endif // CSIRFILTERPT_H

@@ -7,5 +7,6 @@ void run_HistTest();
 void run_testGrayscaleHist();
 void run_testHistNorm();
 void run_testHistCmp();
+void run_sirFilterOnEverything();
 
 #endif // RUNSCENARIO_H

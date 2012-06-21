@@ -4,9 +4,10 @@
 int main(int argc, char** argv)
 {
 //  run_testOpenCVSubtract(); // passed
-//  run_sirFilter();
+//  run_sirFilter(); // passed
 //  run_HistTest(); // passed
 //  run_testGrayscaleHist(); // passed
 //  run_testHistNorm(); // passed
-  run_testHistCmp();
+//  run_testHistCmp(); // passed
+  run_sirFilterOnEverything();
 }
