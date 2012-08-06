@@ -31,11 +31,11 @@ init_points = [ ...
     1867, 426;
     ];
 
-detector_filename = '/Users/mirkoraca/data/classroom/face_detections.txt';
-out_filename = '/Users/mirkoraca/results/classroom/face_rects.txt';
-img_folder = '/Users/mirkoraca/data/classroom/imgs';
+detector_filename = '/Users/mirkoraca/data/classroom/face_detections2.txt';
+out_filename = '/Users/mirkoraca/results/classroom/face_rects2.txt';
+img_folder = '/cvlabdata1/home/raca/data/classroom/canon_digital/imgs2'; %'/Users/mirkoraca/data/classroom/imgs';
 out_format = '%d %d %d %d %d\n';
-out_folder = '/Users/mirkoraca/results/classroom/imgs_corrected_rects';
+out_folder = '/Users/mirkoraca/results/classroom/imgs_corrected_rects2';
 
 [col1, col2, col3, col4, col5] = textread(detector_filename, '%d %d %d %d %d');
 tracks = [col1-2, col2, col3, col4, col5];
@@ -81,8 +81,11 @@ for i = 2 : length(imgs)
         fprintf(file_id, out_format, i, out_rects{i}(j,:));
     end
     % draw the output
+    if i < 984
+        continue;
+    end
     im = imread(fullfile(img_folder, imgs(i).name));
-    im_out = blurRegions(im,out_rects{i});
+    im_out = blurRegions(im,out_rects{i},20);
     imwrite(im_out, fullfile(out_folder, imgs(i).name),'png');
 %     imshow(im);
 %     for j = 1 : num_of_pts_to_track
