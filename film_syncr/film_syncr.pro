@@ -14,10 +14,14 @@ LIBS += -lglog -L/usr/local/lib
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    CUtil.cpp
+    CUtil.cpp \
+    tinyxml2.cpp \
+    CSessionParameters.cpp
 
 HEADERS  += mainwindow.h \
     globalInclude.h \
-    CUtil.h
+    CUtil.h \
+    tinyxml2.h \
+    CSessionParameters.h
 
 FORMS    += mainwindow.ui

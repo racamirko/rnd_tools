@@ -41,12 +41,18 @@ void MainWindow::setupHooks(){
     connect(ui->btnLoad1, SIGNAL(clicked()), this, SLOT(slot_filename1()));
     connect(ui->btnLoad2, SIGNAL(clicked()), this, SLOT(slot_filename2()));
     connect(ui->btnLoad3, SIGNAL(clicked()), this, SLOT(slot_filename3()));
-    // check for playing
+    connect(ui->action_Save, SIGNAL(triggered()), this, SLOT(slot_saveSession()));
+    connect(ui->action_Open, SIGNAL(triggered()), this, SLOT(slot_openSession())); // check for playing
     connect(ui->actionGo_cam1, SIGNAL(triggered()), this, SLOT(slot_checkPlay1()));
     connect(ui->actionGo_cam2, SIGNAL(triggered()), this, SLOT(slot_checkPlay2()));
     connect(ui->actionGo_cam3, SIGNAL(triggered()), this, SLOT(slot_checkPlay3()));
     // timers
     connect(tickTimer, SIGNAL(timeout()), this, SLOT(slot_updateTimeLabels()));
+
+    // just for quicker debugging
+    ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
+    ui->videoPlayer2->load(Phonon::MediaSource(ui->editFilename2->toPlainText()));
+    ui->videoPlayer3->load(Phonon::MediaSource(ui->editFilename3->toPlainText()));
 }
 
 void MainWindow::setupAdditionalUI(){
@@ -55,7 +61,6 @@ void MainWindow::setupAdditionalUI(){
 
 void MainWindow::slot_play(){
     LOG(INFO) << "slot_play";
-    bool anyIsPlaying = false;
 
     if( ui->chkPlay1->isChecked() ){
         if(ui->videoPlayer1->isPlaying())
@@ -103,12 +108,8 @@ void MainWindow::slot_pause(){
 
 void MainWindow::slot_seek_p10(){
     LOG(INFO) << "slot_seek_p10";
-    if( ui->chkPlay1->isChecked() ){
-        LOG(ERROR) << "Seeking from " << ui->videoPlayer1->currentTime() <<  " to " << ui->videoPlayer1->currentTime()+10000;
+    if( ui->chkPlay1->isChecked() )
         ui->videoPlayer1->seek( ui->videoPlayer1->currentTime()+10000 );
-        LOG(ERROR) << "Went to time: " << ui->videoPlayer1->currentTime();
-        LOG(ERROR) << "The player is " << ui->videoPlayer1->isPlaying() ? "playing" : "stopped";
-    }
     if( ui->chkPlay2->isChecked() )
         ui->videoPlayer2->seek( ui->videoPlayer2->currentTime()+10000 );
     if( ui->chkPlay3->isChecked() )
@@ -158,17 +159,30 @@ void MainWindow::getVideoFile(int playerIndex){
         case 0:
             ui->editFilename1->setPlainText(path);
             ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
+            sessParams.filename1 = ui->editFilename1->toPlainText().toStdString();
             break;
         case 1:
             ui->editFilename2->setPlainText(path);
             ui->videoPlayer2->load(Phonon::MediaSource(ui->editFilename2->toPlainText()));
+            sessParams.filename2 = ui->editFilename2->toPlainText().toStdString();
             break;
         case 2:
             ui->editFilename3->setPlainText(path);
             ui->videoPlayer3->load(Phonon::MediaSource(ui->editFilename3->toPlainText()));
+            sessParams.filename3 = ui->editFilename3->toPlainText().toStdString();
             break;
     }
     slot_updateTimeLabels();
+}
+
+void MainWindow::slot_openSession(){
+    QString path = QFileDialog::getOpenFileName(this, tr("Choose session filename to save"), QString("/home/raca/data/video_material/12.09.13 - talk2 - bc410/"), QString::Null());
+    sessParams.load(path.toStdString());
+}
+
+void MainWindow::slot_saveSession(){
+    QString path = QFileDialog::getSaveFileName(this, tr("Choose session filename to save"), QString("/home/raca/data/video_material/12.09.13 - talk2 - bc410/"), QString::Null());
+    sessParams.save(path.toStdString());
 }
 
 void MainWindow::slot_checkPlay1(){
@@ -201,9 +215,9 @@ void MainWindow::slot_updateTimeLabels(){
 
 void MainWindow::slot_endPeriodPlaying(){
     LOG(INFO) << "slot_endPeriodPlaying";
-    slot_pause();
     ui->videoPlayer1->seek(startPos1);
     ui->videoPlayer2->seek(startPos2);
     ui->videoPlayer3->seek(startPos3);
-    slot_updateTimeLabels();
+    //slot_pause();
+//    slot_updateTimeLabels();
 }

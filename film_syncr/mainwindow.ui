@@ -406,6 +406,7 @@
      <string>File</string>
     </property>
     <addaction name="action_Open"/>
+    <addaction name="action_Save"/>
     <addaction name="separator"/>
     <addaction name="action_Quit"/>
    </widget>
@@ -442,6 +443,9 @@
   <action name="action_Open">
    <property name="text">
     <string>&amp;Open</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="action_Quit">
@@ -492,6 +496,14 @@
    </property>
    <property name="shortcut">
     <string>Shift+Space</string>
+   </property>
+  </action>
+  <action name="action_Save">
+   <property name="text">
+    <string>&amp;Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

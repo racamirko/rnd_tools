@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTimer>
+#include "CSessionParameters.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,13 +18,15 @@ public:
     ~MainWindow();
     
 private:
-    void setupHooks();
-    void setupAdditionalUI();
-    void getVideoFile(int playerIndex);
+    CSessionParameters sessParams;
     qint64 startPos1, startPos2, startPos3;
 
     Ui::MainWindow *ui;
     QTimer* tickTimer;
+
+    void setupHooks();
+    void setupAdditionalUI();
+    void getVideoFile(int playerIndex);
 
 private slots:
     void slot_quit();
@@ -45,6 +48,8 @@ private slots:
 
     void slot_updateTimeLabels();
     void slot_endPeriodPlaying();
+    void slot_saveSession();
+    void slot_openSession();
 };
 
 #endif // MAINWINDOW_H
