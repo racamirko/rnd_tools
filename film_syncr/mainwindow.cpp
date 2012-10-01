@@ -176,8 +176,38 @@ void MainWindow::getVideoFile(int playerIndex){
 }
 
 void MainWindow::slot_openSession(){
+    char buffer[20];
     QString path = QFileDialog::getOpenFileName(this, tr("Choose session filename to save"), QString("/home/raca/data/video_material/12.09.13 - talk2 - bc410/"), QString::Null());
     sessParams.load(path.toStdString());
+    // filenames
+    if( !sessParams.filename1.empty() ){
+        ui->editFilename1->setPlainText(QString::fromStdString(sessParams.filename1));
+        ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
+    }
+    if( !sessParams.filename2.empty() ){
+        ui->editFilename1->setPlainText(QString::fromStdString(sessParams.filename1));
+        ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
+    }
+    if( !sessParams.filename3.empty() ){
+        ui->editFilename1->setPlainText(QString::fromStdString(sessParams.filename1));
+        ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
+    }
+
+    if(sessParams.zeroOffset1 != -1){
+        sprintf(buffer,"%d", sessParams.zeroOffset1);
+        ui->editOffset1->setPlainText(QString::fromAscii(buffer));
+        ui->videoPlayer1->seek(sessParams.zeroOffset1);
+    }
+    if(sessParams.zeroOffset1 != -1){
+        sprintf(buffer,"%d", sessParams.zeroOffset2);
+        ui->editOffset2->setPlainText(QString::fromAscii(buffer));
+        ui->videoPlayer2->seek(sessParams.zeroOffset2);
+    }
+    if(sessParams.zeroOffset1 != -1){
+        sprintf(buffer,"%d", sessParams.zeroOffset3);
+        ui->editOffset3->setPlainText(QString::fromAscii(buffer));
+        ui->videoPlayer3->seek(sessParams.zeroOffset3);
+    }
 }
 
 void MainWindow::slot_saveSession(){
