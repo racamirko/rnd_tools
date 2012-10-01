@@ -65,20 +65,35 @@ void MainWindow::slot_play(){
     if( ui->chkPlay1->isChecked() ){
         if(ui->videoPlayer1->isPlaying())
             ui->videoPlayer1->pause();
-        else
+        else{
             ui->videoPlayer1->play();
+            if( startPos1 != 0 ){
+                ui->videoPlayer1->seek(startPos1);
+                startPos1 = 0;
+            }
+        }
     }
     if( ui->chkPlay2->isChecked() ){
         if(ui->videoPlayer2->isPlaying())
             ui->videoPlayer2->pause();
-        else
+        else{
             ui->videoPlayer2->play();
+            if( startPos1 != 0 ){
+                ui->videoPlayer1->seek(startPos1);
+                startPos1 = 0;
+            }
+        }
     }
     if( ui->chkPlay3->isChecked()){
         if(ui->videoPlayer3->isPlaying())
             ui->videoPlayer3->pause();
-        else
+        else{
             ui->videoPlayer3->play();
+            if( startPos1 != 0 ){
+                ui->videoPlayer1->seek(startPos1);
+                startPos1 = 0;
+            }
+        }
     }
 
     if( ui->videoPlayer1->isPlaying() || ui->videoPlayer2->isPlaying() || ui->videoPlayer3->isPlaying() )
@@ -196,17 +211,17 @@ void MainWindow::slot_openSession(){
     if(sessParams.zeroOffset1 != -1){
         sprintf(buffer,"%d", sessParams.zeroOffset1);
         ui->editOffset1->setPlainText(QString::fromAscii(buffer));
-        ui->videoPlayer1->seek(sessParams.zeroOffset1);
+        startPos1 = sessParams.zeroOffset1;
     }
     if(sessParams.zeroOffset1 != -1){
         sprintf(buffer,"%d", sessParams.zeroOffset2);
         ui->editOffset2->setPlainText(QString::fromAscii(buffer));
-        ui->videoPlayer2->seek(sessParams.zeroOffset2);
+        startPos2 = sessParams.zeroOffset2;
     }
     if(sessParams.zeroOffset1 != -1){
         sprintf(buffer,"%d", sessParams.zeroOffset3);
         ui->editOffset3->setPlainText(QString::fromAscii(buffer));
-        ui->videoPlayer3->seek(sessParams.zeroOffset3);
+        startPos3 = sessParams.zeroOffset3;
     }
 }
 
