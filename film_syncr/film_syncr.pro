@@ -6,7 +6,7 @@
 
 QT       += core gui phonon
 
-TARGET = film_syncer
+TARGET = film_syncr
 TEMPLATE = app
 
 INCLUDEPATH += /usr/local/include
