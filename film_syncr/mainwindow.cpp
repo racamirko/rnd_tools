@@ -78,9 +78,9 @@ void MainWindow::slot_play(){
             ui->videoPlayer2->pause();
         else{
             ui->videoPlayer2->play();
-            if( startPos1 != 0 ){
-                ui->videoPlayer1->seek(startPos1);
-                startPos1 = 0;
+            if( startPos2 != 0 ){
+                ui->videoPlayer2->seek(startPos2);
+                startPos2 = 0;
             }
         }
     }
@@ -89,9 +89,9 @@ void MainWindow::slot_play(){
             ui->videoPlayer3->pause();
         else{
             ui->videoPlayer3->play();
-            if( startPos1 != 0 ){
-                ui->videoPlayer1->seek(startPos1);
-                startPos1 = 0;
+            if( startPos3 != 0 ){
+                ui->videoPlayer3->seek(startPos3);
+                startPos3 = 0;
             }
         }
     }
@@ -110,7 +110,7 @@ void MainWindow::slot_play10sec(){
     startPos2 = ui->videoPlayer2->currentTime();
     startPos3 = ui->videoPlayer3->currentTime();
     slot_play();
-    QTimer::singleShot(1000, this, SLOT(slot_endPeriodPlaying()));
+    QTimer::singleShot(1000, this, SLOT(slot_pause()));
 }
 
 void MainWindow::slot_pause(){
@@ -260,9 +260,9 @@ void MainWindow::slot_updateTimeLabels(){
 
 void MainWindow::slot_endPeriodPlaying(){
     LOG(INFO) << "slot_endPeriodPlaying";
-    ui->videoPlayer1->seek(startPos1);
-    ui->videoPlayer2->seek(startPos2);
-    ui->videoPlayer3->seek(startPos3);
-    //slot_pause();
+//    ui->videoPlayer1->seek(startPos1);
+//    ui->videoPlayer2->seek(startPos2);
+//    ui->videoPlayer3->seek(startPos3);
+    slot_pause();
 //    slot_updateTimeLabels();
 }
