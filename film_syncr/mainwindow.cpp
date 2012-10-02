@@ -1,14 +1,18 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "CUtil.h"
-
 #include <phonon/VideoPlayer>
 #include <QFileDialog>
 #include <string>
 #include <stdio.h>
+#include <math.h>
+#include <fstream>
 
 #include "globalInclude.h"
+#include "CUtil.h"
+#include "CMarkDialog.h"
+
+using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -42,10 +46,11 @@ void MainWindow::setupHooks(){
     connect(ui->btnLoad2, SIGNAL(clicked()), this, SLOT(slot_filename2()));
     connect(ui->btnLoad3, SIGNAL(clicked()), this, SLOT(slot_filename3()));
     connect(ui->action_Save, SIGNAL(triggered()), this, SLOT(slot_saveSession()));
-    connect(ui->action_Open, SIGNAL(triggered()), this, SLOT(slot_openSession())); // check for playing
+    connect(ui->action_Open, SIGNAL(triggered()), this, SLOT(slot_openSession()));
     connect(ui->actionGo_cam1, SIGNAL(triggered()), this, SLOT(slot_checkPlay1()));
     connect(ui->actionGo_cam2, SIGNAL(triggered()), this, SLOT(slot_checkPlay2()));
     connect(ui->actionGo_cam3, SIGNAL(triggered()), this, SLOT(slot_checkPlay3()));
+    connect(ui->actionAdd_mark, SIGNAL(triggered()), this, SLOT(slot_addMark()));
     // timers
     connect(tickTimer, SIGNAL(timeout()), this, SLOT(slot_updateTimeLabels()));
 
@@ -68,6 +73,7 @@ void MainWindow::slot_play(){
         else{
             ui->videoPlayer1->play();
             if( startPos1 != 0 ){
+                DLOG(INFO) << "Rewinding camera #1 to position " << startPos1;
                 ui->videoPlayer1->seek(startPos1);
                 startPos1 = 0;
             }
@@ -79,6 +85,7 @@ void MainWindow::slot_play(){
         else{
             ui->videoPlayer2->play();
             if( startPos2 != 0 ){
+                DLOG(INFO) << "Rewinding camera #2 to position " << startPos2;
                 ui->videoPlayer2->seek(startPos2);
                 startPos2 = 0;
             }
@@ -90,6 +97,7 @@ void MainWindow::slot_play(){
         else{
             ui->videoPlayer3->play();
             if( startPos3 != 0 ){
+                DLOG(INFO) << "Rewinding camera #3 to position " << startPos3;
                 ui->videoPlayer3->seek(startPos3);
                 startPos3 = 0;
             }
@@ -109,7 +117,12 @@ void MainWindow::slot_play10sec(){
     startPos1 = ui->videoPlayer1->currentTime();
     startPos2 = ui->videoPlayer2->currentTime();
     startPos3 = ui->videoPlayer3->currentTime();
-    slot_play();
+    if( !ui->videoPlayer1->isPlaying() )
+        ui->videoPlayer1->play();
+    if( !ui->videoPlayer2->isPlaying() )
+        ui->videoPlayer2->play();
+    if( !ui->videoPlayer3->isPlaying() )
+        ui->videoPlayer3->play();
     QTimer::singleShot(1000, this, SLOT(slot_pause()));
 }
 
@@ -191,21 +204,37 @@ void MainWindow::getVideoFile(int playerIndex){
 }
 
 void MainWindow::slot_openSession(){
-    char buffer[20];
+    char buffer[20]; ifstream testFile;
+    LOG(INFO) << "slot_openSession";
     QString path = QFileDialog::getOpenFileName(this, tr("Choose session filename to save"), QString("/home/raca/data/video_material/12.09.13 - talk2 - bc410/"), QString::Null());
     sessParams.load(path.toStdString());
     // filenames
     if( !sessParams.filename1.empty() ){
-        ui->editFilename1->setPlainText(QString::fromStdString(sessParams.filename1));
-        ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
+        testFile.open(sessParams.filename1.c_str());
+        if(testFile.is_open()){
+            testFile.close();
+            ui->editFilename1->setPlainText(QString::fromStdString(sessParams.filename1));
+            ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
+        } else
+            LOG(ERROR) << "File " << sessParams.filename1 << " not found";
     }
     if( !sessParams.filename2.empty() ){
-        ui->editFilename1->setPlainText(QString::fromStdString(sessParams.filename1));
-        ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
+        testFile.open(sessParams.filename2.c_str());
+        if(testFile.is_open()){
+            testFile.close();
+            ui->editFilename2->setPlainText(QString::fromStdString(sessParams.filename2));
+            ui->videoPlayer2->load(Phonon::MediaSource(ui->editFilename2->toPlainText()));
+        } else
+            LOG(ERROR) << "File " << sessParams.filename2 << " not found";
     }
     if( !sessParams.filename3.empty() ){
-        ui->editFilename1->setPlainText(QString::fromStdString(sessParams.filename1));
-        ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
+        testFile.open(sessParams.filename3.c_str());
+        if(testFile.is_open()){
+            testFile.close();
+            ui->editFilename3->setPlainText(QString::fromStdString(sessParams.filename3));
+            ui->videoPlayer3->load(Phonon::MediaSource(ui->editFilename3->toPlainText()));
+        } else
+            LOG(ERROR) << "File " << sessParams.filename3 << " not found";
     }
 
     if(sessParams.zeroOffset1 != -1){
@@ -258,11 +287,28 @@ void MainWindow::slot_updateTimeLabels(){
     }
 }
 
-void MainWindow::slot_endPeriodPlaying(){
-    LOG(INFO) << "slot_endPeriodPlaying";
-//    ui->videoPlayer1->seek(startPos1);
-//    ui->videoPlayer2->seek(startPos2);
-//    ui->videoPlayer3->seek(startPos3);
-    slot_pause();
-//    slot_updateTimeLabels();
+qint64 MainWindow::getGlobalTime(){
+    // find valid trackers and get a mean time to minimize error in missing ticks
+    qint64 timeEst = 0, numOfCams = 0;
+    if( ui->videoPlayer1->currentTime() < ui->videoPlayer1->totalTime() ){
+        timeEst += (ui->videoPlayer1->currentTime() - sessParams.zeroOffset1);
+        ++numOfCams;
+    }
+    if( ui->videoPlayer2->currentTime() < ui->videoPlayer2->totalTime() ){
+        timeEst += (ui->videoPlayer2->currentTime() - sessParams.zeroOffset2);
+        ++numOfCams;
+    }
+    if( ui->videoPlayer3->currentTime() < ui->videoPlayer3->totalTime() ){
+        timeEst += (ui->videoPlayer3->currentTime() - sessParams.zeroOffset3);
+        ++numOfCams;
+    }
+    DLOG(INFO) << "Global time is " << round( timeEst/numOfCams ) << " based on " << numOfCams << " cameras";
+    return round( timeEst/numOfCams ); // TODO: check this
+}
+
+void MainWindow::slot_addMark(){
+    LOG(INFO) << "slot_addMark";
+    pause();
+    CMarkDialog dialog(this, getGlobalTime(), &coolMomentsOfLecture);
+    dialog.show();
 }

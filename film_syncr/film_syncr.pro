@@ -16,12 +16,15 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     CUtil.cpp \
     tinyxml2.cpp \
-    CSessionParameters.cpp
+    CSessionParameters.cpp \
+    CMarkDialog.cpp
 
 HEADERS  += mainwindow.h \
     globalInclude.h \
     CUtil.h \
     tinyxml2.h \
-    CSessionParameters.h
+    CSessionParameters.h \
+    CMarkDialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    CMarkDialog.ui

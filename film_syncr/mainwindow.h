@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTimer>
+#include <vector>
 #include "CSessionParameters.h"
 
 namespace Ui {
@@ -20,6 +21,7 @@ public:
 private:
     CSessionParameters sessParams;
     qint64 startPos1, startPos2, startPos3;
+    std::vector<qint64> coolMomentsOfLecture; // will change when it's working
 
     Ui::MainWindow *ui;
     QTimer* tickTimer;
@@ -27,6 +29,7 @@ private:
     void setupHooks();
     void setupAdditionalUI();
     void getVideoFile(int playerIndex);
+    qint64 getGlobalTime();
 
 private slots:
     void slot_quit();
@@ -47,9 +50,11 @@ private slots:
     void slot_checkPlay3();
 
     void slot_updateTimeLabels();
-    void slot_endPeriodPlaying();
     void slot_saveSession();
     void slot_openSession();
+
+    void slot_changeOffset();
+    void slot_addMark();
 };
 
 #endif // MAINWINDOW_H
