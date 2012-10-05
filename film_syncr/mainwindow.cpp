@@ -114,16 +114,22 @@ void MainWindow::slot_play(){
 
 void MainWindow::slot_play10sec(){
     LOG(INFO) << "slot_play10sec";
-    startPos1 = ui->videoPlayer1->currentTime();
-    startPos2 = ui->videoPlayer2->currentTime();
-    startPos3 = ui->videoPlayer3->currentTime();
-    if( !ui->videoPlayer1->isPlaying() )
-        ui->videoPlayer1->play();
-    if( !ui->videoPlayer2->isPlaying() )
-        ui->videoPlayer2->play();
-    if( !ui->videoPlayer3->isPlaying() )
-        ui->videoPlayer3->play();
-    QTimer::singleShot(1000, this, SLOT(slot_pause()));
+    qint64 p1, p2, p3;
+    if( startPos1 == 0 )
+        p1 = ui->videoPlayer1->currentTime();
+    else
+        p1 = startPos1;
+    if( startPos2 == 0 )
+        p2 = ui->videoPlayer2->currentTime();
+    else
+        p2 = startPos2;
+    if( startPos3 == 0 )
+        p3 = ui->videoPlayer3->currentTime();
+    else
+        p3 = startPos3;
+    slot_play();
+    startPos1 = p1; startPos2 = p2; startPos3 = p3;
+    QTimer::singleShot(2000, this, SLOT(slot_pause()));
 }
 
 void MainWindow::slot_pause(){
