@@ -10,14 +10,14 @@
 
 #include "globalInclude.h"
 #include "CUtil.h"
-#include "CMarkDialog.h"
 
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    startPos1(0), startPos2(0), startPos3(0)
+    startPos1(0), startPos2(0), startPos3(0),
+    markDialog(NULL)
 {
     LOG(INFO) << "construct";
     ui->setupUi(this);
@@ -29,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    if(markDialog != NULL)
+        delete markDialog;
     delete ui;
 }
 
@@ -332,7 +334,8 @@ qint64 MainWindow::getGlobalTime(){
 
 void MainWindow::slot_addMark(){
     LOG(INFO) << "slot_addMark";
-    pause();
-    CMarkDialog dialog(this, getGlobalTime(), &coolMomentsOfLecture);
-    dialog.show();
+    slot_pause();
+    if( markDialog == NULL )
+        markDialog = new CMarkDialog(this, getGlobalTime(), &coolMomentsOfLecture);
+    markDialog->show(); // time & output parameters should go here
 }

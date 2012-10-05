@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <vector>
 #include "CSessionParameters.h"
+#include "CMarkDialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -24,6 +25,7 @@ private:
     std::vector<qint64> coolMomentsOfLecture; // will change when it's working
 
     Ui::MainWindow *ui;
+    CMarkDialog *markDialog;
     QTimer* tickTimer;
 
     void setupHooks();
@@ -53,7 +55,6 @@ private slots:
     void slot_saveSession();
     void slot_openSession();
 
-    void slot_changeOffset();
     void slot_addMark();
     void slot_gotoZero();
 };
