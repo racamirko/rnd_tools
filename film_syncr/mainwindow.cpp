@@ -47,10 +47,12 @@ void MainWindow::setupHooks(){
     connect(ui->btnLoad3, SIGNAL(clicked()), this, SLOT(slot_filename3()));
     connect(ui->action_Save, SIGNAL(triggered()), this, SLOT(slot_saveSession()));
     connect(ui->action_Open, SIGNAL(triggered()), this, SLOT(slot_openSession()));
+    // menu
     connect(ui->actionGo_cam1, SIGNAL(triggered()), this, SLOT(slot_checkPlay1()));
     connect(ui->actionGo_cam2, SIGNAL(triggered()), this, SLOT(slot_checkPlay2()));
     connect(ui->actionGo_cam3, SIGNAL(triggered()), this, SLOT(slot_checkPlay3()));
     connect(ui->actionAdd_mark, SIGNAL(triggered()), this, SLOT(slot_addMark()));
+    connect(ui->actionGoTo_Zero, SIGNAL(triggered()), this, SLOT(slot_gotoZero()));
     // timers
     connect(tickTimer, SIGNAL(timeout()), this, SLOT(slot_updateTimeLabels()));
 
@@ -72,10 +74,10 @@ void MainWindow::slot_play(){
             ui->videoPlayer1->pause();
         else{
             ui->videoPlayer1->play();
-            if( startPos1 != 0 ){
+            if( startPos1 != -1 ){
                 DLOG(INFO) << "Rewinding camera #1 to position " << startPos1;
                 ui->videoPlayer1->seek(startPos1);
-                startPos1 = 0;
+                startPos1 = -1;
             }
         }
     }
@@ -84,10 +86,10 @@ void MainWindow::slot_play(){
             ui->videoPlayer2->pause();
         else{
             ui->videoPlayer2->play();
-            if( startPos2 != 0 ){
+            if( startPos2 != -1 ){
                 DLOG(INFO) << "Rewinding camera #2 to position " << startPos2;
                 ui->videoPlayer2->seek(startPos2);
-                startPos2 = 0;
+                startPos2 = -1;
             }
         }
     }
@@ -96,10 +98,10 @@ void MainWindow::slot_play(){
             ui->videoPlayer3->pause();
         else{
             ui->videoPlayer3->play();
-            if( startPos3 != 0 ){
+            if( startPos3 != -1 ){
                 DLOG(INFO) << "Rewinding camera #3 to position " << startPos3;
                 ui->videoPlayer3->seek(startPos3);
-                startPos3 = 0;
+                startPos3 = -1;
             }
         }
     }
@@ -137,7 +139,23 @@ void MainWindow::slot_pause(){
     ui->videoPlayer1->pause();
     ui->videoPlayer2->pause();
     ui->videoPlayer3->pause();
+    tickTimer->stop();
     slot_updateTimeLabels();
+}
+
+void MainWindow::slot_gotoZero(){
+    LOG(INFO) << "slot_gotoZero";
+    if( ui->chkPlay1->isChecked() )
+        startPos1 = ui->editOffset1->toPlainText().toInt();
+    if( ui->chkPlay2->isChecked() )
+        startPos2 = ui->editOffset2->toPlainText().toInt();
+    if( ui->chkPlay3->isChecked() )
+        startPos3 = ui->editOffset3->toPlainText().toInt();
+    slot_pause();
+    // update labels
+    ui->editFrame1->setPlainText(ui->editOffset1->toPlainText());
+    ui->editFrame2->setPlainText(ui->editOffset2->toPlainText());
+    ui->editFrame3->setPlainText(ui->editOffset3->toPlainText());
 }
 
 void MainWindow::slot_seek_p10(){

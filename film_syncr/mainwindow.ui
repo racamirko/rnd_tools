@@ -418,6 +418,7 @@
     </property>
     <addaction name="actionPlay"/>
     <addaction name="actionPlay_10sec"/>
+    <addaction name="actionGoTo_Zero"/>
     <addaction name="separator"/>
     <addaction name="actionGo_cam1"/>
     <addaction name="actionGo_cam2"/>
@@ -521,6 +522,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="actionGoTo_Zero">
+   <property name="text">
+    <string>GoTo Zero</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+0</string>
    </property>
   </action>
  </widget>

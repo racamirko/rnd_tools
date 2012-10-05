@@ -55,6 +55,7 @@ private slots:
 
     void slot_changeOffset();
     void slot_addMark();
+    void slot_gotoZero();
 };
 
 #endif // MAINWINDOW_H
