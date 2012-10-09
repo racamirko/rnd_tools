@@ -12,7 +12,8 @@ CSessionParameters::CSessionParameters()
       filename3("noname"),
       zeroOffset1(-1),
       zeroOffset2(-1),
-      zeroOffset3(-1)
+      zeroOffset3(-1),
+      pTimeMarks(NULL)
 {
 
 }
@@ -38,6 +39,19 @@ void CSessionParameters::load(std::string _filename){
         root->FirstChildElement("offset2")->QueryIntText(&zeroOffset2);
     if(root->FirstChildElement("offset3"))
         root->FirstChildElement("offset3")->QueryIntText(&zeroOffset3);
+
+    // timeline
+    if(root->FirstChildElement("timeline") && !root->FirstChildElement("timeline")->NoChildren()){
+        XMLElement* timeEvent = root->FirstChildElement("timeline")->FirstChildElement("mark");
+        XMLElement* lastChild = root->FirstChildElement("timeline")->LastChildElement("mark");
+
+        while(1) {
+
+        }
+        timeEvent->NextSibling();
+        CTimeMark tm;
+        tm.fromXml();
+    }
 }
 
 void CSessionParameters::save(std::string _filename){
@@ -74,6 +88,17 @@ void CSessionParameters::save(std::string _filename){
     sprintf(buffer, "%d", zeroOffset3);
     tmpEle->InsertEndChild( doc.NewText(buffer) );
     root->InsertEndChild(tmpEle);
+
+    // time marks
+    if( pTimeMarks ){
+        tmpEle = doc.NewElement("timeline");
+        root->InsertEndChild(tmpEle);
+        for( vector<CTimeMark>::iterator iter = pTimeMarks->begin();
+             iter != pTimeMarks->end(); ++iter)
+        {
+            iter->toXml(&doc, tmpEle);
+        }
+    }
 
     doc.SaveFile(_filename.c_str());
 }

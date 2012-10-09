@@ -6,6 +6,7 @@
 #include <vector>
 #include "CSessionParameters.h"
 #include "CMarkDialog.h"
+#include "CTimeMark.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,7 +23,7 @@ public:
 private:
     CSessionParameters sessParams;
     qint64 startPos1, startPos2, startPos3;
-    std::vector<qint64> coolMomentsOfLecture; // will change when it's working
+    std::vector<CTimeMark> vecTimeMarks;
 
     Ui::MainWindow *ui;
     CMarkDialog *markDialog;

@@ -282,6 +282,7 @@ void MainWindow::slot_openSession(){
 
 void MainWindow::slot_saveSession(){
     QString path = QFileDialog::getSaveFileName(this, tr("Choose session filename to save"), QString("/home/raca/data/video_material/12.09.13 - talk2 - bc410/"), QString::Null());
+    sessParams.pTimeMarks = &vecTimeMarks; // TODO: not cool, not cool at all
     sessParams.save(path.toStdString());
 }
 
@@ -335,7 +336,11 @@ qint64 MainWindow::getGlobalTime(){
 void MainWindow::slot_addMark(){
     LOG(INFO) << "slot_addMark";
     slot_pause();
+
     if( markDialog == NULL )
-        markDialog = new CMarkDialog(this, getGlobalTime(), &coolMomentsOfLecture);
-    markDialog->show(); // time & output parameters should go here
+        markDialog = new CMarkDialog(this, getGlobalTime(), &vecTimeMarks);
+    else
+        markDialog->setTimeMark(getGlobalTime());
+
+    markDialog->show();
 }
