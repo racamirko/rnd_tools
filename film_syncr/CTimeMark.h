@@ -16,6 +16,7 @@ protected:
 
 public:
     CTimeMark( ETimeMarkType _type, qint64 _time, std::string _notes = "");
+    CTimeMark(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent);
 
     void toXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent);
     void fromXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent);

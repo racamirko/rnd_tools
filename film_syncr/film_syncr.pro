@@ -30,3 +30,5 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     CMarkDialog.ui
+
+RESOURCES +=

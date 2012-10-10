@@ -1,5 +1,7 @@
 #include "CSessionParameters.h"
 
+#include <globalInclude.h>
+
 #include "tinyxml2.h"
 #include <stdio.h>
 
@@ -15,11 +17,12 @@ CSessionParameters::CSessionParameters()
       zeroOffset3(-1),
       pTimeMarks(NULL)
 {
-
+    DLOG(INFO) << "SessionParameters created";
 }
 
 
 void CSessionParameters::load(std::string _filename){
+    LOG(INFO) << "Loading parameters from file " << _filename;
     XMLDocument doc;
     doc.LoadFile(_filename.c_str());
 
@@ -41,17 +44,22 @@ void CSessionParameters::load(std::string _filename){
         root->FirstChildElement("offset3")->QueryIntText(&zeroOffset3);
 
     // timeline
-    if(root->FirstChildElement("timeline") && !root->FirstChildElement("timeline")->NoChildren()){
-        XMLElement* timeEvent = root->FirstChildElement("timeline")->FirstChildElement("mark");
-        XMLElement* lastChild = root->FirstChildElement("timeline")->LastChildElement("mark");
+    if( pTimeMarks != NULL ) {
+        if(root->FirstChildElement("timeline") && !root->FirstChildElement("timeline")->NoChildren()){
+            XMLElement* timeEvent = root->FirstChildElement("timeline")->FirstChildElement("mark");
+            XMLElement* lastChild = root->FirstChildElement("timeline")->LastChildElement("mark");
 
-        while(1) {
-
+            while(1) {
+                CTimeMark mark(&doc, timeEvent);
+                pTimeMarks->push_back(mark);
+                if( timeEvent == lastChild )
+                    break;
+                else
+                    timeEvent = timeEvent->NextSiblingElement();
+            }
         }
-        timeEvent->NextSibling();
-        CTimeMark tm;
-        tm.fromXml();
-    }
+    } else
+        LOG(WARNING) << "Time marks not loaded because the timeline pointer wasnt provided";
 }
 
 void CSessionParameters::save(std::string _filename){

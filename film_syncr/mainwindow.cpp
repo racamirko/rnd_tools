@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     LOG(INFO) << "construct";
     ui->setupUi(this);
     tickTimer = new QTimer(this);
+    sessParams.pTimeMarks = &vecTimeMarks;
 
     setupHooks();
     setupAdditionalUI();
@@ -233,6 +234,8 @@ void MainWindow::slot_openSession(){
     char buffer[20]; ifstream testFile;
     LOG(INFO) << "slot_openSession";
     QString path = QFileDialog::getOpenFileName(this, tr("Choose session filename to save"), QString("/home/raca/data/video_material/12.09.13 - talk2 - bc410/"), QString::Null());
+    if( path.isEmpty() )
+        return;
     sessParams.load(path.toStdString());
     // filenames
     if( !sessParams.filename1.empty() ){
@@ -282,6 +285,8 @@ void MainWindow::slot_openSession(){
 
 void MainWindow::slot_saveSession(){
     QString path = QFileDialog::getSaveFileName(this, tr("Choose session filename to save"), QString("/home/raca/data/video_material/12.09.13 - talk2 - bc410/"), QString::Null());
+    if(path.isEmpty())
+        return;
     sessParams.pTimeMarks = &vecTimeMarks; // TODO: not cool, not cool at all
     sessParams.save(path.toStdString());
 }

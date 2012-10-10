@@ -14,6 +14,11 @@ CTimeMark::CTimeMark( ETimeMarkType _type, qint64 _time, string _notes)
     DLOG(INFO) << "Created a time mark";
 }
 
+CTimeMark::CTimeMark(XMLDocument* _doc, XMLElement* _parent){
+    DLOG(INFO) << "Creating Mark from Xml";
+    fromXml(_doc, _parent);
+}
+
 
 /**
   *  Input:
@@ -39,7 +44,26 @@ void CTimeMark::toXml(XMLDocument* _doc, XMLElement* _parent){
 
 void CTimeMark::fromXml(XMLDocument* _doc, XMLElement* _parent){
     DLOG(INFO) << "Loading from XML";
-    // do loading stuff here
+    // get type
+    const char* attributeValue = _parent->Attribute("type");
+    if( strcmp("ChangeSlide",attributeValue) == 0 )
+        type = TMT_CHANGE_SLIDE;
+    if( strcmp("BeginQuestion",attributeValue) == 0 )
+        type = TMT_BEGIN_QUESTION;
+    if( strcmp("EndQuestion",attributeValue) == 0 )
+        type = TMT_END_QUESTION;
+    if( strcmp("BeginAnswer",attributeValue) == 0 )
+        type = TMT_BEGIN_ANSWER;
+    if( strcmp("EndAnswer",attributeValue) == 0 )
+        type = TMT_END_ANSWER;
+    // get time mark
+    int tmpTime;
+    _parent->QueryIntAttribute("time", &tmpTime);
+    time = tmpTime;
+    // get notes if any
+    if( !_parent->NoChildren() ){
+        notes = string(_parent->FirstChild()->Value());
+    }
     DLOG(INFO) << "Got from xml [" << markTypeToText(type) << "@ " << time << "]" ;
 }
 
