@@ -56,6 +56,10 @@ void MainWindow::setupHooks(){
     connect(ui->actionGo_cam3, SIGNAL(triggered()), this, SLOT(slot_checkPlay3()));
     connect(ui->actionAdd_mark, SIGNAL(triggered()), this, SLOT(slot_addMark()));
     connect(ui->actionGoTo_Zero, SIGNAL(triggered()), this, SLOT(slot_gotoZero()));
+    connect(ui->actionSeek_m5min, SIGNAL(triggered()), this, SLOT(slot_seek_m5m()));
+    connect(ui->actionSeek_p5min, SIGNAL(triggered()), this, SLOT(slot_seek_p5m()));
+    connect(ui->actionSeek_m10sec, SIGNAL(triggered()), this, SLOT(slot_seek_m10()));
+    connect(ui->actionSeek_p10sec, SIGNAL(triggered()), this, SLOT(slot_seek_p10()));
     // timers
     connect(tickTimer, SIGNAL(timeout()), this, SLOT(slot_updateTimeLabels()));
 
@@ -87,7 +91,7 @@ void MainWindow::slot_play(){
     if( ui->chkPlay2->isChecked() ){
         if(ui->videoPlayer2->isPlaying())
             ui->videoPlayer2->pause();
-        else{
+        else {
             ui->videoPlayer2->play();
             if( startPos2 != -1 ){
                 DLOG(INFO) << "Rewinding camera #2 to position " << startPos2;
@@ -163,23 +167,23 @@ void MainWindow::slot_gotoZero(){
 
 void MainWindow::slot_seek_p10(){
     LOG(INFO) << "slot_seek_p10";
-    if( ui->chkPlay1->isChecked() )
-        ui->videoPlayer1->seek( ui->videoPlayer1->currentTime()+10000 );
-    if( ui->chkPlay2->isChecked() )
-        ui->videoPlayer2->seek( ui->videoPlayer2->currentTime()+10000 );
-    if( ui->chkPlay3->isChecked() )
-        ui->videoPlayer3->seek( ui->videoPlayer3->currentTime()+10000 );
-    slot_updateTimeLabels();
+    jumpVideo(10000);
 }
 
 void MainWindow::slot_seek_m10(){
     LOG(INFO) << "slot_seek_m10";
+    jumpVideo(-10000);
+}
+
+void MainWindow::jumpVideo(qint64 offset){
+    qint64 newGlobalTime = getGlobalTime() + offset;
+
     if( ui->chkPlay1->isChecked() )
-        ui->videoPlayer1->seek( ui->videoPlayer1->currentTime()-10000 );
+        ui->videoPlayer1->seek( newGlobalTime + sessParams.zeroOffset1 );
     if( ui->chkPlay2->isChecked() )
-        ui->videoPlayer2->seek( ui->videoPlayer2->currentTime()-10000 );
+        ui->videoPlayer2->seek( newGlobalTime + sessParams.zeroOffset2 );
     if( ui->chkPlay3->isChecked() )
-        ui->videoPlayer3->seek( ui->videoPlayer3->currentTime()-10000 );
+        ui->videoPlayer3->seek( newGlobalTime + sessParams.zeroOffset3 );
     slot_updateTimeLabels();
 }
 
@@ -349,3 +353,14 @@ void MainWindow::slot_addMark(){
 
     markDialog->show();
 }
+
+void MainWindow::slot_seek_p5m(){
+    DLOG(INFO) << "Seeking +5min";
+    jumpVideo(300000);
+}
+
+void MainWindow::slot_seek_m5m(){
+    DLOG(INFO) << "Seeking -5min";
+    jumpVideo(-300000);
+}
+

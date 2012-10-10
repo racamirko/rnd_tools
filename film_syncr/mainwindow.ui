@@ -423,6 +423,11 @@
     <addaction name="actionGo_cam1"/>
     <addaction name="actionGo_cam2"/>
     <addaction name="actionGo_cam3"/>
+    <addaction name="separator"/>
+    <addaction name="actionSeek_p5min"/>
+    <addaction name="actionSeek_m5min"/>
+    <addaction name="actionSeek_p10sec"/>
+    <addaction name="actionSeek_m10sec"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -530,6 +535,38 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+0</string>
+   </property>
+  </action>
+  <action name="actionSeek_p5min">
+   <property name="text">
+    <string>Seek +5min</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+&gt;</string>
+   </property>
+  </action>
+  <action name="actionSeek_m5min">
+   <property name="text">
+    <string>Seek -5min</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+&lt;</string>
+   </property>
+  </action>
+  <action name="actionSeek_p10sec">
+   <property name="text">
+    <string>Seek +10sec</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+.</string>
+   </property>
+  </action>
+  <action name="actionSeek_m10sec">
+   <property name="text">
+    <string>Seek -10sec</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+,</string>
    </property>
   </action>
  </widget>

@@ -24,32 +24,35 @@ void CMarkDialog::slot_ok(){
     if( ui->radioSlideChange->isChecked() ){
         LOG(INFO) << "Noting slide change at " << timeMark;
         string tmpStr = string(ui->textNotes->toPlainText().toUtf8().constData());
-        LOG(INFO) << "With notes: " << tmpStr;
         vecData->push_back(CTimeMark(TMT_CHANGE_SLIDE, timeMark, tmpStr));
         close();
         return;
     }
     if( ui->radioQBegin->isChecked() ){
         LOG(INFO) << "Noting question start at " << timeMark;
-        vecData->push_back(CTimeMark(TMT_BEGIN_QUESTION, timeMark));
+        string tmpStr = string(ui->textNotes->toPlainText().toUtf8().constData());
+        vecData->push_back(CTimeMark(TMT_BEGIN_QUESTION, timeMark, tmpStr));
         close();
         return;
     }
     if( ui->radioQEnd->isChecked() ){
         LOG(INFO) << "Noting question end at " << timeMark;
-        vecData->push_back(CTimeMark(TMT_END_QUESTION, timeMark));
+        string tmpStr = string(ui->textNotes->toPlainText().toUtf8().constData());
+        vecData->push_back(CTimeMark(TMT_END_QUESTION, timeMark, tmpStr));
         close();
         return;
     }
     if( ui->radioABegin->isChecked() ){
         LOG(INFO) << "Noting answer start at " << timeMark;
-        vecData->push_back(CTimeMark(TMT_BEGIN_ANSWER, timeMark));
+        string tmpStr = string(ui->textNotes->toPlainText().toUtf8().constData());
+        vecData->push_back(CTimeMark(TMT_BEGIN_ANSWER, timeMark, tmpStr));
         close();
         return;
     }
     if( ui->radioAEnd->isChecked() ){
         LOG(INFO) << "Noting answer end at " << timeMark;
-        vecData->push_back(CTimeMark(TMT_END_ANSWER, timeMark));
+        string tmpStr = string(ui->textNotes->toPlainText().toUtf8().constData());
+        vecData->push_back(CTimeMark(TMT_END_ANSWER, timeMark, tmpStr));
         close();
         return;
     }

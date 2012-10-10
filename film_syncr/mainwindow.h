@@ -33,6 +33,7 @@ private:
     void setupAdditionalUI();
     void getVideoFile(int playerIndex);
     qint64 getGlobalTime();
+    void jumpVideo(qint64 offset);
 
 private slots:
     void slot_quit();
@@ -42,6 +43,8 @@ private slots:
     void slot_pause();
     void slot_seek_p10();
     void slot_seek_m10();
+    void slot_seek_p5m();
+    void slot_seek_m5m();
     void slot_rewind();
 
     void slot_filename1();
