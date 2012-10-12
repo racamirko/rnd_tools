@@ -4,9 +4,12 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <vector>
+#include <map>
 #include "CSessionParameters.h"
 #include "CMarkDialog.h"
 #include "CTimeMark.h"
+#include "CImageRegion.h"
+#include "CSelectPersonsDialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -24,9 +27,12 @@ private:
     CSessionParameters sessParams;
     qint64 startPos1, startPos2, startPos3;
     std::vector<CTimeMark> vecTimeMarks;
+//    std::map<int,std::vector<CImageRegion>> mapImageRegions;
+    std::vector<CImageRegion> vecImageRegions;
 
     Ui::MainWindow *ui;
     CMarkDialog *markDialog;
+    CSelectPersonsDialog regionSelectDialog;
     QTimer* tickTimer;
 
     void setupHooks();
@@ -61,6 +67,8 @@ private slots:
 
     void slot_addMark();
     void slot_gotoZero();
+
+    void slot_markRegionsCam1();
 };
 
 #endif // MAINWINDOW_H

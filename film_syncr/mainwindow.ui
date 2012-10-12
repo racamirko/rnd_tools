@@ -440,6 +440,7 @@
      <string>Manipulation</string>
     </property>
     <addaction name="actionAdd_mark"/>
+    <addaction name="actionMark_region_c1"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPlayback"/>
@@ -567,6 +568,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+,</string>
+   </property>
+  </action>
+  <action name="actionMark_region_c1">
+   <property name="text">
+    <string>Mark region (c1)</string>
    </property>
   </action>
  </widget>

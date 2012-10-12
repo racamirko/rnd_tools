@@ -10,7 +10,7 @@ TARGET = film_syncr
 TEMPLATE = app
 
 INCLUDEPATH += /usr/local/include
-LIBS += -lglog -L/usr/local/lib
+LIBS += -lglog -L/usr/local/lib -lopencv_core -lopencv_highgui -lopencv_video
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -18,7 +18,9 @@ SOURCES += main.cpp\
     tinyxml2.cpp \
     CSessionParameters.cpp \
     CMarkDialog.cpp \
-    CTimeMark.cpp
+    CTimeMark.cpp \
+    CSelectPersonsDialog.cpp \
+    CImageRegion.cpp
 
 HEADERS  += mainwindow.h \
     globalInclude.h \
@@ -26,7 +28,9 @@ HEADERS  += mainwindow.h \
     tinyxml2.h \
     CSessionParameters.h \
     CMarkDialog.h \
-    CTimeMark.h
+    CTimeMark.h \
+    CSelectPersonsDialog.h \
+    CImageRegion.h
 
 FORMS    += mainwindow.ui \
     CMarkDialog.ui

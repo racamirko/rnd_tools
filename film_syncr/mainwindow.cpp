@@ -10,6 +10,7 @@
 
 #include "globalInclude.h"
 #include "CUtil.h"
+#include "CSelectPersonsDialog.h"
 
 using namespace std;
 
@@ -60,6 +61,7 @@ void MainWindow::setupHooks(){
     connect(ui->actionSeek_p5min, SIGNAL(triggered()), this, SLOT(slot_seek_p5m()));
     connect(ui->actionSeek_m10sec, SIGNAL(triggered()), this, SLOT(slot_seek_m10()));
     connect(ui->actionSeek_p10sec, SIGNAL(triggered()), this, SLOT(slot_seek_p10()));
+    connect(ui->actionMark_region_c1, SIGNAL(triggered()), this, SLOT(slot_markRegionsCam1()));
     // timers
     connect(tickTimer, SIGNAL(timeout()), this, SLOT(slot_updateTimeLabels()));
 
@@ -364,3 +366,7 @@ void MainWindow::slot_seek_m5m(){
     jumpVideo(-300000);
 }
 
+void MainWindow::slot_markRegionsCam1(){
+    DLOG(INFO) << "marking regions in cam1";
+    regionSelectDialog.getAreas(vecImageRegions, string( ui->editFilename1->toPlainText().toAscii() ), ui->videoPlayer1->currentTime());
+}
