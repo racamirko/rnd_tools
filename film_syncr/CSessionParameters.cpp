@@ -15,7 +15,8 @@ CSessionParameters::CSessionParameters()
       zeroOffset1(-1),
       zeroOffset2(-1),
       zeroOffset3(-1),
-      pTimeMarks(NULL)
+      pTimeMarks(NULL),
+      pPersons(NULL)
 {
     DLOG(INFO) << "SessionParameters created";
 }
@@ -43,8 +44,26 @@ void CSessionParameters::load(std::string _filename){
     if(root->FirstChildElement("offset3"))
         root->FirstChildElement("offset3")->QueryIntText(&zeroOffset3);
 
+    // persons
+    if( pPersons ){
+        if(root->FirstChildElement("persons") && !root->FirstChildElement("persons")->NoChildren()){
+            XMLElement* personNode = root->FirstChildElement("persons")->FirstChildElement("person");
+            XMLElement* lastChild = root->FirstChildElement("persons")->LastChildElement("person");
+
+            while(1) {
+                CPerson* person = new CPerson(&doc, personNode);
+                pPersons->insert(std::pair<int, CPerson*>(person->getId(), person));
+                if( personNode == lastChild )
+                    break;
+                else
+                    personNode = personNode->NextSiblingElement();
+            }
+        }
+    } else
+        LOG(WARNING) << "Person rectangles not loaded because the person map pointer wasnt provided";
+
     // timeline
-    if( pTimeMarks != NULL ) {
+    if( pTimeMarks ) {
         if(root->FirstChildElement("timeline") && !root->FirstChildElement("timeline")->NoChildren()){
             XMLElement* timeEvent = root->FirstChildElement("timeline")->FirstChildElement("mark");
             XMLElement* lastChild = root->FirstChildElement("timeline")->LastChildElement("mark");
@@ -96,6 +115,18 @@ void CSessionParameters::save(std::string _filename){
     sprintf(buffer, "%d", zeroOffset3);
     tmpEle->InsertEndChild( doc.NewText(buffer) );
     root->InsertEndChild(tmpEle);
+
+    // persons
+    if( pPersons ){
+        tmpEle = doc.NewElement("persons");
+        root->InsertEndChild(tmpEle);
+        for( std::map<int, CPerson*>::iterator iter = pPersons->begin();
+             iter != pPersons->end(); ++iter )
+        {
+            CPerson* tmpPerson = iter->second;
+            tmpPerson->toXml(&doc, tmpEle);
+        }
+    }
 
     // time marks
     if( pTimeMarks ){

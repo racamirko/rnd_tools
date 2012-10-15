@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     tickTimer = new QTimer(this);
     sessParams.pTimeMarks = &vecTimeMarks;
+    sessParams.pPersons = &mapPersons;
 
     setupHooks();
     setupAdditionalUI();

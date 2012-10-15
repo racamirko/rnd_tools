@@ -24,7 +24,7 @@ void CSelectPersonsDialog::getAreas(std::map<int, CPerson*> *_mapPersons, int _c
     IplImage* tmpImg = cvQueryFrame(videoSrc);
     mapPersons = _mapPersons;
     frameData = Mat(tmpImg);
-    currentPersonId = 0;
+    currentPersonId = 1;
     camIdx = _camIdx;
 
     // prepare output information
@@ -101,7 +101,7 @@ void onMouse( int event, int x, int y, int flags, void* param ){
         case CV_EVENT_RBUTTONDOWN:
             {
                 if( flags & CV_EVENT_FLAG_SHIFTKEY )
-                    d->currentPersonId--;
+                    d->currentPersonId = std::max(1,d->currentPersonId-1);
                 else
                     d->currentPersonId++;
                 sprintf(buffer, "Current person id: %d", d->currentPersonId);

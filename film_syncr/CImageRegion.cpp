@@ -3,6 +3,8 @@
 #include "globalInclude.h"
 #include <stdio.h>
 
+using namespace tinyxml2;
+
 CImageRegion::CImageRegion()
      : x1(0)
      , y1(0)
@@ -19,14 +21,6 @@ CImageRegion::CImageRegion(int _x1, int _y1, int _x2, int _y2)
     , y2(_y2)
 {
     DLOG(INFO) << "CImageRegion created at " << "[" << x1 << ", " << y1 << ", "<< x2 << ", "<< y2 << "]";
-}
-
-void CImageRegion::toXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent){
-    // to be done later
-}
-
-void CImageRegion::fromXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent){
-    // to be done later
 }
 
 std::string CImageRegion::toString(){

@@ -14,6 +14,7 @@ protected:
 public:
     CPerson();
     CPerson(int _id);
+    CPerson(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent);
 
     int getId(){ return id; }
     void setId(int _id) { id = _id; }
