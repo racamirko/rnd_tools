@@ -16,17 +16,37 @@ CSelectPersonsDialog::CSelectPersonsDialog()
 
 }
 
-void CSelectPersonsDialog::getAreas(vector<CImageRegion>& _regionList, string _filename, int _timeOffset){
+void CSelectPersonsDialog::getAreas(std::map<int, CPerson*> *_mapPersons, int _camIdx, std::string _filename, int _timeOffset){
     char buffer[50];
+    // prepare image
     CvCapture* videoSrc = cvCaptureFromFile(_filename.c_str());
     cvSetCaptureProperty(videoSrc, CV_CAP_PROP_POS_MSEC, double(_timeOffset) );
     IplImage* tmpImg = cvQueryFrame(videoSrc);
-    vecRegions = _regionList;
+    mapPersons = _mapPersons;
     frameData = Mat(tmpImg);
     currentPersonId = 0;
+    camIdx = _camIdx;
 
+    // prepare output information
     sprintf(buffer, "Current person id: %d", currentPersonId);
     putText(frameData, string(buffer), cvPoint(30,12), FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(0,0,255));
+
+    // display pre-existing regions of persons
+    for( std::map<int, CPerson*>::iterator iter = mapPersons->begin();
+         iter != mapPersons->end(); ++iter )
+    {
+        CPerson* pers = iter->second;
+        for( std::map<int, CImageRegion>::iterator iterInner = pers->beginRegions();
+             iterInner != pers->endRegions(); ++iterInner )
+        {
+            if( iterInner->first != camIdx )
+                continue;
+            CImageRegion reg = iterInner->second;
+            rectangle(frameData, Rect(reg.x1, reg.y1, reg.x2-reg.x1, reg.y2-reg.y1), cvScalar(255,0,0) );
+            sprintf(buffer, "%d", pers->getId());
+            putText(frameData, string(buffer), Point(reg.x1, reg.y1), FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(255,0,0));
+        }
+    }
 
     tmpImage = frameData.clone();
     drawingRect = false;
@@ -34,6 +54,14 @@ void CSelectPersonsDialog::getAreas(vector<CImageRegion>& _regionList, string _f
     cvNamedWindow("testWnd");
     setMouseCallback( "testWnd", onMouse, this );
     imshow("testWnd", tmpImage);
+}
+
+void CSelectPersonsDialog::addPersonRect(int _personId, CImageRegion _region){
+    if( mapPersons->find(_personId) == mapPersons->end() ){
+        mapPersons->insert(std::pair<int, CPerson*>(_personId, new CPerson(_personId)));
+    }
+    CPerson* curPerson = mapPersons->operator [](_personId);
+    curPerson->setCameraRegion(camIdx, _region);
 }
 
 void onMouse( int event, int x, int y, int flags, void* param ){
@@ -59,7 +87,9 @@ void onMouse( int event, int x, int y, int flags, void* param ){
             d->frameData.release();
             sprintf(buffer, "%d", d->currentPersonId);
             putText(d->tmpImage, string(buffer), d->p1, FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(255,0,0));
-            d->vecRegions.push_back(CImageRegion(d->p1.x, d->p1.y, d->p2.x, d->p2.y, d->currentPersonId++));
+            // save information
+            d->addPersonRect(d->currentPersonId++,CImageRegion(d->p1.x, d->p1.y, d->p2.x, d->p2.y));
+            // update video display
             d->drawingRect = false;
             sprintf(buffer, "Current person id: %d", d->currentPersonId);
             rectangle(d->tmpImage, Rect(30,0,200,15), cvScalar(0), CV_FILLED);

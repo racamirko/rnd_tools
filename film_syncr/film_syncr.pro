@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     CMarkDialog.cpp \
     CTimeMark.cpp \
     CSelectPersonsDialog.cpp \
-    CImageRegion.cpp
+    CImageRegion.cpp \
+    CPerson.cpp
 
 HEADERS  += mainwindow.h \
     globalInclude.h \
@@ -30,7 +31,8 @@ HEADERS  += mainwindow.h \
     CMarkDialog.h \
     CTimeMark.h \
     CSelectPersonsDialog.h \
-    CImageRegion.h
+    CImageRegion.h \
+    CPerson.h
 
 FORMS    += mainwindow.ui \
     CMarkDialog.ui

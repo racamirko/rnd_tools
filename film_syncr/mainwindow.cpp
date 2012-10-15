@@ -62,6 +62,10 @@ void MainWindow::setupHooks(){
     connect(ui->actionSeek_m10sec, SIGNAL(triggered()), this, SLOT(slot_seek_m10()));
     connect(ui->actionSeek_p10sec, SIGNAL(triggered()), this, SLOT(slot_seek_p10()));
     connect(ui->actionMark_region_c1, SIGNAL(triggered()), this, SLOT(slot_markRegionsCam1()));
+    connect(ui->actionMark_region_c2, SIGNAL(triggered()), this, SLOT(slot_markRegionsCam2()));
+    connect(ui->actionMark_region_c3, SIGNAL(triggered()), this, SLOT(slot_markRegionsCam3()));
+
+    connect(ui->actionDump_info, SIGNAL(triggered()), this, SLOT(slot_dumpPersonInfo()));
     // timers
     connect(tickTimer, SIGNAL(timeout()), this, SLOT(slot_updateTimeLabels()));
 
@@ -368,5 +372,31 @@ void MainWindow::slot_seek_m5m(){
 
 void MainWindow::slot_markRegionsCam1(){
     DLOG(INFO) << "marking regions in cam1";
-    regionSelectDialog.getAreas(vecImageRegions, string( ui->editFilename1->toPlainText().toAscii() ), ui->videoPlayer1->currentTime());
+    regionSelectDialog.getAreas(&mapPersons, 1, string( ui->editFilename1->toPlainText().toAscii() ), ui->videoPlayer1->currentTime());
+}
+
+void MainWindow::slot_markRegionsCam2(){
+    DLOG(INFO) << "marking regions in cam2";
+    regionSelectDialog.getAreas(&mapPersons, 2, string( ui->editFilename2->toPlainText().toAscii() ), ui->videoPlayer2->currentTime());
+}
+
+void MainWindow::slot_markRegionsCam3(){
+    DLOG(INFO) << "marking regions in cam3";
+    regionSelectDialog.getAreas(&mapPersons, 3, string( ui->editFilename3->toPlainText().toAscii() ), ui->videoPlayer3->currentTime());
+}
+
+void MainWindow::slot_dumpPersonInfo(){
+    DLOG(INFO) << "Dumping person information" ;
+    for( map<int, CPerson*>::iterator iter = mapPersons.begin();
+         iter != mapPersons.end(); ++iter )
+    {
+        CPerson* person = iter->second;
+        DLOG(INFO) << "Person id: " << person->getId();
+        DLOG(INFO) << "Person desc: " << person->getDesc();
+        for( std::map<int, CImageRegion>::iterator iterInner = person->beginRegions();
+             iterInner != person->endRegions(); ++iterInner )
+        {
+            DLOG(INFO) << "\tCam #" << iterInner->first << " : " << iterInner->second.toString();
+        }
+    }
 }

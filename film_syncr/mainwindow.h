@@ -10,6 +10,7 @@
 #include "CTimeMark.h"
 #include "CImageRegion.h"
 #include "CSelectPersonsDialog.h"
+#include "CPerson.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,8 +28,7 @@ private:
     CSessionParameters sessParams;
     qint64 startPos1, startPos2, startPos3;
     std::vector<CTimeMark> vecTimeMarks;
-//    std::map<int,std::vector<CImageRegion>> mapImageRegions;
-    std::vector<CImageRegion> vecImageRegions;
+    std::map<int, CPerson*> mapPersons;
 
     Ui::MainWindow *ui;
     CMarkDialog *markDialog;
@@ -69,6 +69,11 @@ private slots:
     void slot_gotoZero();
 
     void slot_markRegionsCam1();
+    void slot_markRegionsCam2();
+    void slot_markRegionsCam3();
+
+    // helpers (to be removed)
+    void slot_dumpPersonInfo();
 };
 
 #endif // MAINWINDOW_H

@@ -441,6 +441,9 @@
     </property>
     <addaction name="actionAdd_mark"/>
     <addaction name="actionMark_region_c1"/>
+    <addaction name="actionMark_region_c2"/>
+    <addaction name="actionMark_region_c3"/>
+    <addaction name="actionDump_info"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPlayback"/>
@@ -573,6 +576,21 @@
   <action name="actionMark_region_c1">
    <property name="text">
     <string>Mark region (c1)</string>
+   </property>
+  </action>
+  <action name="actionMark_region_c2">
+   <property name="text">
+    <string>Mark region(c2)</string>
+   </property>
+  </action>
+  <action name="actionMark_region_c3">
+   <property name="text">
+    <string>Mark region(c3)</string>
+   </property>
+  </action>
+  <action name="actionDump_info">
+   <property name="text">
+    <string>Dump info</string>
    </property>
   </action>
  </widget>

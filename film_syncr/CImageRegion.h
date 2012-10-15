@@ -9,12 +9,13 @@ class CImageRegion
 protected:
     // we'll protect something, someday...
 public:
-    int x1, y1, x2, y2, personId;
+    int x1, y1, x2, y2;
     std::string desc;
 
     CImageRegion();
-    CImageRegion(int _x1, int _y1, int _x2, int _y2, int personId = -1);
+    CImageRegion(int _x1, int _y1, int _x2, int _y2);
 
+    std::string toString();
     void toXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent);
     void fromXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent);
 };
