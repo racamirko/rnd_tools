@@ -18,6 +18,7 @@ public class AttributeDescription {
 		this.minRange = minRange;
 		this.maxRange = maxRange;
 		this.color = color;
+		this.displayType = displayType;
 	}
 	
 	public float getRange(){

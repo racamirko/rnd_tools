@@ -32,12 +32,14 @@ public class ClassroomDisplay extends PApplet {
 	}
 
 	private void generateVisualItems() {
+		thingsToDraw = new Vector<VisualItem>();
 		VisualItem tmpItem = null;
 		for( DataItem di : data ){
 			tmpItem = new VisualItem(this, di);
-			tmpItem.setPosition(new Point2f(di.x*50, di.y*30) ); // instant layout
+			tmpItem.setPosition(new Point2f(30+di.x*50, 20+di.y*30) ); // instant layout
 			thingsToDraw.add(tmpItem);
 		}
+		mousePressed();
 	}
 
 	public void draw() {

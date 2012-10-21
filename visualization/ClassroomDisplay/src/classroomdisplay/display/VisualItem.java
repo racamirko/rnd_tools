@@ -21,6 +21,9 @@ public class VisualItem {
 		this.pa = pa;
 		this.dataItem = dataItem;
 		visualParts = new Vector<VisualItemComponent>();
+		position = new Point2f(0,0);
+		endPt = position;
+		stepPt = new Point2f(0, 0);
 	}
 	
 	public void setPosition(Point2f position){
