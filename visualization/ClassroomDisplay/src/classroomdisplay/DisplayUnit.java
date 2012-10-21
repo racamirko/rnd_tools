@@ -17,7 +17,6 @@ class DisplayUnit{
 	public int curColor;
 	  
 	PApplet applet;	  
-	public Vector<Attribute> attributes;
 
 	DisplayUnit( PApplet applet, float startX, float startY ){
 		this.applet = applet;
@@ -56,7 +55,7 @@ class DisplayUnit{
 		updateDeltas();
 
 		applet.fill(curColor);
-		applet.rect(curX,curY, sizeX, sizeY);
+		applet.ellipse(curX,curY, sizeX, sizeY);
 	}
 
 	protected void updateDeltas(){

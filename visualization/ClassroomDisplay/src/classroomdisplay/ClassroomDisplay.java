@@ -1,58 +1,84 @@
 package classroomdisplay;
 
+import java.util.Random;
 import java.util.Vector;
+
+import classroomdisplay.data.DataDescription;
+import classroomdisplay.data.DataItem;
+import classroomdisplay.data.Point2f;
+import classroomdisplay.display.VisualComposition;
+import classroomdisplay.display.VisualItem;
 
 import processing.core.*;
 
 
 public class ClassroomDisplay extends PApplet {
 	private static final long serialVersionUID = 8767955545276677628L;
-	Vector<DisplayUnit> thingsToDraw;
+	Vector<VisualItem> thingsToDraw;
+	protected DataDescription dataDesc;
+	protected Vector<DataItem> data;
+	protected Random rnd;
+
 	int sizeX = 1040;
 	int sizeY = 660;
 
 	public void setup() {
 	  size(sizeX, sizeY);
-	  thingsToDraw = new Vector<DisplayUnit>();
-	  for( int i = 0; i < 100; i++){
-	    thingsToDraw.add(new DisplayUnit(this, random(sizeX), random(sizeY)));
-	  }
+	  rnd = new Random(System.currentTimeMillis());
+	  TestDataGenerator td = new TestDataGenerator(this, 100);
+	  dataDesc = td.dataDesc;
+	  data = td.data;
+	  generateVisualItems();
+	}
+
+	private void generateVisualItems() {
+		VisualItem tmpItem = null;
+		for( DataItem di : data ){
+			tmpItem = new VisualItem(this, di);
+			tmpItem.setPosition(new Point2f(di.x*50, di.y*30) ); // instant layout
+			thingsToDraw.add(tmpItem);
+		}
 	}
 
 	public void draw() {
 	  fill(color(0,0,0));
 	  rect(0,0, sizeX, sizeY);
-	  fill(color(124, 44, 240));
-	  rect(100,100,30,50);
-	  for( int i = 0; i < thingsToDraw.size(); i++){
-	    DisplayUnit d = (DisplayUnit) thingsToDraw.get(i);
-	    d.draw();
-	  }
+	  
+	  for( VisualItem vi : thingsToDraw)
+		  vi.draw();
 	}
 	
 	public void mousePressed() {
-	  for( int i = 0; i < thingsToDraw.size(); i++){
-	    DisplayUnit d = (DisplayUnit) thingsToDraw.get(i);
-	    switch( (int)random(4) ){
-	      case 0:
-	        d.setDestinationLocation( random(sizeX), random(sizeY), 100 );
-	        break;
-	      case 1:
-	        d.setDestinationSize( 10+random(50), 10+random(50), 100 );
-	        break;
-	      case 2:
-	        d.setDestinationLocation( random(sizeX), random(sizeY), 100 );
-	        d.setDestinationSize( 10+random(50), 10+random(50), 100 );
-	        break;
-	      case 3:
-	        d.setDestinationColor( color( 10 + random(240), 10 + random(240), 10+random(240) ), 100  );
-	        break;
-	    }
-	  }
+		// switch to the next random layout
+		// generate composition
+		VisualComposition visComp = new VisualComposition();
+		visComp.attributesToDisplay.add( dataDesc.getAttrbDesc( dataDesc.attrsCenter.get( rnd.nextInt( dataDesc.attrsCenter.size() ))  )  );
+		
+		switch( rnd.nextInt(3) ){
+			case 0:
+				visComp.attributesToDisplay.add( dataDesc.getAttrbDesc( dataDesc.attrsRings.get( rnd.nextInt( dataDesc.attrsRings.size() ))  )  );
+				break;
+			case 1:
+				int skipIndex = rnd.nextInt(dataDesc.attrsRings.size());
+				for( int i = 0; i < dataDesc.attrsRings.size(); i++ ){
+					if( i == skipIndex )
+						continue;
+					visComp.attributesToDisplay.add( dataDesc.getAttrbDesc( dataDesc.attrsRings.get( i )));
+				}
+				break;
+			case 2:
+				for( int i = 0; i < dataDesc.attrsRings.size(); i++ ){
+					visComp.attributesToDisplay.add( dataDesc.getAttrbDesc( dataDesc.attrsRings.get( i )));
+				}
+				break;
+		}
+		// update all visible items
+		for( VisualItem vi : thingsToDraw )
+			vi.setComposition(visComp);
 	}
 	
 	public static void main(String _args[]) {
-//		PApplet.main(new String[] { classroomdisplay.ClassroomDisplay.class.getName() });
-		DisplayUnit a = new DisplayUnit(null, 2,3);
+		PApplet.main(new String[] { classroomdisplay.ClassroomDisplay.class.getName() });
+//		DisplayUnit a = new DisplayUnit(null, 2,3);
 	}
 }
