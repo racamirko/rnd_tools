@@ -1,5 +1,6 @@
 package classroomdisplay.display;
 
+import java.util.Collections;
 import java.util.Vector;
 
 import classroomdisplay.data.AttributeDescription;
@@ -54,7 +55,7 @@ public class VisualItem {
 	public void setComposition(VisualComposition composition){
 		Vector<VisualItemComponent> newDisplayVec = new Vector<VisualItemComponent>();
 		// find inner radius - not dealing with several radiuses right now
-		float maxRadius = 30.0f, radius = 5.0f, ringStep = 4.0f;
+		float maxRadius = 30.0f, radius = 5.0f, ringStep = 10.0f;
 		AttributeDescription centerAttribute = null;
 		VisualItemComponent tmpCmp = null;
 		for( AttributeDescription attr : composition.attributesToDisplay ){
@@ -73,6 +74,7 @@ public class VisualItem {
 		}
 		
 		for( AttributeDescription attr : composition.attributesToDisplay ){
+			boolean found = false;
 			if( attr == centerAttribute )
 				continue;
 			for( VisualItemComponent vi : visualParts ){
@@ -80,9 +82,12 @@ public class VisualItem {
 					radius += ringStep;
 					vi.setSize(new Point2f(radius, radius));
 					newDisplayVec.add(vi);
+					found = true;
 					break;
 				}
 			}
+			if( found )
+				continue;
 			// if it reaches here - didn't find it
 			// check if the value should be displayed at all
 			if( dataItem.getAttributeValue(attr) == attr.minRange )
@@ -92,8 +97,10 @@ public class VisualItem {
 			tmpCmp.setSize(new Point2f(radius, radius));
 			newDisplayVec.add(tmpCmp);
 		}
-		// calculate internal radius
-		// update outside radiuses
+		// update new display list
+		visualParts.clear();
+		visualParts.addAll(newDisplayVec);
+		Collections.reverse(visualParts);
 	}
 
 }
