@@ -43,7 +43,7 @@ public class ClassroomDisplay extends PApplet {
 	}
 
 	public void draw() {
-	  fill(color(150,150,150));
+	  fill(color(250,250,250));
 	  rect(0,0, sizeX, sizeY);
 	  
 	  for( VisualItem vi : thingsToDraw)
@@ -79,8 +79,14 @@ public class ClassroomDisplay extends PApplet {
 			vi.setComposition(visComp);
 	}
 	
+	public void keyPressed(){
+		if( key == 'a' )
+			System.out.println("Bla");
+//			if (key == CODED) {
+//			    if (keyCode == UP) {
+	}
+	
 	public static void main(String _args[]) {
 		PApplet.main(new String[] { classroomdisplay.ClassroomDisplay.class.getName() });
-//		DisplayUnit a = new DisplayUnit(null, 2,3);
 	}
 }

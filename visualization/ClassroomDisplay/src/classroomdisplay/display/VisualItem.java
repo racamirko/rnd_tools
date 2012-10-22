@@ -14,6 +14,7 @@ public class VisualItem {
 	public PApplet pa;
 	protected DataItem dataItem;
 	protected Vector<VisualItemComponent> visualParts;
+	protected Vector<VisualItemComponent> toRemove;
 	
 	protected Point2f endPt, stepPt;
 	public Point2f position;
@@ -22,6 +23,7 @@ public class VisualItem {
 		this.pa = pa;
 		this.dataItem = dataItem;
 		visualParts = new Vector<VisualItemComponent>();
+		toRemove = new Vector<VisualItemComponent>();
 		position = new Point2f(0,0);
 		endPt = position;
 		stepPt = new Point2f(0, 0);
@@ -39,8 +41,15 @@ public class VisualItem {
 	
 	public void draw(){
 		update();
-		for( VisualItemComponent vic : visualParts )
+		toRemove.clear();
+		for( VisualItemComponent vic : visualParts ){
 			vic.draw();
+			if( vic.size.x == 0 && vic.size.y == 0 && !vic.isChanging )
+				toRemove.add(vic);
+		}
+		// remove things which are not active any more
+		for( VisualItemComponent vic : toRemove )
+			visualParts.remove(vic);
 	}
 	
 	protected void update(){
@@ -53,17 +62,26 @@ public class VisualItem {
 	}
 	
 	public void setComposition(VisualComposition composition){
-		Vector<VisualItemComponent> newDisplayVec = new Vector<VisualItemComponent>();
+		Vector<VisualItemComponent> newDisplayVec = new Vector<VisualItemComponent>(),
+									toDiscardWhenDone = new Vector<VisualItemComponent>(); 
 		// find inner radius - not dealing with several radiuses right now
 		float maxRadius = 30.0f, radius = 5.0f, ringStep = 10.0f;
 		AttributeDescription centerAttribute = null;
 		VisualItemComponent tmpCmp = null;
 		for( AttributeDescription attr : composition.attributesToDisplay ){
 			if( attr.displayType == eAttributeDisplayType.ATD_CENTER ){
-				radius += maxRadius*(dataItem.getAttributeValue(attr)-attr.minRange)/(attr.maxRange-attr.minRange);
-				tmpCmp = new VisualItemComponent(this, attr);
-				tmpCmp.setSize(new Point2f(radius, radius));
-				newDisplayVec.add(tmpCmp);
+				// test if it's already displayed
+				if( visualParts.size() > 0 && visualParts.get(visualParts.size()-1).attributeRepresented == attr )
+				{
+					newDisplayVec.add(visualParts.get(visualParts.size()-1));
+					radius += visualParts.get(visualParts.size()-1).size.x;
+				} else {
+					// if it's a different element, calculate it's new size and insert it
+					radius += maxRadius*(dataItem.getAttributeValue(attr)-attr.minRange)/(attr.maxRange-attr.minRange);
+					tmpCmp = new VisualItemComponent(this, attr);
+					tmpCmp.setSize(new Point2f(radius, radius));
+					newDisplayVec.add(tmpCmp);
+				}
 				centerAttribute = attr;
 				break;
 			}
@@ -96,6 +114,21 @@ public class VisualItem {
 			radius += ringStep;
 			tmpCmp.setSize(new Point2f(radius, radius));
 			newDisplayVec.add(tmpCmp);
+		}
+		// now add the stuff that's going to dissapear
+		for( VisualItemComponent vis : visualParts ){
+			boolean found = false;
+			for( AttributeDescription attr : composition.attributesToDisplay ){
+				if( vis.attributeRepresented == attr ){
+					found = true;
+					break;
+				}
+			}
+			if(!found){
+				vis.setPosition(new Point2f(0,0)); // just to be on a safe side
+				vis.setSize(new Point2f(0,0));
+				newDisplayVec.add(vis);
+			}
 		}
 		// update new display list
 		visualParts.clear();

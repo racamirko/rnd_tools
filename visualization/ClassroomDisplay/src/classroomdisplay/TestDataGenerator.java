@@ -47,13 +47,13 @@ public class TestDataGenerator {
 
 	private void initDataDesc() {
 		dataDesc = new DataDescription();
-		dataDesc.addAttribute( new AttributeDescription("attention", 1.0f, 10.0f, eAttributeDisplayType.ATD_CENTER, pa.color(255, 0, 0)));
-		dataDesc.addAttribute( new AttributeDescription("attentionNeight", 1.0f, 10.0f, eAttributeDisplayType.ATD_CENTER, pa.color(0, 255, 0)));
-		dataDesc.addAttribute( new AttributeDescription("energyTeacher", 1.0f, 10.0f, eAttributeDisplayType.ATD_CENTER, pa.color(0, 0, 255)));
+		dataDesc.addAttribute( new AttributeDescription("attention", 1.0f, 10.0f, eAttributeDisplayType.ATD_CENTER, pa.color(255, 99, 83)));
+		dataDesc.addAttribute( new AttributeDescription("attentionNeight", 1.0f, 10.0f, eAttributeDisplayType.ATD_CENTER, pa.color(101, 233, 79)));
+		dataDesc.addAttribute( new AttributeDescription("energyTeacher", 1.0f, 10.0f, eAttributeDisplayType.ATD_CENTER, pa.color(98, 80, 220)));
 		// rings
-		dataDesc.addAttribute( new AttributeDescription("listening", 0.0f, 1.0f, eAttributeDisplayType.ATD_RING, pa.color(30,0,80)));
-		dataDesc.addAttribute( new AttributeDescription("writting", 0.0f, 1.0f, eAttributeDisplayType.ATD_RING, pa.color(30,60,10)));
-		dataDesc.addAttribute( new AttributeDescription("repeatingKeyIdeas", 0.0f, 1.0f, eAttributeDisplayType.ATD_RING, pa.color(80,20,10)));
+		dataDesc.addAttribute( new AttributeDescription("listening", 0.0f, 1.0f, eAttributeDisplayType.ATD_RING, pa.color(105,175,208)));
+		dataDesc.addAttribute( new AttributeDescription("writting", 0.0f, 1.0f, eAttributeDisplayType.ATD_RING, pa.color(86,248,130)));
+		dataDesc.addAttribute( new AttributeDescription("repeatingKeyIdeas", 0.0f, 1.0f, eAttributeDisplayType.ATD_RING, pa.color(255,228,122)));
 	}
 	
 	

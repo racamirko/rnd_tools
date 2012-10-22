@@ -7,6 +7,7 @@ import classroomdisplay.data.Point2f;
 public class VisualItemComponent {
 	public VisualItem parent;
 	public AttributeDescription attributeRepresented;
+	public boolean isChanging;
 	
 	// display components
 	// NOTE: this is all relative to the parent position
@@ -25,6 +26,8 @@ public class VisualItemComponent {
 		size = new Point2f(1,1);
 		stepSize = new Point2f(0,0);
 		endSize = size;
+		
+		isChanging = false;
 	}
 	
 	public void draw(){
@@ -55,14 +58,17 @@ public class VisualItemComponent {
 	}
 	
 	protected void update(){
+		isChanging = false;
 		// movement
 		if( position != endPt ){
+			isChanging = true;
 			position.add(stepPt);
 			if( position.distance(endPt) < 3.0f)
 				position = endPt;
 		}
 		// size
 		if( size != endSize ){
+			isChanging = true;
 			size.add(stepSize);
 			if( size.distance(endSize) < 3.0f ){
 				size = endSize;
