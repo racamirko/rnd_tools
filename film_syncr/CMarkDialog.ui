@@ -35,7 +35,7 @@
      <x>10</x>
      <y>10</y>
      <width>371</width>
-     <height>161</height>
+     <height>192</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -46,6 +46,13 @@
       </property>
       <property name="checked">
        <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QRadioButton" name="radioSlideAnimation">
+      <property name="text">
+       <string>Slide animation</string>
       </property>
      </widget>
     </item>
@@ -74,6 +81,13 @@
      <widget class="QRadioButton" name="radioAEnd">
       <property name="text">
        <string>Answer end</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QRadioButton" name="radioOther">
+      <property name="text">
+       <string>Other event</string>
       </property>
      </widget>
     </item>

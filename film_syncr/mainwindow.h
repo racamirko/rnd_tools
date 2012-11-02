@@ -34,12 +34,15 @@ private:
     CMarkDialog *markDialog;
     CSelectPersonsDialog regionSelectDialog;
     QTimer* tickTimer;
+    int currentPersonIndex;
 
     void setupHooks();
     void setupAdditionalUI();
     void getVideoFile(int playerIndex);
     qint64 getGlobalTime();
     void jumpVideo(qint64 offset);
+
+    bool changingOffsetText1, changingOffsetText2, changingOffsetText3;
 
 private slots:
     void slot_quit();
@@ -71,6 +74,10 @@ private slots:
     void slot_markRegionsCam1();
     void slot_markRegionsCam2();
     void slot_markRegionsCam3();
+
+    void slot_changeOffset1Text();
+    void slot_changeOffset2Text();
+    void slot_changeOffset3Text();
 
     // helpers (to be removed)
     void slot_dumpPersonInfo();

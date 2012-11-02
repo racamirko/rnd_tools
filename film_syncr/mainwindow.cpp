@@ -18,13 +18,17 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     startPos1(0), startPos2(0), startPos3(0),
-    markDialog(NULL)
+    markDialog(NULL),
+    changingOffsetText1(false), changingOffsetText2(false), changingOffsetText3(false),
+    currentPersonIndex(0),
+    regionSelectDialog(&currentPersonIndex)
 {
     LOG(INFO) << "construct";
     ui->setupUi(this);
     tickTimer = new QTimer(this);
     sessParams.pTimeMarks = &vecTimeMarks;
     sessParams.pPersons = &mapPersons;
+//    regionSelectDialog = ;
 
     setupHooks();
     setupAdditionalUI();
@@ -65,6 +69,8 @@ void MainWindow::setupHooks(){
     connect(ui->actionMark_region_c1, SIGNAL(triggered()), this, SLOT(slot_markRegionsCam1()));
     connect(ui->actionMark_region_c2, SIGNAL(triggered()), this, SLOT(slot_markRegionsCam2()));
     connect(ui->actionMark_region_c3, SIGNAL(triggered()), this, SLOT(slot_markRegionsCam3()));
+
+    connect(ui->editOffset1, SIGNAL(textChanged()), this, SLOT(slot_changeOffset1Text()));
 
     connect(ui->actionDump_info, SIGNAL(triggered()), this, SLOT(slot_dumpPersonInfo()));
     // timers
@@ -147,6 +153,80 @@ void MainWindow::slot_play10sec(){
     startPos1 = p1; startPos2 = p2; startPos3 = p3;
     QTimer::singleShot(2000, this, SLOT(slot_pause()));
 }
+
+void MainWindow::slot_changeOffset1Text(){
+    LOG(INFO) << "slot_changeOffset1Text";
+    if( changingOffsetText1 )
+        return;
+    changingOffsetText1 = true;
+//    int cursorPos = ui->editOffset1->textCursor().position();
+    QString tmpStr = ui->editOffset1->toPlainText();
+    tmpStr = tmpStr.trimmed();
+//    ui->editOffset1->setPlainText(tmpStr);
+    if( tmpStr.length() == 0 )
+        sessParams.zeroOffset1 = 0;
+    int tmpInt = atoi(tmpStr.toAscii().constData());
+    if( tmpInt == 0 ){
+        if( strcmp("0", ui->editOffset1->toPlainText().toAscii().constData()) == 0 )
+            sessParams.zeroOffset1 = 0;
+        else{
+            char buffer[20];
+            printf(buffer, "%li", sessParams.zeroOffset1);
+            ui->editOffset1->setPlainText(QString(buffer));
+        }
+    }else
+        sessParams.zeroOffset1 = tmpInt;
+//    cursorPos = min(cursorPos,tmpStr.length());
+//    ui->editOffset1->textCursor().setPosition(cursorPos,QTextCursor::MoveAnchor);
+    changingOffsetText1 = false;
+}
+
+void MainWindow::slot_changeOffset2Text(){
+    LOG(INFO) << "slot_changeOffset2Text";
+    if( changingOffsetText2 )
+        return;
+    changingOffsetText2 = true;
+    QString tmpStr = ui->editOffset2->toPlainText();
+    tmpStr = tmpStr.trimmed();
+    if( tmpStr.length() == 0 )
+        sessParams.zeroOffset2 = 0;
+    int tmpInt = atoi(tmpStr.toAscii().constData());
+    if( tmpInt == 0 ){
+        if( strcmp("0", ui->editOffset2->toPlainText().toAscii().constData()) == 0 )
+            sessParams.zeroOffset2 = 0;
+        else{
+            char buffer[20];
+            printf(buffer, "%li", sessParams.zeroOffset2);
+            ui->editOffset2->setPlainText(QString(buffer));
+        }
+    }else
+        sessParams.zeroOffset2 = tmpInt;
+    changingOffsetText2 = false;
+}
+
+void MainWindow::slot_changeOffset3Text(){
+    LOG(INFO) << "slot_changeOffset3Text";
+    if( changingOffsetText3 )
+        return;
+    changingOffsetText3 = true;
+    QString tmpStr = ui->editOffset3->toPlainText();
+    tmpStr = tmpStr.trimmed();
+    if( tmpStr.length() == 0 )
+        sessParams.zeroOffset3 = 0;
+    int tmpInt = atoi(tmpStr.toAscii().constData());
+    if( tmpInt == 0 ){
+        if( strcmp("0", ui->editOffset3->toPlainText().toAscii().constData()) == 0 )
+            sessParams.zeroOffset3 = 0;
+        else{
+            char buffer[20];
+            printf(buffer, "%li", sessParams.zeroOffset3);
+            ui->editOffset3->setPlainText(QString(buffer));
+        }
+    }else
+        sessParams.zeroOffset3 = tmpInt;
+    changingOffsetText3 = false;
+}
+
 
 void MainWindow::slot_pause(){
     LOG(INFO) << "slot_pause";

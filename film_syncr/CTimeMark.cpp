@@ -56,6 +56,10 @@ void CTimeMark::fromXml(XMLDocument* _doc, XMLElement* _parent){
         type = TMT_BEGIN_ANSWER;
     if( strcmp("EndAnswer",attributeValue) == 0 )
         type = TMT_END_ANSWER;
+    if( strcmp("OtherEvent",attributeValue) == 0 )
+        type = TMT_OTHER_EVENT;
+    if( strcmp("SlideAnimation",attributeValue) == 0 )
+        type = TMT_SLIDE_ANIMATION;
     // get time mark
     int tmpTime;
     _parent->QueryIntAttribute("time", &tmpTime);
@@ -79,5 +83,9 @@ std::string CTimeMark::markTypeToText(ETimeMarkType _markType){
             return "BeginAnswer";
         case TMT_END_ANSWER:
             return "EndAnswer";
+        case TMT_OTHER_EVENT:
+            return "OtherEvent";
+        case TMT_SLIDE_ANIMATION:
+            return "SlideAnimation";
     }
 }

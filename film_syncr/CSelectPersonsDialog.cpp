@@ -1,6 +1,7 @@
 #include "CSelectPersonsDialog.h"
 
 #include <stdio.h>
+#include <opencv2/imgproc/imgproc.hpp>
 #include "globalInclude.h"
 
 using namespace std;
@@ -8,10 +9,11 @@ using namespace cv;
 
 void onMouse( int event, int x, int y, int, void* param );
 
-CSelectPersonsDialog::CSelectPersonsDialog()
+CSelectPersonsDialog::CSelectPersonsDialog(int* _personIndex)
     : drawingRect(false)
     , p1(cvPoint(0,0))
     , p2(cvPoint(0,0))
+    , currentPersonId(_personIndex)
 {
 
 }
@@ -24,11 +26,10 @@ void CSelectPersonsDialog::getAreas(std::map<int, CPerson*> *_mapPersons, int _c
     IplImage* tmpImg = cvQueryFrame(videoSrc);
     mapPersons = _mapPersons;
     frameData = Mat(tmpImg);
-    currentPersonId = 1;
     camIdx = _camIdx;
 
     // prepare output information
-    sprintf(buffer, "Current person id: %d", currentPersonId);
+    sprintf(buffer, "Current person id: %d", *currentPersonId);
     putText(frameData, string(buffer), cvPoint(30,12), FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(0,0,255));
 
     // display pre-existing regions of persons
@@ -85,13 +86,14 @@ void onMouse( int event, int x, int y, int flags, void* param ){
         case CV_EVENT_LBUTTONUP:
             DLOG(INFO) << "Mouse lbutton up";
             d->frameData.release();
-            sprintf(buffer, "%d", d->currentPersonId);
+            sprintf(buffer, "%d", *(d->currentPersonId));
             putText(d->tmpImage, string(buffer), d->p1, FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(255,0,0));
             // save information
-            d->addPersonRect(d->currentPersonId++,CImageRegion(d->p1.x, d->p1.y, d->p2.x, d->p2.y));
+            d->addPersonRect(*(d->currentPersonId),CImageRegion(d->p1.x, d->p1.y, d->p2.x, d->p2.y));
+            *(d->currentPersonId) = *(d->currentPersonId) + 1;
             // update video display
             d->drawingRect = false;
-            sprintf(buffer, "Current person id: %d", d->currentPersonId);
+            sprintf(buffer, "Current person id: %d", *(d->currentPersonId));
             rectangle(d->tmpImage, Rect(30,0,200,15), cvScalar(0), CV_FILLED);
             putText(d->tmpImage, string(buffer), cvPoint(30,12), FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(0,0,255));
             d->frameData = d->tmpImage.clone();
@@ -101,10 +103,10 @@ void onMouse( int event, int x, int y, int flags, void* param ){
         case CV_EVENT_RBUTTONDOWN:
             {
                 if( flags & CV_EVENT_FLAG_SHIFTKEY )
-                    d->currentPersonId = std::max(1,d->currentPersonId-1);
+                    *(d->currentPersonId) = std::max(1,*(d->currentPersonId)-1);
                 else
-                    d->currentPersonId++;
-                sprintf(buffer, "Current person id: %d", d->currentPersonId);
+                    *(d->currentPersonId) = *(d->currentPersonId) + 1;
+                sprintf(buffer, "Current person id: %d", *(d->currentPersonId));
                 rectangle(d->frameData, Rect(30,0,200,15), cvScalar(0), CV_FILLED);
                 putText(d->frameData, string(buffer), cvPoint(30,12), FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(0,0,255));
 
