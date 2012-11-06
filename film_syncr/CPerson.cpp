@@ -28,6 +28,17 @@ void CPerson::setCameraRegion(int _camId, CImageRegion _reg){
     cameraRegions.insert( std::pair<int, CImageRegion>(_camId, _reg) );
 }
 
+bool CPerson::hasRegionForCamera(int _camIdx){
+    if( cameraRegions.count(_camIdx) > 0 )
+        return true;
+    return false;
+}
+
+CImageRegion CPerson::getCameraRegion(int _camIdx){
+    if( !hasRegionForCamera(_camIdx) )
+        return CImageRegion();
+    return cameraRegions[_camIdx];
+}
 
 void CPerson::toXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent){
     char buffer[300];

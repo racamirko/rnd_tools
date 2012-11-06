@@ -23,6 +23,8 @@ public:
     void setCameraRegion(int _camId, CImageRegion _reg);
     std::map<int, CImageRegion>::iterator beginRegions(){ return cameraRegions.begin(); }
     std::map<int, CImageRegion>::iterator endRegions() { return cameraRegions.end(); }
+    bool hasRegionForCamera(int _camIdx);
+    CImageRegion getCameraRegion(int _camIdx);
 
     void toXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent);
     void fromXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent);

@@ -30,7 +30,7 @@ public class ClassroomDisplay extends PApplet {
 	  rnd = new Random(System.currentTimeMillis());
 //	  TestDataGenerator td = new TestDataGenerator(this, 100);
 	  CSVDataLoaderExperiment1 td = new CSVDataLoaderExperiment1(this);
-	  td.load("/home/raca/data/video_material/lecture02 - 12.10.17 - aac117/questionnair01_results/study01-hpl_class.csv");
+	  td.load("/home/raca/data/video_material/lecture02_12.10.17_aac117/questionnair01_results/study01-hpl_class.csv");
 	  dataDesc = td.dataDesc;
 	  data = td.data;
 	  generateVisualItems();

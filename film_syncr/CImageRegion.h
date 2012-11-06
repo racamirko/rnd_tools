@@ -14,6 +14,9 @@ public:
     CImageRegion();
     CImageRegion(int _x1, int _y1, int _x2, int _y2);
 
+    int getWidth() { return x2-x1; }
+    int getHeight() { return y2-y1; }
+
     std::string toString();
 };
 
