@@ -18,6 +18,17 @@ public class VisualItem {
 	
 	protected Point2f endPt, stepPt;
 	public Point2f position;
+
+	
+	public VisualItem( PApplet pa, DataItem dataItem, Point2f startPos ){
+		this.pa = pa;
+		this.dataItem = dataItem;
+		visualParts = new Vector<VisualItemComponent>();
+		toRemove = new Vector<VisualItemComponent>();
+		position = startPos;
+		endPt = position;
+		stepPt = new Point2f(0, 0);
+	}
 	
 	public VisualItem( PApplet pa, DataItem dataItem ){
 		this.pa = pa;

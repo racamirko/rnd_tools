@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="/home/raca/tools/processing-2.0b3/core/library/jogl-all.jar"/>
 	<classpathentry kind="lib" path="/home/raca/tools/processing-2.0b3/lib/ant.jar"/>
 	<classpathentry kind="lib" path="/home/raca/tools/processing-2.0b3/lib/ant-launcher.jar"/>
+	<classpathentry kind="lib" path="/home/raca/tools/processing_addons/controlP5/library/controlP5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
