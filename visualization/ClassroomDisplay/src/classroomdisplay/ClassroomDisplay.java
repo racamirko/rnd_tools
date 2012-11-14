@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.Vector;
 
 import controlP5.CColor;
+import controlP5.CheckBox;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
 
@@ -29,6 +30,11 @@ public class ClassroomDisplay extends PApplet {
 	protected ClassroomLayout layout;
 	VisualComposition visComp;
 	
+	protected PImage imgOkTick;
+	protected Vector<Point2f> okTicksLocations;
+	protected Point2f offsetLegend, shiftLegend;
+	protected int numColumnsLegend;
+	
 	protected ControlP5 ctrls;
 
 	int sizeX = 1340;
@@ -40,22 +46,23 @@ public class ClassroomDisplay extends PApplet {
 	  rnd = new Random(System.currentTimeMillis());
 //	  TestDataGenerator td = new TestDataGenerator(this, 100);
 	  CSVDataLoaderExperiment1 td = new CSVDataLoaderExperiment1(this);
+	  imgOkTick = loadImage("/home/raca/repo/rnd_tools/visualization/ClassroomDisplay/resources/ok_tick_20px.png");
 	  td.load("/home/raca/data/video_material/lecture02_12.10.17_aac117/questionnair01_results/study01-hpl_class.csv");
 	  dataDesc = td.dataDesc;
 	  data = td.data;
 	  
-	  int[] corridorsSpaces = {4,10};
+	  int[] corridorsSpaces = {4, 10};
 	  layout = new ClassroomLayout(this, 14, 6, corridorsSpaces, 1200, 450, 50.0f, 80.0f);
 	  
 	  visComp = new VisualComposition();
 	  visComp.attributesToDisplay.add(dataDesc.getAttrbDesc( dataDesc.attrsCenter.get( rnd.nextInt( dataDesc.attrsCenter.size() ))));
 	  generateVisualItems();
+	  okTicksLocations = new Vector<Point2f>();
 	  
 	  // controls
-	  
 	  ctrls = new ControlP5(this);
 	  setupControls();
-//	  ctrls.addButton("First control").setPosition(100,200).setColor(arg0);
+	  updateTicks();
 	}
 
 	private void generateVisualItems() {
@@ -72,17 +79,17 @@ public class ClassroomDisplay extends PApplet {
 	}
 	
 	private void setupControls(){
-		float xOffset = 30.0f,
-				  yOffset = 500.0f,
-				  yShift = 30.0f,
-				  xShift = 200.0f;
-			int numInColumn = 5,
-				counter = 0;
+		int counter = 0;
+		numColumnsLegend = 5;
+		offsetLegend = new Point2f(30.0f, 500.0f);
+		shiftLegend = new Point2f(200.0f, 30.0f);
 			
 			for( AttributeDescription attr : dataDesc.attribDescriptions.values() ){
 				CColor thisColor = new CColor( color(125.0f), attr.color, color(125.0f), color(255.0f), color(255.0f) );
-				ctrls.addButton(attr.name).setPosition(xOffset + (float)( Math.floor(counter / numInColumn )*xShift ),
-													   yOffset + (float)( Math.floor(counter % numInColumn )*yShift)).setColor(thisColor);
+				ctrls.addButton(attr.name).setPosition(offsetLegend.x + (float)( Math.floor(counter / numColumnsLegend )*shiftLegend.x ),
+													   offsetLegend.y + (float)( Math.floor(counter % numColumnsLegend )*shiftLegend.y))
+													   .setColor(thisColor)
+													   .setWidth(170);
 				counter += 1;
 			}
 	}
@@ -95,55 +102,13 @@ public class ClassroomDisplay extends PApplet {
 	  
 	  for( VisualItem vi : thingsToDraw)
 		  vi.draw();
-			  
-	  drawLegend();
+
 	  ctrls.draw();
+	  drawTicks();
 	}
 	
-	private void drawLegend() {
-		float xOffset = 30.0f,
-			  yOffset = 500.0f,
-			  yShift = 30.0f,
-			  xShift = 200.0f;
-		int numInColumn = 5,
-			counter = 0;
-		
-		for( AttributeDescription attr : dataDesc.attribDescriptions.values() ){
-			fill(attr.color);
-			rect(xOffset + (float)( Math.floor(counter / numInColumn )*xShift ),
-				 yOffset + (float)( Math.floor(counter % numInColumn )*yShift ), 30, 10);
-			text( attr.name,
-				  xOffset + (float)( Math.floor(counter / numInColumn )*xShift + 35 ),
-				  yOffset + (float)( Math.floor(counter % numInColumn )*yShift + 10) );
-			counter += 1;
-		}
-	}
-
 	public void mousePressed() {
-		// switch to the next random layout
-		// generate composition
-//		visComp.attributesToDisplay.add( dataDesc.getAttrbDesc( dataDesc.attrsCenter.get( rnd.nextInt( dataDesc.attrsCenter.size() ))  )  );
-//		
-//		switch( rnd.nextInt(2) ){
-//			case 0:
-//				visComp.attributesToDisplay.add( dataDesc.getAttrbDesc( dataDesc.attrsRings.get( rnd.nextInt( dataDesc.attrsRings.size() ))  )  );
-//				break;
-//			case 1:
-//				int index1 = rnd.nextInt(dataDesc.attrsRings.size()),
-//				 	index2 = rnd.nextInt(dataDesc.attrsRings.size());
-//					if(index1==index2)
-//						if( index1 == dataDesc.attrsRings.size()-1 )
-//							index2 = 0;
-//						else
-//							index2 = dataDesc.attrsRings.size()-1;
-//					visComp.attributesToDisplay.add( dataDesc.getAttrbDesc( dataDesc.attrsRings.get( index1 )));
-//					visComp.attributesToDisplay.add( dataDesc.getAttrbDesc( dataDesc.attrsRings.get( index2 )));
-//				break;
-//		}
-//		// update all visible items
-		for( VisualItem vi : thingsToDraw )
-			vi.setComposition(visComp);
-//		ctrls.mouseEvent(mouseEvent);
+		// nothing more here
 	}
 	
 	public void keyPressed(){
@@ -151,9 +116,6 @@ public class ClassroomDisplay extends PApplet {
 			System.out.println("Bla");
 		if( key == BACKSPACE )
 			saveScreenShot();
-//			if (key == CODED) {
-//			    if (keyCode == UP) {
-//		ctrls.keyEvent(keyEvent);
 	}
 	
 	public void saveScreenShot(){
@@ -190,6 +152,26 @@ public class ClassroomDisplay extends PApplet {
 		  // update
 		  for( VisualItem vi : thingsToDraw )
 				vi.setComposition(visComp);
+		  // update ticks
+		  updateTicks();
+	}
+	
+	public void drawTicks(){
+		for( Point2f pt : okTicksLocations ){
+			image(imgOkTick, pt.x, pt.y);
+		}
+	}
+	
+	public void updateTicks(){
+		int counter = 0;   
+		okTicksLocations.clear();
+		for( AttributeDescription attr : dataDesc.attribDescriptions.values() ){
+			if( visComp.attributesToDisplay.contains(attr) ){
+				okTicksLocations.add(new Point2f(offsetLegend.x + (float)( Math.floor(counter / numColumnsLegend )*shiftLegend.x )-22,
+						   offsetLegend.y + (float)( Math.floor(counter % numColumnsLegend )*shiftLegend.y)));
+			}
+			counter += 1;
+		}
 	}
 	
 	public static void main(String _args[]) {
