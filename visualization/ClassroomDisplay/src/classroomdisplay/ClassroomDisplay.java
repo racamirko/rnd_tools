@@ -18,6 +18,7 @@ import classroomdisplay.display.ClassroomLayout;
 import classroomdisplay.display.VisualComposition;
 import classroomdisplay.display.VisualItem;
 import classroomdisplay.loaders.CSVDataLoaderExperiment1;
+import classroomdisplay.loaders.CSVDataLoaderExperiment2;
 
 import processing.core.*;
 
@@ -47,9 +48,9 @@ public class ClassroomDisplay extends PApplet {
 //	  size(sizeX, sizeY);
 	  rnd = new Random(System.currentTimeMillis());
 //	  TestDataGenerator td = new TestDataGenerator(this, 100);
-	  CSVDataLoaderExperiment1 td = new CSVDataLoaderExperiment1(this);
+	  CSVDataLoaderExperiment2 td = new CSVDataLoaderExperiment2(this);
 	  imgOkTick = loadImage("/home/raca/repo/rnd_tools/visualization/ClassroomDisplay/resources/ok_tick_20px.png");
-	  td.load("/home/raca/data/video_material/lecture02_12.10.17_aac117/questionnair01_results/study01-hpl_class.csv");
+	  td.load("/home/raca/data/video_material/lecture02_12.10.17_aac117/questionnaire02_results/study02-hpl_class.csv");
 	  dataDesc = td.dataDesc;
 	  data = td.data;
 	  
