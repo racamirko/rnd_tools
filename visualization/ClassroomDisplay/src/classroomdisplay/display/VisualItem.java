@@ -81,14 +81,15 @@ public class VisualItem {
 		VisualItemComponent tmpCmp = null;
 		for( AttributeDescription attr : composition.attributesToDisplay ){
 			if( attr.displayType == eAttributeDisplayType.ATD_CENTER ){
+				radius += maxRadius*(dataItem.getAttributeValue(attr, composition.series)-attr.minRange)/(attr.maxRange-attr.minRange);
 				// test if it's already displayed
 				if( visualParts.size() > 0 && visualParts.get(visualParts.size()-1).attributeRepresented == attr )
 				{
+					// set new size, if different
+					visualParts.get(visualParts.size()-1).setSize(new Point2f(radius, radius));
 					newDisplayVec.add(visualParts.get(visualParts.size()-1));
-					radius += visualParts.get(visualParts.size()-1).size.x;
 				} else {
 					// if it's a different element, calculate it's new size and insert it
-					radius += maxRadius*(dataItem.getAttributeValue(attr)-attr.minRange)/(attr.maxRange-attr.minRange);
 					tmpCmp = new VisualItemComponent(this, attr);
 					tmpCmp.setSize(new Point2f(radius, radius));
 					newDisplayVec.add(tmpCmp);
@@ -108,8 +109,14 @@ public class VisualItem {
 				continue;
 			for( VisualItemComponent vi : visualParts ){
 				if( vi.attributeRepresented == attr ){
-					radius += ringStep;
-					vi.setSize(new Point2f(radius, radius));
+					// should the item still be represented
+					if( dataItem.getAttributeValue(attr, composition.series) != attr.minRange ){
+						radius += ringStep;
+						vi.setSize(new Point2f(radius, radius));
+					} else {
+						vi.setPosition(new Point2f(0,0)); // just to be on a safe side
+						vi.setSize(new Point2f(0,0));
+					}
 					newDisplayVec.add(vi);
 					found = true;
 					break;
@@ -119,7 +126,7 @@ public class VisualItem {
 				continue;
 			// if it reaches here - didn't find it
 			// check if the value should be displayed at all
-			if( dataItem.getAttributeValue(attr) == attr.minRange )
+			if( dataItem.getAttributeValue(attr, composition.series) == attr.minRange )
 				continue;
 			tmpCmp = new VisualItemComponent(this, attr);
 			radius += ringStep;

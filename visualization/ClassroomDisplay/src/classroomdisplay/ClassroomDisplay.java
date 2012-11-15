@@ -58,6 +58,7 @@ public class ClassroomDisplay extends PApplet {
 	  
 	  visComp = new VisualComposition();
 	  visComp.attributesToDisplay.add(dataDesc.getAttrbDesc( dataDesc.attrsCenter.get( rnd.nextInt( dataDesc.attrsCenter.size() ))));
+	  visComp.series = 0;
 	  generateVisualItems();
 	  okTicksLocations = new Vector<Point2f>();
 	  
@@ -149,7 +150,7 @@ public class ClassroomDisplay extends PApplet {
 	
 	public void controlEvent(ControlEvent theEvent) {
 		if( theEvent.isFrom(periodRadioBtn) ){
-			changePeriod();
+			changePeriod(theEvent);
 			return;
 		}
 		// handle buttons
@@ -177,9 +178,10 @@ public class ClassroomDisplay extends PApplet {
 		updateTicks();
 	}
 	
-	private void changePeriod() {
-		// TODO Auto-generated method stub
-		
+	private void changePeriod(ControlEvent theEvent) {
+		visComp.series = (int) theEvent.getValue();
+		for( VisualItem vi : thingsToDraw )
+			vi.setComposition(visComp);
 	}
 
 	public void drawTicks(){
