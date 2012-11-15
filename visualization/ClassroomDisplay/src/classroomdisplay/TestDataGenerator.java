@@ -31,29 +31,31 @@ public class TestDataGenerator {
 			tmpItem.x = i / 10;
 			tmpItem.y = i % 10;
 			// generate attributes
-			ad = dataDesc.getAttrbDesc("attention");
-			tmpItem.attributes.put("attention", rnd.nextFloat()*ad.getRange()+ad.minRange );
-			ad = dataDesc.getAttrbDesc("attentionNeight");
-			tmpItem.attributes.put("attentionNeight", rnd.nextFloat()*ad.getRange()+ad.minRange );
-			ad = dataDesc.getAttrbDesc("energyTeacher");
-			tmpItem.attributes.put("energyTeacher", rnd.nextFloat()*ad.getRange()+ad.minRange );
-			
-			tmpItem.attributes.put("listening", (float)rnd.nextInt(2));
-			tmpItem.attributes.put("writting", (float)rnd.nextInt(2));
-			tmpItem.attributes.put("repeatingKeyIdeas", (float)rnd.nextInt(2));
+			for( int j = 0; j < 4; ++j ){
+				ad = dataDesc.getAttrbDesc("attention");
+				tmpItem.addTimeAttribute("attention", j, rnd.nextFloat()*ad.getRange()+ad.minRange );
+				ad = dataDesc.getAttrbDesc("attentionNeight");
+				tmpItem.addTimeAttribute("attentionNeight", j, rnd.nextFloat()*ad.getRange()+ad.minRange );
+				ad = dataDesc.getAttrbDesc("energyTeacher");
+				tmpItem.addTimeAttribute("energyTeacher", j, rnd.nextFloat()*ad.getRange()+ad.minRange );
+				
+				tmpItem.addTimeAttribute("listening", j, (float)rnd.nextInt(2));
+				tmpItem.addTimeAttribute("writting", j, (float)rnd.nextInt(2));
+				tmpItem.addTimeAttribute("repeatingKeyIdeas", j, (float)rnd.nextInt(2));
+			}
 			data.add(tmpItem);
 		}
 	}
 
 	private void initDataDesc() {
 		dataDesc = new DataDescription();
-		dataDesc.addAttribute( new AttributeDescription("attention", 1.0f, 10.0f, eAttributeDisplayType.ATD_CENTER, pa.color(255, 99, 83)));
-		dataDesc.addAttribute( new AttributeDescription("attentionNeight", 1.0f, 10.0f, eAttributeDisplayType.ATD_CENTER, pa.color(101, 233, 79)));
-		dataDesc.addAttribute( new AttributeDescription("energyTeacher", 1.0f, 10.0f, eAttributeDisplayType.ATD_CENTER, pa.color(98, 80, 220)));
+		dataDesc.addAttribute( new AttributeDescription("attention", 1.0f, 10.0f, eAttributeDisplayType.ATD_CENTER, pa.color(255, 99, 83), true));
+		dataDesc.addAttribute( new AttributeDescription("attentionNeight", 1.0f, 10.0f, eAttributeDisplayType.ATD_CENTER, pa.color(101, 233, 79), true));
+		dataDesc.addAttribute( new AttributeDescription("energyTeacher", 1.0f, 10.0f, eAttributeDisplayType.ATD_CENTER, pa.color(98, 80, 220), true));
 		// rings
-		dataDesc.addAttribute( new AttributeDescription("listening", 0.0f, 1.0f, eAttributeDisplayType.ATD_RING, pa.color(105,175,208)));
-		dataDesc.addAttribute( new AttributeDescription("writting", 0.0f, 1.0f, eAttributeDisplayType.ATD_RING, pa.color(86,248,130)));
-		dataDesc.addAttribute( new AttributeDescription("repeatingKeyIdeas", 0.0f, 1.0f, eAttributeDisplayType.ATD_RING, pa.color(255,228,122)));
+		dataDesc.addAttribute( new AttributeDescription("listening", 0.0f, 1.0f, eAttributeDisplayType.ATD_RING, pa.color(105,175,208), true));
+		dataDesc.addAttribute( new AttributeDescription("writting", 0.0f, 1.0f, eAttributeDisplayType.ATD_RING, pa.color(86,248,130), true));
+		dataDesc.addAttribute( new AttributeDescription("repeatingKeyIdeas", 0.0f, 1.0f, eAttributeDisplayType.ATD_RING, pa.color(255,228,122), true));
 	}
 	
 	

@@ -8,6 +8,7 @@ import controlP5.CColor;
 import controlP5.CheckBox;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
+import controlP5.RadioButton;
 
 import classroomdisplay.data.AttributeDescription;
 import classroomdisplay.data.DataDescription;
@@ -36,6 +37,7 @@ public class ClassroomDisplay extends PApplet {
 	protected int numColumnsLegend;
 	
 	protected ControlP5 ctrls;
+	protected RadioButton periodRadioBtn;
 
 	int sizeX = 1340;
 	int sizeY = 660;
@@ -66,7 +68,6 @@ public class ClassroomDisplay extends PApplet {
 	}
 
 	private void generateVisualItems() {
-		
 		thingsToDraw = new Vector<VisualItem>();
 		VisualItem tmpItem = null;
 		for( DataItem di : data ){
@@ -75,7 +76,6 @@ public class ClassroomDisplay extends PApplet {
 			tmpItem.setComposition(visComp);
 			thingsToDraw.add(tmpItem);
 		}
-//		mousePressed();
 	}
 	
 	private void setupControls(){
@@ -83,20 +83,31 @@ public class ClassroomDisplay extends PApplet {
 		numColumnsLegend = 5;
 		offsetLegend = new Point2f(30.0f, 500.0f);
 		shiftLegend = new Point2f(200.0f, 30.0f);
-			
-			for( AttributeDescription attr : dataDesc.attribDescriptions.values() ){
-				CColor thisColor = new CColor( color(125.0f), attr.color, color(125.0f), color(255.0f), color(255.0f) );
-				ctrls.addButton(attr.name).setPosition(offsetLegend.x + (float)( Math.floor(counter / numColumnsLegend )*shiftLegend.x ),
-													   offsetLegend.y + (float)( Math.floor(counter % numColumnsLegend )*shiftLegend.y))
-													   .setColor(thisColor)
-													   .setWidth(170);
-				counter += 1;
-			}
+		// selection buttons
+		for( AttributeDescription attr : dataDesc.attribDescriptions.values() ){
+			CColor thisColor = new CColor( color(125.0f), attr.color, color(125.0f), color(255.0f), color(255.0f) );
+			ctrls.addButton(attr.name).setPosition(offsetLegend.x + (float)( Math.floor(counter / numColumnsLegend )*shiftLegend.x ),
+												   offsetLegend.y + (float)( Math.floor(counter % numColumnsLegend )*shiftLegend.y))
+												   .setColor(thisColor)
+												   .setWidth(170);
+			counter += 1;
+		}
+		// period checkbox
+		int numOfPeriods = 4;
+		periodRadioBtn = ctrls.addRadioButton("timeRadioBtn").setPosition(offsetLegend.x + (float)( (Math.floor(counter / numColumnsLegend )+1)*shiftLegend.x ),
+														 offsetLegend.y)
+										    .setSize(50,20)
+										    .setItemsPerRow(numOfPeriods)
+										    .setColorLabels(color(255))
+										    .showLabels();
+		for( int i = 0; i < numOfPeriods; ++i ){
+			periodRadioBtn.addItem("Period "+(i+1), i);
+		}
+		periodRadioBtn.activate(0);
 	}
 
 	public void draw() {
-	  fill(color(250,250,250));
-	  rect(0,0, sizeX, sizeY);
+	  clearCanvas();
 	  
 	  layout.draw();
 	  
@@ -105,6 +116,11 @@ public class ClassroomDisplay extends PApplet {
 
 	  ctrls.draw();
 	  drawTicks();
+	}
+
+	private void clearCanvas() {
+		fill(color(250,250,250));
+		rect(0,0, sizeX, sizeY);
 	}
 	
 	public void mousePressed() {
@@ -132,30 +148,40 @@ public class ClassroomDisplay extends PApplet {
 
 	
 	public void controlEvent(ControlEvent theEvent) {
-		  println(theEvent.getController().getName());
-		  // find attribute
-		  AttributeDescription selectedDesc = null;
-		  for( AttributeDescription attr : dataDesc.attribDescriptions.values() ){
-			  if( attr.name.equals(theEvent.getController().getName()) ){
-				  selectedDesc = attr;
-				  break;
-			  }
-		  }
-		  if( selectedDesc == null ){
-			  System.out.println("Theres been a problem");
-			  return;
-		  }
-		  if( visComp.attributesToDisplay.contains(selectedDesc) )
-			  visComp.attributesToDisplay.remove(selectedDesc);
-		  else 
-			  visComp.attributesToDisplay.add(selectedDesc);
-		  // update
-		  for( VisualItem vi : thingsToDraw )
-				vi.setComposition(visComp);
-		  // update ticks
-		  updateTicks();
+		if( theEvent.isFrom(periodRadioBtn) ){
+			changePeriod();
+			return;
+		}
+		// handle buttons
+		println(theEvent.getController().getName());
+		// find attribute
+		AttributeDescription selectedDesc = null;
+		for( AttributeDescription attr : dataDesc.attribDescriptions.values() ){
+			if( attr.name.equals(theEvent.getController().getName()) ){
+				selectedDesc = attr;
+				break;
+			}
+		}
+		if( selectedDesc == null ){
+			System.out.println("Theres been a problem");
+			return;
+		}
+		if( visComp.attributesToDisplay.contains(selectedDesc) )
+			visComp.attributesToDisplay.remove(selectedDesc);
+		else 
+			visComp.attributesToDisplay.add(selectedDesc);
+		// update
+		for( VisualItem vi : thingsToDraw )
+			vi.setComposition(visComp);
+		// update ticks
+		updateTicks();
 	}
 	
+	private void changePeriod() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	public void drawTicks(){
 		for( Point2f pt : okTicksLocations ){
 			image(imgOkTick, pt.x, pt.y);

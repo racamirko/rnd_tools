@@ -7,18 +7,19 @@ public class AttributeDescription {
 	public float minRange, maxRange;
 	public int color;
 	public eAttributeDisplayType displayType;
-	
+	public boolean timeVariable;
 	
 	public AttributeDescription(){
-		
+		// nothing to do here
 	}
 	
-	public AttributeDescription(String name, float minRange, float maxRange, eAttributeDisplayType displayType, int color){
+	public AttributeDescription(String name, float minRange, float maxRange, eAttributeDisplayType displayType, int color, boolean timeVariable){
 		this.name = name;
 		this.minRange = minRange;
 		this.maxRange = maxRange;
 		this.color = color;
 		this.displayType = displayType;
+		this.timeVariable = timeVariable;
 	}
 	
 	public float getRange(){
