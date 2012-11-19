@@ -111,7 +111,7 @@ void CPerson::fromXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent)
         // regions
         XMLElement* regionNode = _parent->FirstChildElement("region");
         XMLElement* lastChild = _parent->LastChildElement("region");
-        while(1) {
+        while(regionNode) {
             CImageRegion region = CImageRegion();
             int camIdx = atoi(regionNode->Attribute("camIdx"));
             region.x1 = atoi(regionNode->Attribute("x1"));
@@ -121,14 +121,14 @@ void CPerson::fromXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent)
 
             cameraRegions[camIdx] = region;
             if( regionNode == lastChild )
-                break;
+                regionNode = NULL;
             else
                 regionNode = regionNode->NextSiblingElement();
         }
         // head positions
         XMLElement* headNode = _parent->FirstChildElement("headPos");
         XMLElement* lastHeadPos = _parent->LastChildElement("headPos");
-        while(1) {
+        while(headNode) {
             cv::Point point;
             int camIdx = atoi(headNode->Attribute("camIdx"));
             point.x = atoi(headNode->Attribute("x"));
@@ -136,7 +136,7 @@ void CPerson::fromXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent)
 
             headPosition[camIdx] = point;
             if( headNode == lastHeadPos )
-                break;
+                headNode = NULL;
             else
                 headNode = headNode->NextSiblingElement();
         }

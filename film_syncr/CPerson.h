@@ -6,6 +6,8 @@
 #include <opencv2/core/core.hpp>
 #include "CImageRegion.h"
 
+//typedef std::map<int, cv::Point> tPointsInTime;
+
 class CPerson
 {
 protected:
