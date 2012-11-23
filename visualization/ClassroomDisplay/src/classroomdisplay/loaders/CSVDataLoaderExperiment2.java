@@ -45,7 +45,7 @@ public class CSVDataLoaderExperiment2 {
 		String lines[] = pa.loadStrings(filename);
 		processHeader(lines[1]);
 
-		for (int i=2; i < lines.length; i++) {
+		for (int i=2; i < lines.length-1; i++) {
 			String [] fields = PApplet.split(lines[i],',');
 			if( fields[1].length() == 0 && fields[2].length()==0 )
 				break; // first two empty = reached the end of data section

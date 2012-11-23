@@ -50,12 +50,19 @@ public class ClassroomDisplay extends PApplet {
 //	  TestDataGenerator td = new TestDataGenerator(this, 100);
 	  CSVDataLoaderExperiment2 td = new CSVDataLoaderExperiment2(this);
 	  imgOkTick = loadImage("/home/raca/repo/rnd_tools/visualization/ClassroomDisplay/resources/ok_tick_20px.png");
-	  td.load("/home/raca/data/video_material/lecture02_12.10.17_aac117/questionnaire02_results/study02-hpl_class.csv");
+//	  td.load("/home/raca/data/video_material/lecture02_12.10.17_aac117/questionnaire02_results/study02-hpl_class.csv");
+	  td.load("/home/raca/data/video_material/lecture03 - 12.10.30 - bc03/01_first_period/study03-pierre_class.csv");
 	  dataDesc = td.dataDesc;
 	  data = td.data;
+
+//	  AAC117 layout	  
+//	  int[] corridorsSpaces = {4, 10};
+//	  layout = new ClassroomLayout(this, 14, 6, corridorsSpaces, 1200, 450, 50.0f, 80.0f);
 	  
-	  int[] corridorsSpaces = {4, 10};
-	  layout = new ClassroomLayout(this, 14, 6, corridorsSpaces, 1200, 450, 50.0f, 80.0f);
+//		BC01 layout
+	  int[] corridorsSpaces = {6};
+	  layout = new ClassroomLayout(this, 10, 4, corridorsSpaces, 1200, 450, 50.0f, 80.0f);
+	  
 	  
 	  visComp = new VisualComposition();
 	  visComp.attributesToDisplay.add(dataDesc.getAttrbDesc( dataDesc.attrsCenter.get( rnd.nextInt( dataDesc.attrsCenter.size() ))));
@@ -134,6 +141,23 @@ public class ClassroomDisplay extends PApplet {
 			System.out.println("Bla");
 		if( key == BACKSPACE )
 			saveScreenShot();
+		if( key == CODED && keyCode == LEFT ){
+			if( visComp.series == 0 )
+				return;
+			visComp.series -= 1;
+			periodRadioBtn.activate(visComp.series);
+			for( VisualItem vi : thingsToDraw )
+				vi.setComposition(visComp);
+
+		}
+		if( key == CODED && keyCode == RIGHT ){
+			if( visComp.series == 3 )
+				return;
+			visComp.series += 1;
+			periodRadioBtn.activate(visComp.series);
+			for( VisualItem vi : thingsToDraw )
+				vi.setComposition(visComp);
+		}
 	}
 	
 	public void saveScreenShot(){
@@ -155,7 +179,7 @@ public class ClassroomDisplay extends PApplet {
 			return;
 		}
 		// handle buttons
-		println(theEvent.getController().getName());
+//		println(theEvent.getController().getName());
 		// find attribute
 		AttributeDescription selectedDesc = null;
 		for( AttributeDescription attr : dataDesc.attribDescriptions.values() ){

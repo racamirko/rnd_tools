@@ -54,7 +54,7 @@ public class VisualItemComponent {
 	}
 	
 	public void setSize(Point2f size){
-		setSize(size, 100);
+		setSize(size, 20);
 	}
 	
 	protected void update(){
