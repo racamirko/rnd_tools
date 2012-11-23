@@ -40,8 +40,11 @@ CImageRegion CPerson::getCameraRegion(int _camIdx){
     return cameraRegions[_camIdx];
 }
 
-void CPerson::setCameraHeadPosition(int _camId, cv::Point _point){
-    headPosition.insert( std::pair<int, cv::Point>(_camId, _point));
+void CPerson::setCameraHeadPosition(int _camId, long _time, CImageRegion _point){
+    if( headPosition.count(_camId) == 0){
+        headPosition.insert(std::pair<int, tPointsInTime>(_camId, tPointsInTime()));
+    }
+    headPosition[_camId].insert( std::pair<int, CImageRegion>(_time, _point));
 }
 
 bool CPerson::hasHeadInCamera(int _camIdx){
@@ -50,12 +53,11 @@ bool CPerson::hasHeadInCamera(int _camIdx){
     return false;
 }
 
-cv::Point CPerson::getCameraHeadPos(int _camIdx){
+tPointsInTime CPerson::getCameraHeadPos(int _camIdx){
     if( !hasHeadInCamera(_camIdx) )
-        return cv::Point();
+        return tPointsInTime();
     return headPosition[_camIdx];
 }
-
 
 void CPerson::toXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent){
     DLOG(INFO) << "Output to xml Person[" << id << "]" ;
@@ -86,16 +88,22 @@ void CPerson::toXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent){
     }
     // head positions
     if( !headPosition.empty() ){
-        for( std::map<int, cv::Point>::iterator iter = headPosition.begin();
+        for( std::map<int, tPointsInTime>::iterator iter = headPosition.begin();
              iter != headPosition.end(); ++iter )
         {
-            XMLElement* tmpSubEle = _doc->NewElement("headPos");
+            for( tPointsInTime::iterator iterTime = iter->second.begin();
+                 iterTime != iter->second.end(); ++iterTime )
+            {
+                XMLElement* tmpSubEle = _doc->NewElement("headPos");
+                tmpSubEle->SetAttribute("camIdx", iter->first);
+                tmpSubEle->SetAttribute("time", (int)iterTime->first);
+                tmpSubEle->SetAttribute("x1", iterTime->second.x1);
+                tmpSubEle->SetAttribute("y1", iterTime->second.y1);
+                tmpSubEle->SetAttribute("x2", iterTime->second.x2);
+                tmpSubEle->SetAttribute("y2", iterTime->second.y2);
 
-            tmpSubEle->SetAttribute("camIdx", iter->first);
-            tmpSubEle->SetAttribute("x", iter->second.x);
-            tmpSubEle->SetAttribute("y", iter->second.y);
-
-            tmpEle->InsertEndChild(tmpSubEle);
+                tmpEle->InsertEndChild(tmpSubEle);
+            }
         }
     }
     // finalize
@@ -129,12 +137,15 @@ void CPerson::fromXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent)
         XMLElement* headNode = _parent->FirstChildElement("headPos");
         XMLElement* lastHeadPos = _parent->LastChildElement("headPos");
         while(headNode) {
-            cv::Point point;
+            CImageRegion point;
             int camIdx = atoi(headNode->Attribute("camIdx"));
-            point.x = atoi(headNode->Attribute("x"));
-            point.y = atoi(headNode->Attribute("y"));
+            long time = atoi(headNode->Attribute("time"));
+            point.x1 = atoi(headNode->Attribute("x1"));
+            point.y1 = atoi(headNode->Attribute("y1"));
+            point.x2 = atoi(headNode->Attribute("x2"));
+            point.y2 = atoi(headNode->Attribute("y2"));
 
-            headPosition[camIdx] = point;
+            setCameraHeadPosition(camIdx, time, point);
             if( headNode == lastHeadPos )
                 headNode = NULL;
             else

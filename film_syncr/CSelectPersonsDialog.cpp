@@ -14,14 +14,15 @@ CSelectPersonsDialog::CSelectPersonsDialog(int* _personIndex)
     , p1(cvPoint(0,0))
     , p2(cvPoint(0,0))
     , currentPersonId(_personIndex)
-    , mode(DM_BODY_REGIONS)
+    , time(0l)
 {
 
 }
 
-void CSelectPersonsDialog::getAreas(std::map<int, CPerson*> *_mapPersons, int _camIdx, std::string _filename, int _timeOffset){
+void CSelectPersonsDialog::getAreas(std::map<int, CPerson*> *_mapPersons, int _camIdx, std::string _filename, long _timeOffset, long _globalTime){
     char buffer[500];
     // prepare image
+    time = _globalTime;
     CvCapture* videoSrc = cvCaptureFromFile(_filename.c_str());
     cvSetCaptureProperty(videoSrc, CV_CAP_PROP_POS_MSEC, double(_timeOffset) );
     IplImage* tmpImg = cvQueryFrame(videoSrc);
@@ -61,13 +62,13 @@ void CSelectPersonsDialog::drawPersons(){
             sprintf(buffer, "%d", pers->getId());
             putText(frameData, string(buffer), Point(reg.x1, reg.y1), FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(255,0,0));
         }
-        for( std::map<int, Point>::iterator iterPts = pers->beginHeadPos();
+        for( std::map<int, tPointsInTime>::iterator iterPts = pers->beginHeadPos();
              iterPts != pers->endHeadPos(); ++iterPts )
         {
             if( iterPts->first != camIdx )
                 continue;
-            Point tmpPt = iterPts->second;
-            rectangle(frameData, Rect(tmpPt.x, tmpPt.y,2,2), cvScalar(255.0,0.0,0.0), CV_FILLED);
+            CImageRegion reg = iterPts->second.begin()->second;
+            rectangle(frameData, Rect(reg.x1, reg.y1, reg.x2-reg.x1, reg.y2-reg.y1), cvScalar(0,0,255) );
         }
     }
 }
@@ -80,12 +81,12 @@ void CSelectPersonsDialog::addPersonRect(int _personId, CImageRegion _region){
     curPerson->setCameraRegion(camIdx, _region);
 }
 
-void CSelectPersonsDialog::addPeronsHead(int _personId, cv::Point _point){
+void CSelectPersonsDialog::addPeronsHead(int _personId, CImageRegion reg){
     if( mapPersons->find(_personId) == mapPersons->end() ){
         mapPersons->insert(std::pair<int, CPerson*>(_personId, new CPerson(_personId)));
     }
     CPerson* curPerson = mapPersons->operator [](_personId);
-    curPerson->setCameraHeadPosition(camIdx, _point);
+    curPerson->setCameraHeadPosition(camIdx, time, reg);
 }
 
 void onMouse( int event, int x, int y, int flags, void* param ){
@@ -97,26 +98,28 @@ void onMouse( int event, int x, int y, int flags, void* param ){
             if(d->drawingRect){
                 d->tmpImage.release();
                 d->tmpImage = d->frameData.clone();
-                rectangle(d->tmpImage, Rect(d->p1, d->p2), cvScalar(255,0,0) );
+                CvScalar rectColor;
+                if( flags & CV_EVENT_FLAG_CTRLKEY )
+                    rectColor = cvScalar(0,0,255);
+                else
+                    rectColor = cvScalar(255,0,0);
+                rectangle(d->tmpImage, Rect(d->p1, d->p2), rectColor );
                 imshow("testWnd", d->tmpImage);
             }
             break;
         case CV_EVENT_LBUTTONDOWN:
             DLOG(INFO) << "Mouse lbutton down";
-            if( ! flags & CV_EVENT_FLAG_CTRLKEY ){
-                d->p1 = cvPoint(x,y);
-                d->drawingRect = true;
-            }
+            d->p1 = cvPoint(x,y);
+            d->drawingRect = true;
             break;
         case CV_EVENT_LBUTTONUP:
             DLOG(INFO) << "Mouse lbutton up";
             d->frameData.release();
             // save information
-            if( flags & CV_EVENT_FLAG_CTRLKEY ){
-                d->addPeronsHead(*(d->currentPersonId), Point(d->p2.x, d->p2.y));
-                rectangle(d->tmpImage, Rect(d->p2.x,d->p2.y,2,2), cvScalar(255.0,0.0,0.0), CV_FILLED);
+            if( flags & CV_EVENT_FLAG_CTRLKEY ){ // head region
+                d->addPeronsHead(*(d->currentPersonId),CImageRegion(d->p1.x, d->p1.y, d->p2.x, d->p2.y));
                 *(d->currentPersonId) = *(d->currentPersonId) + 1;
-            } else {
+            } else { // person region
                 sprintf(buffer, "%d", *(d->currentPersonId));
                 putText(d->tmpImage, string(buffer), d->p1, FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(255,0,0));
                 d->addPersonRect(*(d->currentPersonId),CImageRegion(d->p1.x, d->p1.y, d->p2.x, d->p2.y));

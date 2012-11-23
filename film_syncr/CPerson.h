@@ -6,7 +6,7 @@
 #include <opencv2/core/core.hpp>
 #include "CImageRegion.h"
 
-//typedef std::map<int, cv::Point> tPointsInTime;
+typedef std::map<long, CImageRegion> tPointsInTime;
 
 class CPerson
 {
@@ -14,7 +14,7 @@ protected:
     int id;
     std::string desc;
     std::map<int, CImageRegion> cameraRegions;
-    std::map<int, cv::Point> headPosition; // cameraIdx -> position of head
+    std::map<int, tPointsInTime> headPosition; // cameraIdx -> position of head (at different times)
 public:
     CPerson();
     CPerson(int _id);
@@ -31,11 +31,11 @@ public:
     bool hasRegionForCamera(int _camIdx);
     CImageRegion getCameraRegion(int _camIdx);
     // head position methods
-    void setCameraHeadPosition(int _camId, cv::Point _point);
-    std::map<int, cv::Point>::iterator beginHeadPos(){ return headPosition.begin(); }
-    std::map<int, cv::Point>::iterator endHeadPos() { return headPosition.end(); }
+    void setCameraHeadPosition(int _camId, long _time, CImageRegion _point);
+    std::map<int, tPointsInTime>::iterator beginHeadPos(){ return headPosition.begin(); }
+    std::map<int, tPointsInTime>::iterator endHeadPos() { return headPosition.end(); }
     bool hasHeadInCamera(int _camIdx);
-    cv::Point getCameraHeadPos(int _camIdx);
+    tPointsInTime getCameraHeadPos(int _camIdx);
 
     void toXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent);
     void fromXml(tinyxml2::XMLDocument* _doc,tinyxml2::XMLElement* _parent);

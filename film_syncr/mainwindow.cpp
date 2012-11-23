@@ -453,17 +453,17 @@ void MainWindow::slot_seek_m5m(){
 
 void MainWindow::slot_markRegionsCam1(){
     DLOG(INFO) << "marking regions in cam1";
-    regionSelectDialog.getAreas(&mapPersons, 1, string( ui->editFilename1->toPlainText().toAscii() ), ui->videoPlayer1->currentTime());
+    regionSelectDialog.getAreas(&mapPersons, 1, string( ui->editFilename1->toPlainText().toAscii() ), ui->videoPlayer1->currentTime(), getGlobalTime());
 }
 
 void MainWindow::slot_markRegionsCam2(){
     DLOG(INFO) << "marking regions in cam2";
-    regionSelectDialog.getAreas(&mapPersons, 2, string( ui->editFilename2->toPlainText().toAscii() ), ui->videoPlayer2->currentTime());
+    regionSelectDialog.getAreas(&mapPersons, 2, string( ui->editFilename2->toPlainText().toAscii() ), ui->videoPlayer2->currentTime(), getGlobalTime());
 }
 
 void MainWindow::slot_markRegionsCam3(){
     DLOG(INFO) << "marking regions in cam3";
-    regionSelectDialog.getAreas(&mapPersons, 3, string( ui->editFilename3->toPlainText().toAscii() ), ui->videoPlayer3->currentTime());
+    regionSelectDialog.getAreas(&mapPersons, 3, string( ui->editFilename3->toPlainText().toAscii() ), ui->videoPlayer3->currentTime(), getGlobalTime());
 }
 
 void MainWindow::slot_dumpPersonInfo(){
