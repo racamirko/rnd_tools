@@ -20,6 +20,8 @@ CSelectPersonsDialog::CSelectPersonsDialog(int* _personIndex)
 }
 
 void CSelectPersonsDialog::getAreas(std::map<int, CPerson*> *_mapPersons, int _camIdx, std::string _filename, long _timeOffset, long _globalTime){
+    LOG(INFO) << "Marking areas for camera " << _camIdx;
+    LOG(INFO) << "Camera " << _camIdx << " time is " << _timeOffset;
     char buffer[500];
     // prepare image
     time = _globalTime;
