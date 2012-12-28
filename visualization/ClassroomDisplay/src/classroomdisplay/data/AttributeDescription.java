@@ -1,7 +1,7 @@
 package classroomdisplay.data;
 
 public class AttributeDescription {
-	public enum eAttributeDisplayType { ATD_CENTER, ATD_RING };
+	public enum eAttributeDisplayType { ATD_CENTER, ATD_RING, ATD_SUBPART, ATD_COMBINED_ROSE };
 	
 	public String name;
 	public float minRange, maxRange;
