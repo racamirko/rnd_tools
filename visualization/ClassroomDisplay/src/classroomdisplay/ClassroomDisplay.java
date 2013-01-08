@@ -55,6 +55,7 @@ public class ClassroomDisplay extends PApplet {
 	  td.load("/home/raca/data/video_material/lecture02_12.10.17_aac117/questionnaire02_results/study02-hpl_class.csv");
 //	  td.load("/home/raca/data/video_material/lecture03_12.10.30_bc03/01_first_period/questionnaire_results/study03-pierre_class.csv");
 	  
+	  ////////////////	Additional attributes loading	////////////////
 	  AttributeLoader attribLoader = new AttributeLoader(this);
 	  AttributeDescription a1 = attribLoader.load("/home/raca/repo/raca-personal/trunk/data/video_material/filmsyncr_annotations/lecture_02/questionnaire02_results/postprocess_measurements/meOnWorld.csv",
 			  				"meOnWorld",td.data, td.dataDesc, AttributeDescription.eAttributeDisplayType.ATD_SUBPART);
@@ -67,6 +68,11 @@ public class ClassroomDisplay extends PApplet {
 	  roseAttrib.addSubAttribute(a2);
 	  roseAttrib.addSubAttribute(a3);
 	  td.dataDesc.addAttribute(roseAttrib);
+	  
+	  AttributeDescription a4 = attribLoader.load("/home/raca/data/video_material/lecture02_12.10.17_aac117/questionnaire02_results/postprocess_measurements/attDeltas.csv",
+ 			   "Attention deltas", td.data, td.dataDesc, AttributeDescription.eAttributeDisplayType.ATD_DELTA);
+	  td.dataDesc.addAttribute(a4);
+	  ////////////////	end of additional attributes	////////////////
 	  
 	  imgOkTick = loadImage("/home/raca/repo/rnd_tools/visualization/ClassroomDisplay/resources/ok_tick_20px.png");
 	  dataDesc = td.dataDesc;
@@ -152,26 +158,34 @@ public class ClassroomDisplay extends PApplet {
 	}
 	
 	public void mousePressed() {
-		// nothing more here
+		for( VisualItem vi : thingsToDraw ){
+			if( vi.mouseInside(mouseX, mouseY) ){
+				// highlighting problem
+//				VisualComposition curComp = vi.getComposition().clone();
+//				// is it already highlighted
+//				curComp.attributesToDisplay.add(new AttributeDescription(eAttributeDisplayType.ATD_HIGHLIGHT));
+//				break;
+				
+			}
+		}
 	}
 	
 	public void keyPressed(){
-		if( key == 'a' )
-			System.out.println("Bla");
 		if( key == BACKSPACE )
 			saveScreenShot();
 		if( key == CODED && keyCode == LEFT ){
-			if( visComp.series == 0 )
-				return;
+			if( visComp.series == 0 ){
+				visComp.series = 4;
+			}
 			visComp.series -= 1;
 			periodRadioBtn.activate(visComp.series);
 			for( VisualItem vi : thingsToDraw )
 				vi.setComposition(visComp);
-
 		}
 		if( key == CODED && keyCode == RIGHT ){
-			if( visComp.series == 3 )
-				return;
+			if( visComp.series == 3 ){
+				visComp.series = -1;
+			}
 			visComp.series += 1;
 			periodRadioBtn.activate(visComp.series);
 			for( VisualItem vi : thingsToDraw )

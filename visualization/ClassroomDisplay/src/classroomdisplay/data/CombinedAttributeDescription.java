@@ -15,4 +15,8 @@ public class CombinedAttributeDescription extends AttributeDescription {
 	public void addSubAttribute(AttributeDescription attrDesc){
 		subAttribs.add(attrDesc);
 	}
+	
+	public AttributeDescription getSubAttribute(int index){
+		return subAttribs.get(index);
+	}
 }

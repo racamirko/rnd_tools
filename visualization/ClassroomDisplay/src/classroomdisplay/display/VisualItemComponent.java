@@ -14,7 +14,6 @@ public class VisualItemComponent {
 	public Point2f position, size;
 	protected Point2f endPt, stepPt, endSize, stepSize;
 	
-
 	public VisualItemComponent(VisualItem parent, AttributeDescription attributeRepresented){
 		this.parent = parent;
 		this.attributeRepresented = attributeRepresented;

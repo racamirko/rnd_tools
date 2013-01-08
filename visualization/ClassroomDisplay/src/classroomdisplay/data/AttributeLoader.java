@@ -30,7 +30,8 @@ public class AttributeLoader {
 		}
 		AttributeDescription attrDesc = new AttributeDescription();
 		attrDesc.name = attributeName;
-		attrDesc.color = pa.color(rnd.nextInt(255),rnd.nextInt(255),rnd.nextInt(255));
+		attrDesc.displayType = displayType;
+		attrDesc.color = pa.color(30+rnd.nextInt(190),40+rnd.nextInt(180),60+rnd.nextInt(160));
 		while( scanner.hasNextLine() ){
 			String tmpStr = scanner.nextLine();
 			if(tmpStr.length() == 0)
