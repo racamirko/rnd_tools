@@ -1,4 +1,4 @@
-package classroomdisplay.display;
+package classroomdisplay.display.layer;
 
 import java.util.Random;
 import java.util.Vector;

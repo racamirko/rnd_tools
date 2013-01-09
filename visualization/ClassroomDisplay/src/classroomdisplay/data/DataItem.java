@@ -10,6 +10,7 @@ public class DataItem {
 	protected HashMap<String, Vector<Float>> attributes;
 	protected Set<String> fixedAttributesSet;
 	public float x, y; // representing row and seat
+	public int personId;
 	
 	public DataItem(){
 		attributes = new HashMap<String, Vector<Float>>();
@@ -17,6 +18,7 @@ public class DataItem {
 		fixedAttributesSet = new HashSet<String>();
 		x = 0;
 		y = 0;
+		personId = 0;
 	}
 	
 	public void addFixedAttribute(String name, float value){
@@ -44,5 +46,9 @@ public class DataItem {
 
 	public Vector<Float> getAttributeSeries(AttributeDescription attrDesc){
 		return attributes.get(attrDesc.name);
+	}
+	
+	public int getId(){
+		return personId;
 	}
 }

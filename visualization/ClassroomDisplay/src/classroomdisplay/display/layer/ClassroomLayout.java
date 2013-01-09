@@ -1,4 +1,4 @@
-package classroomdisplay.display;
+package classroomdisplay.display.layer;
 
 import processing.core.PApplet;
 import classroomdisplay.data.Point2f;

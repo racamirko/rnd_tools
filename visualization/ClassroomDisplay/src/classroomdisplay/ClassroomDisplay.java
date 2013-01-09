@@ -17,11 +17,12 @@ import classroomdisplay.data.CombinedAttributeDescription;
 import classroomdisplay.data.DataDescription;
 import classroomdisplay.data.DataItem;
 import classroomdisplay.data.Point2f;
-import classroomdisplay.display.ClassroomLayout;
-import classroomdisplay.display.DotsLayer;
-import classroomdisplay.display.Layer;
 import classroomdisplay.display.item.VisualComposition;
 import classroomdisplay.display.item.VisualItem;
+import classroomdisplay.display.layer.ClassroomLayout;
+import classroomdisplay.display.layer.DotsLayer;
+import classroomdisplay.display.layer.Layer;
+import classroomdisplay.display.layer.MotionSyncLayer;
 import classroomdisplay.loaders.CSVDataLoaderExperiment1;
 import classroomdisplay.loaders.CSVDataLoaderExperiment2;
 
@@ -37,6 +38,7 @@ public class ClassroomDisplay extends PApplet {
 	protected Vector<Layer> layers;
 	
 	protected DotsLayer dotsLayer;
+	protected MotionSyncLayer connectionsLayer;
 	
 	protected PImage imgOkTick;
 	protected Vector<Point2f> okTicksLocations;
@@ -55,39 +57,41 @@ public class ClassroomDisplay extends PApplet {
 	  rnd = new Random(System.currentTimeMillis());
 //	  TestDataGenerator td = new TestDataGenerator(this, 100);
 	  CSVDataLoaderExperiment2 td = new CSVDataLoaderExperiment2(this);
-	  td.load("/home/raca/data/video_material/lecture02_12.10.17_aac117/questionnaire02_results/study02-hpl_class.csv");
-//	  td.load("/home/raca/data/video_material/lecture03_12.10.30_bc03/01_first_period/questionnaire_results/study03-pierre_class.csv");
+//	  td.load("/home/raca/data/video_material/lecture02_12.10.17_aac117/questionnaire02_results/study02-hpl_class.csv");
+	  td.load("/home/raca/data/video_material/lecture03_12.10.30_bc03/01_first_period/questionnaire_results/study03-pierre_class.csv");
 	  
 	  ////////////////	Additional attributes loading	////////////////
-	  AttributeLoader attribLoader = new AttributeLoader(this);
-	  AttributeDescription a1 = attribLoader.load("/home/raca/repo/raca-personal/trunk/data/video_material/filmsyncr_annotations/lecture_02/questionnaire02_results/postprocess_measurements/meOnWorld.csv",
-			  				"meOnWorld",td.data, td.dataDesc, AttributeDescription.eAttributeDisplayType.ATD_SUBPART);
-	  AttributeDescription a2 = attribLoader.load("/home/raca/repo/raca-personal/trunk/data/video_material/filmsyncr_annotations/lecture_02/questionnaire02_results/postprocess_measurements/relAttention.csv",
-			  			   "relativeAttention", td.data, td.dataDesc, AttributeDescription.eAttributeDisplayType.ATD_SUBPART);
-	  AttributeDescription a3 = attribLoader.load("/home/raca/repo/raca-personal/trunk/data/video_material/filmsyncr_annotations/lecture_02/questionnaire02_results/postprocess_measurements/worldOnMe.csv",
-			  			   "worldOnMe", td.data, td.dataDesc, AttributeDescription.eAttributeDisplayType.ATD_SUBPART);
-	  CombinedAttributeDescription roseAttrib = new CombinedAttributeDescription("Relative attention", eAttributeDisplayType.ATD_COMBINED_ROSE, color(255,77,77), true);
-	  roseAttrib.addSubAttribute(a1);
-	  roseAttrib.addSubAttribute(a2);
-	  roseAttrib.addSubAttribute(a3);
-	  td.dataDesc.addAttribute(roseAttrib);
-	  
-	  AttributeDescription a4 = attribLoader.load("/home/raca/data/video_material/lecture02_12.10.17_aac117/questionnaire02_results/postprocess_measurements/attDeltas.csv",
- 			   "Attention deltas", td.data, td.dataDesc, AttributeDescription.eAttributeDisplayType.ATD_DELTA);
-	  td.dataDesc.addAttribute(a4);
+//	  AttributeLoader attribLoader = new AttributeLoader(this);
+//	  AttributeDescription a1 = attribLoader.load("/home/raca/repo/raca-personal/trunk/data/video_material/filmsyncr_annotations/lecture_02/questionnaire02_results/postprocess_measurements/meOnWorld.csv",
+//			  				"meOnWorld",td.data, td.dataDesc, AttributeDescription.eAttributeDisplayType.ATD_SUBPART);
+//	  AttributeDescription a2 = attribLoader.load("/home/raca/repo/raca-personal/trunk/data/video_material/filmsyncr_annotations/lecture_02/questionnaire02_results/postprocess_measurements/relAttention.csv",
+//			  			   "relativeAttention", td.data, td.dataDesc, AttributeDescription.eAttributeDisplayType.ATD_SUBPART);
+//	  AttributeDescription a3 = attribLoader.load("/home/raca/repo/raca-personal/trunk/data/video_material/filmsyncr_annotations/lecture_02/questionnaire02_results/postprocess_measurements/worldOnMe.csv",
+//			  			   "worldOnMe", td.data, td.dataDesc, AttributeDescription.eAttributeDisplayType.ATD_SUBPART);
+//	  CombinedAttributeDescription roseAttrib = new CombinedAttributeDescription("Relative attention", eAttributeDisplayType.ATD_COMBINED_ROSE, color(255,77,77), true);
+//	  roseAttrib.addSubAttribute(a1);
+//	  roseAttrib.addSubAttribute(a2);
+//	  roseAttrib.addSubAttribute(a3);
+//	  td.dataDesc.addAttribute(roseAttrib);
+//	  
+//	  AttributeDescription a4 = attribLoader.load("/home/raca/data/video_material/lecture02_12.10.17_aac117/questionnaire02_results/postprocess_measurements/attDeltas.csv",
+// 			   "Attention deltas", td.data, td.dataDesc, AttributeDescription.eAttributeDisplayType.ATD_DELTA);
+//	  td.dataDesc.addAttribute(a4);
 	  ////////////////	end of additional attributes	////////////////
+	  
+	  
 	  
 	  imgOkTick = loadImage("/home/raca/repo/rnd_tools/visualization/ClassroomDisplay/resources/ok_tick_20px.png");
 	  dataDesc = td.dataDesc;
 	  data = td.data;
 
 //	  AAC117 layout	  
-	  int[] corridorsSpaces = {4, 10};
-	  layout = new ClassroomLayout(this, 14, 6, corridorsSpaces, 1200, 450, 50.0f, 80.0f);
+//	  int[] corridorsSpaces = {4, 10};
+//	  layout = new ClassroomLayout(this, 14, 6, corridorsSpaces, 1200, 450, 50.0f, 80.0f);
 	  
 //		BC01 layout
-//	  int[] corridorsSpaces = {6};
-//	  layout = new ClassroomLayout(this, 10, 4, corridorsSpaces, 1200, 450, 50.0f, 80.0f);
+	  int[] corridorsSpaces = {6};
+	  layout = new ClassroomLayout(this, 10, 4, corridorsSpaces, 1200, 450, 50.0f, 80.0f);
 	  
 	  
 	  generateVisualItems();
@@ -107,9 +111,16 @@ public class ClassroomDisplay extends PApplet {
 		dotsLayer = new DotsLayer(this);
 		dotsLayer.initialize(data, visComp, layout);
 		
+		// graphs
+		connectionsLayer = new MotionSyncLayer(this);
+//		connectionsLayer.loadData("/home/raca/data/video_material/lecture02_12.10.17_aac117/motion_metrics/motion_correl_matlab.txt");
+		connectionsLayer.loadData("/home/raca/data/video_material/lecture03_12.10.30_bc03/01_first_period/motion_metrics/motion_correl_matlab.txt");
+		connectionsLayer.readPositions(data, layout);
+		
 		layers = new Vector<Layer>();
 		layers.add(layout);
 		layers.add(dotsLayer);
+		layers.add(connectionsLayer);
 	}
 	
 	private void setupControls(){
@@ -158,8 +169,13 @@ public class ClassroomDisplay extends PApplet {
 	}
 	
 	public void mousePressed() {
-		VisualItem clickedItem =  dotsLayer.getItemAt(mouseX, mouseY);
-		// TODO finish this
+		if( mouseButton == LEFT ){
+			VisualItem clickedItem =  dotsLayer.getItemAt(mouseX, mouseY);
+			if( clickedItem != null )
+				connectionsLayer.setActive(clickedItem);
+			else
+				connectionsLayer.clearDisplay();
+		}
 	}
 	
 	public void keyPressed(){

@@ -52,6 +52,7 @@ public class CSVDataLoaderExperiment2 {
 			
 			DataItem di = new DataItem();
 			// static information
+			di.personId = Integer.valueOf(fields[0]);
 			if( fields[1].equals("m") )
 				di.addFixedAttribute("Gender", 1.0f);
 			else
