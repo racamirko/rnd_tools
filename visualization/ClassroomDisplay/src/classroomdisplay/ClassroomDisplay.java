@@ -18,6 +18,7 @@ import classroomdisplay.data.DataDescription;
 import classroomdisplay.data.DataItem;
 import classroomdisplay.data.Point2f;
 import classroomdisplay.display.ClassroomLayout;
+import classroomdisplay.display.DotsLayer;
 import classroomdisplay.display.VisualComposition;
 import classroomdisplay.display.VisualItem;
 import classroomdisplay.loaders.CSVDataLoaderExperiment1;
@@ -28,12 +29,12 @@ import processing.core.*;
 
 public class ClassroomDisplay extends PApplet {
 	private static final long serialVersionUID = 8767955545276677628L;
-	Vector<VisualItem> thingsToDraw;
 	protected DataDescription dataDesc;
 	protected Vector<DataItem> data;
 	protected Random rnd;
 	protected ClassroomLayout layout;
-	VisualComposition visComp;
+	
+	protected DotsLayer dotsLayer;
 	
 	protected PImage imgOkTick;
 	protected Vector<Point2f> okTicksLocations;
@@ -87,9 +88,6 @@ public class ClassroomDisplay extends PApplet {
 //	  layout = new ClassroomLayout(this, 10, 4, corridorsSpaces, 1200, 450, 50.0f, 80.0f);
 	  
 	  
-	  visComp = new VisualComposition();
-	  visComp.attributesToDisplay.add(dataDesc.getAttrbDesc( dataDesc.attrsCenter.get( rnd.nextInt( dataDesc.attrsCenter.size() ))));
-	  visComp.series = 0;
 	  generateVisualItems();
 	  okTicksLocations = new Vector<Point2f>();
 	  
@@ -100,14 +98,12 @@ public class ClassroomDisplay extends PApplet {
 	}
 
 	private void generateVisualItems() {
-		thingsToDraw = new Vector<VisualItem>();
-		VisualItem tmpItem = null;
-		for( DataItem di : data ){
-			tmpItem = new VisualItem(this, di, new Point2f(670,330));
-			tmpItem.setPosition(layout.getCoordinateForSeat(di.x, di.y), 20+rnd.nextInt(80)); // instant layout
-			tmpItem.setComposition(visComp);
-			thingsToDraw.add(tmpItem);
-		}
+		VisualComposition visComp = new VisualComposition();
+		visComp.attributesToDisplay.add(dataDesc.getAttrbDesc( dataDesc.attrsCenter.get( rnd.nextInt( dataDesc.attrsCenter.size() ))));
+		visComp.series = 0;
+
+		dotsLayer = new DotsLayer(this);
+		dotsLayer.initialize(data, visComp, layout);
 	}
 	
 	private void setupControls(){
@@ -144,9 +140,8 @@ public class ClassroomDisplay extends PApplet {
 	  clearCanvas();
 	  
 	  layout.draw();
-	  
-	  for( VisualItem vi : thingsToDraw)
-		  vi.draw();
+
+	  dotsLayer.draw();
 
 	  ctrls.draw();
 	  drawTicks();
@@ -158,29 +153,21 @@ public class ClassroomDisplay extends PApplet {
 	}
 	
 	public void mousePressed() {
-		for( VisualItem vi : thingsToDraw ){
-			if( vi.mouseInside(mouseX, mouseY) ){
-				// highlighting problem
-//				VisualComposition curComp = vi.getComposition().clone();
-//				// is it already highlighted
-//				curComp.attributesToDisplay.add(new AttributeDescription(eAttributeDisplayType.ATD_HIGHLIGHT));
-//				break;
-				
-			}
-		}
+		VisualItem clickedItem =  dotsLayer.getItemAt(mouseX, mouseY);
+		// TODO finish this
 	}
 	
 	public void keyPressed(){
 		if( key == BACKSPACE )
 			saveScreenShot();
+		VisualComposition visComp = dotsLayer.getComposition();
 		if( key == CODED && keyCode == LEFT ){
 			if( visComp.series == 0 ){
 				visComp.series = 4;
 			}
 			visComp.series -= 1;
 			periodRadioBtn.activate(visComp.series);
-			for( VisualItem vi : thingsToDraw )
-				vi.setComposition(visComp);
+			dotsLayer.setComposition(visComp);
 		}
 		if( key == CODED && keyCode == RIGHT ){
 			if( visComp.series == 3 ){
@@ -188,8 +175,7 @@ public class ClassroomDisplay extends PApplet {
 			}
 			visComp.series += 1;
 			periodRadioBtn.activate(visComp.series);
-			for( VisualItem vi : thingsToDraw )
-				vi.setComposition(visComp);
+			dotsLayer.setComposition(visComp);
 		}
 	}
 	
@@ -225,21 +211,22 @@ public class ClassroomDisplay extends PApplet {
 			System.out.println("Theres been a problem");
 			return;
 		}
+		VisualComposition visComp = dotsLayer.getComposition();
+		
 		if( visComp.attributesToDisplay.contains(selectedDesc) )
 			visComp.attributesToDisplay.remove(selectedDesc);
 		else 
 			visComp.attributesToDisplay.add(selectedDesc);
 		// update
-		for( VisualItem vi : thingsToDraw )
-			vi.setComposition(visComp);
+		dotsLayer.setComposition(visComp);
 		// update ticks
 		updateTicks();
 	}
 	
 	private void changePeriod(ControlEvent theEvent) {
+		VisualComposition visComp = dotsLayer.getComposition();
 		visComp.series = (int) theEvent.getValue();
-		for( VisualItem vi : thingsToDraw )
-			vi.setComposition(visComp);
+		dotsLayer.setComposition(visComp);
 	}
 
 	public void drawTicks(){
@@ -251,6 +238,7 @@ public class ClassroomDisplay extends PApplet {
 	public void updateTicks(){
 		int counter = 0;   
 		okTicksLocations.clear();
+		VisualComposition visComp = dotsLayer.getComposition();
 		for( AttributeDescription attr : dataDesc.attribDescriptions.values() ){
 			if( visComp.attributesToDisplay.contains(attr) ){
 				okTicksLocations.add(new Point2f(offsetLegend.x + (float)( Math.floor(counter / numColumnsLegend )*shiftLegend.x )-22,
