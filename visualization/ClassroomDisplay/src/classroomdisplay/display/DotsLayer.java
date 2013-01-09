@@ -5,6 +5,8 @@ import java.util.Vector;
 
 import classroomdisplay.data.DataItem;
 import classroomdisplay.data.Point2f;
+import classroomdisplay.display.item.VisualComposition;
+import classroomdisplay.display.item.VisualItem;
 
 import processing.core.PApplet;
 

@@ -19,8 +19,9 @@ import classroomdisplay.data.DataItem;
 import classroomdisplay.data.Point2f;
 import classroomdisplay.display.ClassroomLayout;
 import classroomdisplay.display.DotsLayer;
-import classroomdisplay.display.VisualComposition;
-import classroomdisplay.display.VisualItem;
+import classroomdisplay.display.Layer;
+import classroomdisplay.display.item.VisualComposition;
+import classroomdisplay.display.item.VisualItem;
 import classroomdisplay.loaders.CSVDataLoaderExperiment1;
 import classroomdisplay.loaders.CSVDataLoaderExperiment2;
 
@@ -33,6 +34,7 @@ public class ClassroomDisplay extends PApplet {
 	protected Vector<DataItem> data;
 	protected Random rnd;
 	protected ClassroomLayout layout;
+	protected Vector<Layer> layers;
 	
 	protected DotsLayer dotsLayer;
 	
@@ -104,6 +106,10 @@ public class ClassroomDisplay extends PApplet {
 
 		dotsLayer = new DotsLayer(this);
 		dotsLayer.initialize(data, visComp, layout);
+		
+		layers = new Vector<Layer>();
+		layers.add(layout);
+		layers.add(dotsLayer);
 	}
 	
 	private void setupControls(){
@@ -138,10 +144,9 @@ public class ClassroomDisplay extends PApplet {
 
 	public void draw() {
 	  clearCanvas();
-	  
-	  layout.draw();
 
-	  dotsLayer.draw();
+	  for( Layer layer : layers )
+		  layer.draw();
 
 	  ctrls.draw();
 	  drawTicks();
@@ -236,7 +241,7 @@ public class ClassroomDisplay extends PApplet {
 	}
 	
 	public void updateTicks(){
-		int counter = 0;   
+		int counter = 0;
 		okTicksLocations.clear();
 		VisualComposition visComp = dotsLayer.getComposition();
 		for( AttributeDescription attr : dataDesc.attribDescriptions.values() ){

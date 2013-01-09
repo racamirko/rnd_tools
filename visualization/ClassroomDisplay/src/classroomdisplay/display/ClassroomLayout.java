@@ -3,7 +3,7 @@ package classroomdisplay.display;
 import processing.core.PApplet;
 import classroomdisplay.data.Point2f;
 
-public class ClassroomLayout {
+public class ClassroomLayout implements Layer {
 
 	PApplet p;
 	protected int seats, rows;

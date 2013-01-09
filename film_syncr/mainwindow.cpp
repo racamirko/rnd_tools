@@ -413,15 +413,15 @@ void MainWindow::slot_updateTimeLabels(){
 qint64 MainWindow::getGlobalTime(){
     // find valid trackers and get a mean time to minimize error in missing ticks
     qint64 timeEst = 0, numOfCams = 0;
-    if( ui->videoPlayer1->currentTime() < ui->videoPlayer1->totalTime() ){
+    if( ui->videoPlayer1->currentTime() < ui->videoPlayer1->totalTime() && ui->chkPlay1->isChecked() ){
         timeEst += (ui->videoPlayer1->currentTime() - sessParams.zeroOffset1);
         ++numOfCams;
     }
-    if( ui->videoPlayer2->currentTime() < ui->videoPlayer2->totalTime() ){
+    if( ui->videoPlayer2->currentTime() < ui->videoPlayer2->totalTime() && ui->chkPlay2->isChecked() ){
         timeEst += (ui->videoPlayer2->currentTime() - sessParams.zeroOffset2);
         ++numOfCams;
     }
-    if( ui->videoPlayer3->currentTime() < ui->videoPlayer3->totalTime() ){
+    if( ui->videoPlayer3->currentTime() < ui->videoPlayer3->totalTime() && ui->chkPlay3->isChecked() ){
         timeEst += (ui->videoPlayer3->currentTime() - sessParams.zeroOffset3);
         ++numOfCams;
     }
