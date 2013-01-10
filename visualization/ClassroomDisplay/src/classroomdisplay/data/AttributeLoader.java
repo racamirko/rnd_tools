@@ -19,7 +19,7 @@ public class AttributeLoader {
 		rnd = new Random(d.getTime());
 	}
 	
-	public AttributeDescription load(String filename, String attributeName, Vector<DataItem> items, DataDescription dataDesc, AttributeDescription.eAttributeDisplayType displayType ){
+	public AttributeDescription load(String filename, Vector<DataItem> items, DataDescription dataDesc, AttributeDescription.eAttributeDisplayType displayType ){
 		// for Attribute description
 		Scanner scanner;
 		try {
@@ -29,7 +29,8 @@ public class AttributeLoader {
 			return null;
 		}
 		AttributeDescription attrDesc = new AttributeDescription();
-		attrDesc.name = attributeName;
+		boolean timeVariant = true;
+		attrDesc.name = "";
 		attrDesc.displayType = displayType;
 		attrDesc.color = pa.color(30+rnd.nextInt(190),40+rnd.nextInt(180),60+rnd.nextInt(160));
 		while( scanner.hasNextLine() ){
@@ -45,6 +46,16 @@ public class AttributeLoader {
 				attrDesc.maxRange = Float.parseFloat(parts[1].trim());
 				continue;
 			}
+			if( parts[0].equals("name") ){
+				attrDesc.name = parts[1].trim();
+				continue;
+			}
+			if( parts[0].equals("time-variable") ){
+				if( parts[1].trim().equalsIgnoreCase("false") )
+					timeVariant = false;
+				continue;
+			}
+			
 		}
 		// for data attributes addition
 		while( scanner.hasNextLine() ){
@@ -56,7 +67,7 @@ public class AttributeLoader {
 			// find person
 			DataItem curItem = null;
 			for( DataItem item : items ){
-				if( item.x == seat && item.y == row ){
+				if( item.getId() == id ){
 					curItem = item;
 					break;
 				}
@@ -69,7 +80,10 @@ public class AttributeLoader {
 			// make attribute and append
 			for( int i = 3; i < parts.length; ++i ){
 				float value = Float.parseFloat(parts[i]);
-				curItem.addTimeAttribute(attributeName, i-3, value);
+				if( timeVariant )
+					curItem.addTimeAttribute(attrDesc.name, i-3, value);
+				else
+					curItem.addFixedAttribute(attrDesc.name, value);
 			}
 		}
 		scanner.close();
