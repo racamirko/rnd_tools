@@ -18,11 +18,10 @@ public class MotionSyncLayer implements Layer {
 	protected Map<Integer, Point2f> personId2Location;
 	protected Map<Integer, Connections> data;
 	protected PApplet pa;
-	protected float correlLimit;
 	protected eDisplaySyncMode displayMode;
 	protected float maxLineWidth;
 	
-	protected int colorSynced, colorDesynced;
+	protected int colorPosSynced, colorNegSynced, colorDesynced;
 	
 	protected Vector<Line> itemsToDraw;
 	
@@ -31,11 +30,11 @@ public class MotionSyncLayer implements Layer {
 		itemsToDraw = new Vector<Line>();
 		personId2Location = new HashMap<Integer, Point2f>();
 		data = new HashMap<Integer, MotionSyncLayer.Connections>();
-		correlLimit = 0.05f;
 		displayMode = eDisplaySyncMode.DSM_ALL;
 		// generate colors
-		colorSynced = pa.color(36, 95, 203, 128.0f);
-		colorDesynced = pa.color(241, 80, 80, 128.0f);
+		colorPosSynced = pa.color(36, 95, 203, 128.0f);
+		colorNegSynced = pa.color(241, 80, 80, 128.0f);
+		colorDesynced = pa.color(80, 80, 80, 128.0f);
 		maxLineWidth = 6.0f;
 	}
 	
@@ -70,7 +69,7 @@ public class MotionSyncLayer implements Layer {
 		
 		int personId = 0;
 		Connections conns = null;
-		eReadingMode mode = eReadingMode.RM_PERSON; 
+		eReadingMode mode = eReadingMode.RM_PERSON;
 		while( scanner.hasNextLine() ){
 			String tmpStr = scanner.nextLine();
 			
@@ -84,13 +83,30 @@ public class MotionSyncLayer implements Layer {
 				continue;
 			}
 			
-			if( mode == eReadingMode.RM_SYNCED ){
-				String[] parts = tmpStr.split("; ");
-				for( String part : parts ){
-					if( part.length() == 0 )
-						continue;
-					int separator = part.indexOf(":");
-					conns.correlation.put( Integer.valueOf(part.substring(0, separator)), Float.valueOf(part.substring(separator+1)));
+			if( mode == eReadingMode.RM_SYNCED_POS ){
+				if( tmpStr.charAt(0) != '-' ){
+					String[] parts = tmpStr.split("; ");
+					for( String part : parts ){
+						if( part.length() == 0 )
+							continue;
+						int separator = part.indexOf(":");
+						conns.correlation.put( Integer.valueOf(part.substring(0, separator)), Float.valueOf(part.substring(separator+1)));
+					}
+				}
+				mode = eReadingMode.RM_SYNCED_NEG;
+				scanner.nextLine(); // to skip 1 line
+				continue;
+			}
+			
+			if( mode == eReadingMode.RM_SYNCED_NEG ){
+				if( tmpStr.charAt(0) != '-' ){
+					String[] parts = tmpStr.split("; ");
+					for( String part : parts ){
+						if( part.length() == 0 )
+							continue;
+						int separator = part.indexOf(":");
+						conns.correlation.put( Integer.valueOf(part.substring(0, separator)), Float.valueOf(part.substring(separator+1)));
+					}
 				}
 				mode = eReadingMode.RM_DESYNCED;
 				scanner.nextLine(); // to skip 1 line
@@ -98,21 +114,25 @@ public class MotionSyncLayer implements Layer {
 			}
 			
 			if( mode == eReadingMode.RM_DESYNCED ){
-				String[] parts = tmpStr.split("; ");
-				for( String part : parts ){
-					if( part.length() == 0 )
-						continue;
-					int separator = part.indexOf(":");
-					conns.correlation.put( Integer.valueOf(part.substring(0, separator)), Float.valueOf(part.substring(separator+1)));
+				if( tmpStr.charAt(0) != '-' ){
+					String[] parts = tmpStr.split("; ");
+					for( String part : parts ){
+						if( part.length() == 0 )
+							continue;
+						int separator = part.indexOf(":");
+						conns.notCorrelated.add(Integer.valueOf(part.substring(0, separator)));
+					}
 				}
-				mode = eReadingMode.RM_DESYNCED;
+				mode = eReadingMode.RM_PERSON;
+				continue;
 			}
 			
 			int loc = tmpStr.indexOf("Person");
 			if( loc != -1 ){
 				personId = Integer.parseInt(tmpStr.substring(loc+7, loc+9).trim()); // i'm expecting less then 100 students
 				conns = new Connections();
-				mode = eReadingMode.RM_SYNCED;
+				mode = eReadingMode.RM_SYNCED_POS;
+				scanner.nextLine(); // to skip 1 line
 			}
 		}
 		// insert last person
@@ -123,7 +143,7 @@ public class MotionSyncLayer implements Layer {
 	public void setActive( int personId ){
 		itemsToDraw.clear();
 		if( displayMode != eDisplaySyncMode.DSM_ALL_SYNCED_TO_ME ) {
-			// synced
+			// positive correlation
 			Connections connects = data.get(personId);
 			if( connects == null )
 				return;
@@ -131,17 +151,18 @@ public class MotionSyncLayer implements Layer {
 				Iterator<Map.Entry<Integer, Float>> iter = connects.correlation.entrySet().iterator();
 				while( iter.hasNext() ){
 					Map.Entry<Integer, Float> pair = iter.next();
-					if( pair.getValue() < correlLimit )
-						addLine(personId, pair.getKey(), colorSynced, pair.getValue());
+					if( pair.getValue() > 0.0 )
+						addLine(personId, pair.getKey(), colorPosSynced, (float) Math.pow( pair.getValue(), 0.5));
+					else
+						addLine(personId, pair.getKey(), colorNegSynced, (float) Math.pow( pair.getValue(), 0.5));
 				}
 			}
-			// desynced
+			// desync
 			if( displayMode == eDisplaySyncMode.DSM_ALL || displayMode == eDisplaySyncMode.DSM_NONSYNC ){
-				Iterator<Map.Entry<Integer, Float>> iter = connects.correlation.entrySet().iterator();
+				Iterator<Integer> iter = connects.notCorrelated.iterator();
 				while( iter.hasNext() ){
-					Map.Entry<Integer, Float> pair = iter.next();
-					if( pair.getValue() >= correlLimit )
-						addLine(personId, pair.getKey(), colorDesynced, pair.getValue());
+					Integer otherPersonId = iter.next();
+					addLine(personId, otherPersonId, colorDesynced, 0.2f); // fixed width
 				}
 			}
 		} else {
@@ -160,10 +181,10 @@ public class MotionSyncLayer implements Layer {
 		tmpLine.x1 = pt1.x; tmpLine.y1 = pt1.y;
 		tmpLine.x2 = pt2.x; tmpLine.y2 = pt2.y;
 		tmpLine.color = color;
-		if( corrVal < correlLimit ){
-			tmpLine.width = Math.abs(corrVal-correlLimit)/correlLimit*6.0f;
+		if( corrVal < 0.0f ){
+			tmpLine.width = Math.abs(corrVal)*6.0f;
 		} else {
-			tmpLine.width = Math.abs(corrVal-correlLimit)/(1.0f-correlLimit)*6.0f;
+			tmpLine.width = corrVal*6.0f;
 		}
 		tmpLine.width = Math.max(tmpLine.width, 1.0f);
 		itemsToDraw.add(tmpLine);
@@ -172,13 +193,15 @@ public class MotionSyncLayer implements Layer {
 	//// Helper classes
 	
 	public enum eDisplaySyncMode { DSM_ALL, DSM_SYNC, DSM_NONSYNC, DSM_ALL_SYNCED_TO_ME };
-	protected enum eReadingMode{ RM_PERSON, RM_SYNCED, RM_DESYNCED};
+	protected enum eReadingMode{ RM_PERSON, RM_SYNCED_POS, RM_SYNCED_NEG, RM_DESYNCED};
 
 	public class Connections {
 		public Map<Integer, Float> correlation;
+		public Vector<Integer> notCorrelated;
 		
 		public Connections(){
 			correlation = new HashMap<Integer, Float>();
+			notCorrelated = new Vector<Integer>();
 		}
 	}
 	
