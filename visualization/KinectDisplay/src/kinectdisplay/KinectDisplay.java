@@ -1,12 +1,19 @@
 package kinectdisplay;
 
+import java.io.FileNotFoundException;
 import java.util.Vector;
 
 import kinectdisplay.elements.GroundPlane;
 import kinectdisplay.elements.Rapper;
 import kinectdisplay.elements.Sphere;
+import kinectdisplay.elements.Viewpoint;
+
+import animation.IAnimator;
+import animation.Animator;
 
 import com.jogamp.graph.math.Quaternion;
+
+import data.DataReader;
 
 import processing.core.PApplet;
 import processing.core.PVector;
@@ -19,29 +26,52 @@ public class KinectDisplay extends PApplet {
 	protected float lastMouseX, lastMouseY;
 	protected float wndSize[];
 	protected Vector<IDrawable> drawables;
+	protected Vector<IAnimator> animators;
+	protected String fnCameraFile;
+	protected int lastTime;
+	
+	// needed objects in the scene
+	GraphicalNode viewptNode;
 
 	public void setup() {
 		// window
 		wndSize = new float[2];
 		wndSize[0] = 1240.0f; wndSize[1] = 880.0f;
 		size((int)wndSize[0], (int)wndSize[1], P3D);
-		rot = new Quaternion(0.0f,0.0f,PI,1.0f);
-		trans = new PVector(631.0f,538.0f,500.0f);
+		rot = new Quaternion(-PI/8.0f,-PI/6.0f,PI,1.0f);
+		trans = new PVector(631.0f,538.0f,300.0f);
 		// perspective
 		float fov = (float) (PI/3.5);
 		float cameraZ = (float) ((height/2.0) / tan(fov/2.0f));
-		perspective(fov, (float)(width/height), cameraZ/10.0f, cameraZ*100.0f);
+		fnCameraFile = "/home/raca/data/eyetracking/01_test_exp/coords/camera_position_normal.txt";
+//		perspective(fov, (float)(width/height), cameraZ/10.0f, cameraZ*10000.0f);
+		perspective(fov, (float)(width/height), 1.0f, 10000.0f);
 		drawables = new Vector<IDrawable>();
+		animators = new Vector<IAnimator>();
+		lastTime = millis();
+		// object setup
 		setupObjects();
+		setupLife();
 	}
 	
 	protected void setupObjects(){
 		drawables.add(new Rapper(this));
 		drawables.add(new GraphicalNode(this, new Sphere(this, 8.0f)).translate(new PVector(50.0f, 150.0f, 0.0f)) );
 		drawables.add(new GraphicalNode(this, new GroundPlane(this, 350.0f)));
+		viewptNode = new GraphicalNode(this, new Viewpoint(this)).translate(new PVector(-50.0f, 100.0f, 0.0f));
+		drawables.add(viewptNode);
+	}
+	
+	public void setupLife(){
+		try {
+			animators.add(new Animator(viewptNode, new DataReader(fnCameraFile)));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void draw() {
+		life();
 		fill(200.0f);
 		rect(0.0f, 0.0f, wndSize[0], wndSize[1]);
 		drawOverlay();
@@ -56,6 +86,16 @@ public class KinectDisplay extends PApplet {
 
 //		rot.setY(rot.getY() + 0.01f);
 //		trans.setZ(trans.getZ()+1.5f);
+	}
+	
+	public void life(){
+		int currentTime = millis();
+		int timeDiff = currentTime - lastTime;
+		for( IAnimator ani : animators ){
+			ani.tick(timeDiff);
+		}
+		
+		lastTime = currentTime;
 	}
 	
 	public void drawOverlay(){
