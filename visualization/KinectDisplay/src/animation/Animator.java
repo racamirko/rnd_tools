@@ -60,16 +60,28 @@ public class Animator implements IAnimator {
 					break;
 					// _ABS values set the value absolutely
 				case ANI_TRANSX_ABS:
+					curTrans.x = curVal;
+					node.setLocation(curTrans);
 					break;
 				case ANI_TRANSY_ABS:
+					curTrans.y = curVal;
+					node.setLocation(curTrans);
 					break;
 				case ANI_TRANSZ_ABS:
+					curTrans.z = curVal;
+					node.setLocation(curTrans);
 					break;
 				case ANI_ROTX_ABS:
+					curRot.setX(curVal);
+					node.setRotation(curRot);
 					break;
 				case ANI_ROTY_ABS:
+					curRot.setY(curVal);
+					node.setRotation(curRot);
 					break;
 				case ANI_ROTZ_ABS:
+					curRot.setZ(curVal);
+					node.setRotation(curRot);
 					break;
 			}
 		}
