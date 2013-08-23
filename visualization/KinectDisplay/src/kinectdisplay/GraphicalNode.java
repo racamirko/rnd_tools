@@ -88,5 +88,14 @@ public class GraphicalNode implements IDrawable {
 		rot.setZ(rot.getZ() + angleRad);
 		return this;
 	}
-
+	
+	public Quaternion getRotation(){
+		return rot;
+	}
+	
+	public void setRotation(Quaternion q){
+		rot = q;
+	}
+		
+	
 }

@@ -44,7 +44,7 @@ public class KinectDisplay extends PApplet {
 	public void draw() {
 		fill(200.0f);
 		rect(0.0f, 0.0f, wndSize[0], wndSize[1]);
-//		drawOverlay();
+		drawOverlay();
 		lights();
 		translate(trans.x, trans.y, trans.z);
 		rotateX(rot.getX());
@@ -77,7 +77,7 @@ public class KinectDisplay extends PApplet {
 	public void mouseDragged(){
 		if( mouseButton == LEFT ){
 			rot.setY( rot.getY() + (mouseX-lastMouseX)*0.005f);
-			rot.setX( rot.getX() + (mouseY-lastMouseY)*0.005f);
+			rot.setX( rot.getX() - (mouseY-lastMouseY)*0.005f);
 		}
 		if( mouseButton == RIGHT ){
 			if( key == CODED && keyCode == SHIFT ){
