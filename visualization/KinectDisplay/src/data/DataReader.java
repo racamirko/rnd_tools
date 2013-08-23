@@ -32,13 +32,14 @@ public class DataReader implements IDataSource {
 		this.filename = filename;
 		// reasonable default values
 		tempo = 4; // 4 miliseconds == 25 fps
-		format = new enumManipulationAttrib[6]; //{ enumManipulationAttrib.ANI_ROTX };
-		format[0] = enumManipulationAttrib.ANI_ROTX_ABS;
-		format[1] = enumManipulationAttrib.ANI_ROTY_ABS;
-		format[2] = enumManipulationAttrib.ANI_ROTZ_ABS;
-		format[3] = enumManipulationAttrib.ANI_TRANSX_ABS;
-		format[4] = enumManipulationAttrib.ANI_TRANSY_ABS;
-		format[5] = enumManipulationAttrib.ANI_TRANSZ_ABS;
+		format = new enumManipulationAttrib[7]; //{ enumManipulationAttrib.ANI_ROTX };
+		format[0] = enumManipulationAttrib.ANI_IGNORE;
+		format[1] = enumManipulationAttrib.ANI_ROTX_ABS;
+		format[2] = enumManipulationAttrib.ANI_ROTY_ABS;
+		format[3] = enumManipulationAttrib.ANI_ROTZ_ABS;
+		format[4] = enumManipulationAttrib.ANI_TRANSX_ABS;
+		format[5] = enumManipulationAttrib.ANI_TRANSY_ABS;
+		format[6] = enumManipulationAttrib.ANI_TRANSZ_ABS;
 		// open the input
 		open(filename);
 	}
@@ -49,14 +50,15 @@ public class DataReader implements IDataSource {
 
 	@Override
 	public void getNextValue(Vector<Float> values) {
+		values.clear();
 		if( dataScanner == null ){
-			values.clear();
 			throw new InvalidState("Input stream not opened.");
 		}
-		while( dataScanner.hasNextLine() ){
+		if( dataScanner.hasNextLine() ){
 			String tmpStr = dataScanner.nextLine();
-			if(tmpStr.length() == 0)
-				break;
+			if(tmpStr.length() == 0 || tmpStr.charAt(0) == '#'){
+				return;
+			}
 			String[] parts = tmpStr.split(",");
 			for( int i = 0; i < parts.length; i++ ){
 				values.add( Float.parseFloat(parts[i]) );

@@ -20,6 +20,7 @@ public class Animator implements IAnimator {
 		this.dataSrc = dataSrc;
 		this.attrib = dataSrc.getFormat();
 		this.tempo = dataSrc.getTempo();
+		passedTime = 0.0f;
 	}
 
 	@Override
@@ -30,6 +31,10 @@ public class Animator implements IAnimator {
 		}
 		Vector<Float> values = new Vector<Float>();
 		dataSrc.getNextValue(values);
+		if(values.isEmpty()){
+			passedTime = 0;
+			return;
+		}
 		// get initial values (in case of relative changes)
 		PVector curTrans = node.getLocation();
 		Quaternion curRot = node.getRotation();
@@ -83,9 +88,12 @@ public class Animator implements IAnimator {
 					curRot.setZ(curVal);
 					node.setRotation(curRot);
 					break;
+				case ANI_IGNORE:
+					// yup, do abs nothing
+					break;
 			}
 		}
-		passedTime = 0;
+		this.passedTime = 0;
 	}
 
 }

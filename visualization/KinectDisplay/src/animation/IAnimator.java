@@ -18,7 +18,9 @@ public interface IAnimator {
 		// normal values show the increment of change
 		ANI_TRANSX, ANI_TRANSY, ANI_TRANSZ, ANI_ROTX, ANI_ROTY, ANI_ROTZ,
 		// _ABS values set the value absolutely
-		ANI_TRANSX_ABS, ANI_TRANSY_ABS, ANI_TRANSZ_ABS, ANI_ROTX_ABS, ANI_ROTY_ABS, ANI_ROTZ_ABS
+		ANI_TRANSX_ABS, ANI_TRANSY_ABS, ANI_TRANSZ_ABS, ANI_ROTX_ABS, ANI_ROTY_ABS, ANI_ROTZ_ABS,
+		// dummy
+		ANI_IGNORE
 	};
 	
 	/**
