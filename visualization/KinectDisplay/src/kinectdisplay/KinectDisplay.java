@@ -3,6 +3,8 @@ package kinectdisplay;
 import java.io.FileNotFoundException;
 import java.util.Vector;
 
+import com.jogamp.opengl.math.Quaternion;
+
 import kinectdisplay.elements.GroundPlane;
 import kinectdisplay.elements.Rapper;
 import kinectdisplay.elements.Sphere;
@@ -11,7 +13,6 @@ import kinectdisplay.elements.Viewpoint;
 import animation.IAnimator;
 import animation.Animator;
 
-import com.jogamp.graph.math.Quaternion;
 
 import data.DataReader;
 
@@ -41,11 +42,8 @@ public class KinectDisplay extends PApplet {
 		rot = new Quaternion(-PI/8.0f,-PI/6.0f,PI,1.0f);
 		trans = new PVector(631.0f,538.0f,300.0f);
 		// perspective
-		float fov = (float) (PI/3.5);
-		float cameraZ = (float) ((height/2.0) / tan(fov/2.0f));
 		fnCameraFile = "/home/raca/data/eyetracking/01_test_exp/coords/camera_position_normal.txt";
 //		perspective(fov, (float)(width/height), cameraZ/10.0f, cameraZ*10000.0f);
-		perspective(fov, (float)(width/height), 1.0f, 10000.0f);
 		drawables = new Vector<IDrawable>();
 		animators = new Vector<IAnimator>();
 		lastTime = millis();
@@ -71,7 +69,13 @@ public class KinectDisplay extends PApplet {
 	}
 
 	public void draw() {
+		// setup
+		float fov = (float) (PI/3.5);
+		float cameraZ = (float) ((height/2.0) / tan(fov/2.0f));
+		perspective(fov, (float)(width/height), 1.0f, 1000000000.0f);
+		// life
 		life();
+		// drawing
 		fill(200.0f);
 		rect(0.0f, 0.0f, wndSize[0], wndSize[1]);
 		drawOverlay();

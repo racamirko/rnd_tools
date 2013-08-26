@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.jogamp.graph.math.Quaternion;
+import com.jogamp.opengl.math.Quaternion;
 
 import data.QuaternionMathematics;
 import data.matrix.IllegalDimensionException;

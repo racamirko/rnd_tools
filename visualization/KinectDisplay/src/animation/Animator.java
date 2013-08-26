@@ -2,9 +2,10 @@ package animation;
 
 import java.util.Vector;
 
-import com.jogamp.graph.math.Quaternion;
+import com.jogamp.opengl.math.Quaternion;
 
 import processing.core.PVector;
+
 
 import kinectdisplay.GraphicalNode;
 

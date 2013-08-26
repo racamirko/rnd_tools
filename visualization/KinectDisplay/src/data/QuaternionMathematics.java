@@ -1,6 +1,6 @@
 package data;
 
-import com.jogamp.graph.math.Quaternion;
+import com.jogamp.opengl.math.Quaternion;
 
 public class QuaternionMathematics {
 

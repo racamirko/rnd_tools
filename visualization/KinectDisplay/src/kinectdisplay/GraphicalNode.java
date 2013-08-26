@@ -2,10 +2,10 @@ package kinectdisplay;
 
 import java.util.Vector;
 
+import com.jogamp.opengl.math.Quaternion;
+
 import processing.core.PApplet;
 import processing.core.PVector;
-
-import com.jogamp.graph.math.Quaternion;
 
 public class GraphicalNode implements IDrawable {
 	protected PVector trans;
