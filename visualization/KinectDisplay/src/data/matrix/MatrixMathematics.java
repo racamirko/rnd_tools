@@ -1,6 +1,7 @@
 package data.matrix;
 
-import com.jogamp.graph.math.Quaternion;
+
+import com.jogamp.opengl.math.Quaternion;
 
 import data.QuaternionMathematics;
 

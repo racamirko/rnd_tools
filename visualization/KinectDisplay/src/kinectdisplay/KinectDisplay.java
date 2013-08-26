@@ -42,8 +42,11 @@ public class KinectDisplay extends PApplet {
 		rot = new Quaternion(-PI/8.0f,-PI/6.0f,PI,1.0f);
 		trans = new PVector(631.0f,538.0f,300.0f);
 		// perspective
+		float fov = (float) (PI/3.5);
+		float cameraZ = (float) ((height/2.0) / tan(fov/2.0f));
 		fnCameraFile = "/home/raca/data/eyetracking/01_test_exp/coords/camera_position_normal.txt";
 //		perspective(fov, (float)(width/height), cameraZ/10.0f, cameraZ*10000.0f);
+		perspective(fov, (float)(width/height), 10.0f, 100000000.0f);
 		drawables = new Vector<IDrawable>();
 		animators = new Vector<IAnimator>();
 		lastTime = millis();
@@ -70,14 +73,13 @@ public class KinectDisplay extends PApplet {
 
 	public void draw() {
 		// setup
-		float fov = (float) (PI/3.5);
-		float cameraZ = (float) ((height/2.0) / tan(fov/2.0f));
-		perspective(fov, (float)(width/height), 1.0f, 1000000000.0f);
+//		float fov = (float) (PI/3.5);
+//		float cameraZ = (float) ((height/2.0) / tan(fov/2.0f));
+//		perspective(fov, (float)(width/height), 1.0f, 1000000000.0f);
 		// life
 		life();
 		// drawing
-		fill(200.0f);
-		rect(0.0f, 0.0f, wndSize[0], wndSize[1]);
+		background(200.0f);
 		drawOverlay();
 		lights();
 		translate(trans.x, trans.y, trans.z);
@@ -139,7 +141,7 @@ public class KinectDisplay extends PApplet {
 		// don't know why this doesn't work, API says it's ok ?
 		float e = event.getClickCount();
 		System.out.println(e);
-		trans.z = trans.z + e*10.0f;
+		trans.z = trans.z + e*100.0f;
 	}
 	
 	public static void main(String _args[]) {
