@@ -93,8 +93,9 @@ public class GraphicalNode implements IDrawable {
 		return rot;
 	}
 	
-	public void setRotation(Quaternion q){
+	public GraphicalNode setRotation(Quaternion q){
 		rot = q;
+		return this;
 	}
 		
 	
