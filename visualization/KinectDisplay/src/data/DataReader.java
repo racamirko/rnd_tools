@@ -31,7 +31,7 @@ public class DataReader implements IDataSource {
 	public DataReader(String filename) throws FileNotFoundException{
 		this.filename = filename;
 		// reasonable default values
-		tempo = 4; // 4 miliseconds == 25 fps
+		tempo = 3.3f; // 4 miliseconds == 25 fps
 		format = new enumManipulationAttrib[7]; //{ enumManipulationAttrib.ANI_ROTX };
 		format[0] = enumManipulationAttrib.ANI_IGNORE;
 		format[1] = enumManipulationAttrib.ANI_ROTX_ABS;

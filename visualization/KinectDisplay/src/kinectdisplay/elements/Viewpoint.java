@@ -54,6 +54,12 @@ public class Viewpoint implements IDrawable {
 			
 			p.vertex(-1.0f, -1.0f, rectDist+15.0f);
 			p.vertex(0.0f, 0.0f, rectDist+20.0f);
+			
+			// long line
+			p.stroke(255.0f, 0.0f, 0.0f);
+			p.strokeWeight(1.0f);
+			p.vertex(0.0f, 0.0f, 0.0f);
+			p.vertex(0.0f, 0.0f, 30.0f*rectDist);
 		p.endShape();
 		
 		p.popMatrix();
