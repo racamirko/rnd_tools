@@ -1,8 +1,12 @@
 package eyetrackerviz;
 
+import java.util.Vector;
+
 import data.CoordReader;
+import data.HeadPositionProvider;
 import data.Point2d;
 import processing.core.PApplet;
+import processing.core.PImage;
 import processing.video.Movie;
 
 
@@ -11,12 +15,33 @@ public class EyetrackerViz extends PApplet {
 	protected Movie eyeVideo;
 	protected CoordReader dataReader;
 	protected int lastTime;
+	protected HeadPositionProvider headSrc;
+	protected FaceDrawer fdraw;
+	protected boolean moviePlaying;
+	protected PImage screenShotPause;
+	protected Point2d gazePoint;
 
 	public void setup() {
-		String fnTrackVideo = "/home/raca/data/eyetracking/01_test_exp/ex01_mirko.avi";
-		String fnTrackTextFile = "/home/raca/data/eyetracking/01_test_exp/Raw Data Export_mirko_mirko-1-recording (1).txt";
+//		String fnTrackVideo = "/media/Local Disk/data/09_facedetect/04_eyetracker_exp2/mirko3.avi";
+//		String fnTrackTextFile = "/media/Local Disk/data/09_facedetect/04_eyetracker_exp2/mirko3_binocular_raw.txt";
+//		String ptrnHeadLocFiles = "/media/Local Disk/data/09_facedetect/04_eyetracker_exp2/result/faceLocData%d.txt";
 		
-		dataReader = new CoordReader(fnTrackTextFile, 3, 4, 5, 6, ",", 33.33f);
+		String fnTrackVideo = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/eyetracker_roland_video_reencoded.m4v";
+		String ptrnHeadLocFiles = "";
+		String fnTrackTextFile = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/roland_eyetracker_data.txt";
+		
+		if( fnTrackTextFile.length() == 0 )
+			dataReader = null;
+		else
+			dataReader = new CoordReader(fnTrackTextFile, 3, 4, ",", 33.33f);
+		
+		if( ptrnHeadLocFiles.length() == 0 ){
+			fdraw = null;
+			headSrc = null;
+		} else {
+			headSrc = new HeadPositionProvider(ptrnHeadLocFiles);
+			fdraw = new FaceDrawer(this);
+		}
 		
 		eyeVideo = new Movie(this, fnTrackVideo);
 		eyeVideo.play();
@@ -25,21 +50,70 @@ public class EyetrackerViz extends PApplet {
 		
 		size(eyeVideo.width, eyeVideo.height);
 		lastTime = millis();
+		moviePlaying = true;
+		gazePoint = null;
 	}
 
 	public void draw() {
+		float time = eyeVideo.time();
+		float frameRate = eyeVideo.frameRate;
+		int frameNo = (int)(time*frameRate);
 		if(eyeVideo.available()){
 			eyeVideo.read();
 			image(eyeVideo, 0, 0, eyeVideo.width, eyeVideo.height);
 		}
 		
+		if( !moviePlaying ){
+			fill(0.0f,0.0f,0.0f);
+			rect(20, 10, 300, 80);
+		}
+		
 		fill(255.0f, 0.0f, 0.0f);
 		noStroke();
 		
+		// draw eye-tracking data
 		int curTime = millis();
-		Point2d tmpPoint = dataReader.getNextValue(curTime - lastTime);
-		if( tmpPoint != null )
-			ellipse(tmpPoint.getX(), tmpPoint.getY(), 10.0f, 10.0f);
+		if( dataReader != null ){
+			if( moviePlaying )
+				gazePoint = dataReader.getNextValue(curTime - lastTime);
+			if( gazePoint != null )
+				ellipse(gazePoint.getX(), gazePoint.getY(), 10.0f, 10.0f);
+		}
+		// draw face-detection data
+//		if( frameNo == 3254 ){
+//			int a = 100;
+//			a =  a + 1;
+//		}
+		if( headSrc != null && fdraw != null ){
+			Vector<HeadPositionProvider.FaceBoundingBox> faceData = new Vector<HeadPositionProvider.FaceBoundingBox>();
+			headSrc.getFaces(frameNo, faceData);
+			fdraw.draw(faceData);
+		}
+		
+		text( String.format("Approx Frame #%d", frameNo) , 20, 20);
+		text( String.format("Mouse [x=%d, y=%d]", mouseX, mouseY ), 20, 40 );
+		if( gazePoint != null )
+			text( String.format("Gaze  [x=%f, y=%f]", gazePoint.getX(), gazePoint.getY() ), 20, 60 );
+		else
+			text( "Gaze  [x=?, y=?]", 20, 60 );
+		
+		//if(moviePlaying)
 		lastTime = curTime;
+	}
+	
+/*	public void mousePressed(){
+		// nothing really
+	}*/
+	
+	public void keyPressed() {
+		if( key == 'n' ){
+			if( moviePlaying ){
+				eyeVideo.pause();
+				if( eyeVideo.available() )
+					screenShotPause = eyeVideo;
+			}else
+				eyeVideo.play();
+			moviePlaying = !moviePlaying;
+		}
 	}
 }
