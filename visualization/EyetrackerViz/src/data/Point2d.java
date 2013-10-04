@@ -28,4 +28,8 @@ public class Point2d {
 		return "("+x+", "+y+")";
 	}
 
+	public void clear(){
+		x = 0.0f;
+		y = 0.0f;
+	}
 }

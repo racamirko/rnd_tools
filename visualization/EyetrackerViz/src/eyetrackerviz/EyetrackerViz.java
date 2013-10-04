@@ -28,12 +28,12 @@ public class EyetrackerViz extends PApplet {
 		
 		String fnTrackVideo = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/eyetracker_roland_video_reencoded.m4v";
 		String ptrnHeadLocFiles = "";
-		String fnTrackTextFile = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/roland_eyetracker_data.txt";
+		String fnTrackTextFile = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/roland_eyetracker_data_pure_transf2.txt";
 		
 		if( fnTrackTextFile.length() == 0 )
 			dataReader = null;
 		else
-			dataReader = new CoordReader(fnTrackTextFile, 3, 4, ",", 33.33f);
+			dataReader = new CoordReader(fnTrackTextFile, 3, 4, ",");
 		
 		if( ptrnHeadLocFiles.length() == 0 ){
 			fdraw = null;
@@ -80,10 +80,6 @@ public class EyetrackerViz extends PApplet {
 				ellipse(gazePoint.getX(), gazePoint.getY(), 10.0f, 10.0f);
 		}
 		// draw face-detection data
-//		if( frameNo == 3254 ){
-//			int a = 100;
-//			a =  a + 1;
-//		}
 		if( headSrc != null && fdraw != null ){
 			Vector<HeadPositionProvider.FaceBoundingBox> faceData = new Vector<HeadPositionProvider.FaceBoundingBox>();
 			headSrc.getFaces(frameNo, faceData);
@@ -100,10 +96,6 @@ public class EyetrackerViz extends PApplet {
 		//if(moviePlaying)
 		lastTime = curTime;
 	}
-	
-/*	public void mousePressed(){
-		// nothing really
-	}*/
 	
 	public void keyPressed() {
 		if( key == 'n' ){
