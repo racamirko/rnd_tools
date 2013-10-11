@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import data.CoordReader;
 import data.HeadPositionProvider;
+import data.HeadPositionProviderTar;
 import data.Point2d;
 import processing.core.PApplet;
 import processing.core.PImage;
@@ -15,7 +16,7 @@ public class EyetrackerViz extends PApplet {
 	protected Movie eyeVideo;
 	protected CoordReader dataReader;
 	protected int lastTime;
-	protected HeadPositionProvider headSrc;
+	protected HeadPositionProviderTar headSrc;
 	protected FaceDrawer fdraw;
 	protected boolean moviePlaying;
 	protected PImage screenShotPause;
@@ -27,7 +28,8 @@ public class EyetrackerViz extends PApplet {
 //		String ptrnHeadLocFiles = "/media/Local Disk/data/09_facedetect/04_eyetracker_exp2/result/faceLocData%d.txt";
 		
 		String fnTrackVideo = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/eyetracker_roland_video_reencoded.m4v";
-		String ptrnHeadLocFiles = "";
+//		String ptrnHeadLocFiles = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/faceDetect/facedetect_frame%06d.txt";
+		String ptrnHeadLocTar = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/faceDetect_hpl_roland_01.tar";
 		String fnTrackTextFile = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/roland_eyetracker_data_pure_transf2.txt";
 		
 		if( fnTrackTextFile.length() == 0 )
@@ -35,11 +37,11 @@ public class EyetrackerViz extends PApplet {
 		else
 			dataReader = new CoordReader(fnTrackTextFile, 3, 4, ",");
 		
-		if( ptrnHeadLocFiles.length() == 0 ){
+		if( ptrnHeadLocTar.length() == 0 ){
 			fdraw = null;
 			headSrc = null;
 		} else {
-			headSrc = new HeadPositionProvider(ptrnHeadLocFiles);
+			headSrc = new HeadPositionProviderTar(ptrnHeadLocTar);
 			fdraw = new FaceDrawer(this);
 		}
 		

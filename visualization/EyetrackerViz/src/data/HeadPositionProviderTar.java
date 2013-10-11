@@ -1,43 +1,69 @@
 package data;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Vector;
 
-public class HeadPositionProvider {
-	protected String filePattern;
-	
-	static public class FaceBoundingBox {
-		public Rect2d bbox;
-		public int mixtureNo;
-		public float score;
-		public int frameNo;
-		
-		public FaceBoundingBox( Rect2d bbox, int mixtureNo, float score, int frameNo ){
-			this.bbox = bbox;
-			this.mixtureNo = mixtureNo;
-			this.score = score;
-			this.frameNo = frameNo;
-		}		
-	}
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.tools.ant.filters.StringInputStream;
+import org.apache.tools.tar.TarEntry;
+
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
+
+import data.HeadPositionProvider.FaceBoundingBox;
+
+public class HeadPositionProviderTar {
+	protected String tarFilename;
+	protected Map<Integer, byte[]> dataMap;
 	
 	// you have to find the whole bounding box of the data
-	public HeadPositionProvider(String frameFilePattern){
-		filePattern = frameFilePattern;
+
+	public HeadPositionProviderTar(String tarFilename){
+		this.tarFilename = tarFilename;
+		dataMap = new HashMap<Integer, byte[]>();
+		init();
+	}
+	
+	protected void init(){
+		TarArchiveInputStream tarSrc;
+		try {
+			tarSrc = new TarArchiveInputStream(new FileInputStream(new File(tarFilename)));
+		} catch (FileNotFoundException e1) {
+			System.out.println("Tar file not found: "+tarFilename);
+			e1.printStackTrace();
+			return;
+		}
+		TarArchiveEntry entry;
+		try {
+			while ((entry = tarSrc.getNextTarEntry()) != null) {
+			    /* Get the name of the file */
+			    String filename = entry.getName();
+			    int frameNo = Integer.parseInt(filename.substring(16, 22));
+			    byte[] content = new byte[(int) entry.getSize()];
+			    tarSrc.read(content, 0, (int) entry.getSize());
+			    dataMap.put(frameNo, content);
+			}
+		} catch (IOException e) {
+			System.out.println("Reading tar file: " + tarFilename +" failed." );
+			e.printStackTrace();
+		}
 	}
 	
 	public void getFaces(int frameNo, Vector<FaceBoundingBox> output){
 		output.clear();
 		// find filename
-		String fullFilename = String.format(filePattern, frameNo);
 		Scanner dataSrc;
-		try {
-			dataSrc = new Scanner(new FileInputStream(fullFilename));
-		} catch (FileNotFoundException e) {
-			System.out.println("Could not find: " + fullFilename);
-			return;
+		if( !dataMap.containsKey(frameNo) ){
+			System.out.println("Could not find: " + frameNo);
 		}
+		dataSrc = new Scanner(new ByteArrayInputStream(dataMap.get(frameNo)));
 		while(dataSrc.hasNextLine()){
 			String curLine = dataSrc.nextLine();
 			String[] parts = curLine.split(",");
