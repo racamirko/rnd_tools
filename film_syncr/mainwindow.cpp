@@ -164,18 +164,18 @@ void MainWindow::slot_changeOffset1Text(){
     tmpStr = tmpStr.trimmed();
 //    ui->editOffset1->setPlainText(tmpStr);
     if( tmpStr.length() == 0 )
-        sessParams.zeroOffset1 = 0;
+        sessParams.setZeroOffset(1,0);
     int tmpInt = atoi(tmpStr.toAscii().constData());
     if( tmpInt == 0 ){
         if( strcmp("0", ui->editOffset1->toPlainText().toAscii().constData()) == 0 )
-            sessParams.zeroOffset1 = 0;
+            sessParams.setZeroOffset(1, 0);
         else{
             char buffer[20];
-            printf(buffer, "%li", sessParams.zeroOffset1);
+            printf(buffer, "%li", sessParams.getZeroOffset(1));
             ui->editOffset1->setPlainText(QString(buffer));
         }
     }else
-        sessParams.zeroOffset1 = tmpInt;
+        sessParams.setZeroOffset(1,tmpInt);
 //    cursorPos = min(cursorPos,tmpStr.length());
 //    ui->editOffset1->textCursor().setPosition(cursorPos,QTextCursor::MoveAnchor);
     changingOffsetText1 = false;
@@ -189,18 +189,18 @@ void MainWindow::slot_changeOffset2Text(){
     QString tmpStr = ui->editOffset2->toPlainText();
     tmpStr = tmpStr.trimmed();
     if( tmpStr.length() == 0 )
-        sessParams.zeroOffset2 = 0;
+        sessParams.setZeroOffset(2, 0);
     int tmpInt = atoi(tmpStr.toAscii().constData());
     if( tmpInt == 0 ){
         if( strcmp("0", ui->editOffset2->toPlainText().toAscii().constData()) == 0 )
-            sessParams.zeroOffset2 = 0;
+            sessParams.setZeroOffset(2, 0);
         else{
             char buffer[20];
-            printf(buffer, "%li", sessParams.zeroOffset2);
+            printf(buffer, "%li", sessParams.getZeroOffset(2));
             ui->editOffset2->setPlainText(QString(buffer));
         }
     }else
-        sessParams.zeroOffset2 = tmpInt;
+        sessParams.setZeroOffset(2, tmpInt);
     changingOffsetText2 = false;
 }
 
@@ -212,18 +212,18 @@ void MainWindow::slot_changeOffset3Text(){
     QString tmpStr = ui->editOffset3->toPlainText();
     tmpStr = tmpStr.trimmed();
     if( tmpStr.length() == 0 )
-        sessParams.zeroOffset3 = 0;
+        sessParams.setZeroOffset(3, 0);
     int tmpInt = atoi(tmpStr.toAscii().constData());
     if( tmpInt == 0 ){
         if( strcmp("0", ui->editOffset3->toPlainText().toAscii().constData()) == 0 )
-            sessParams.zeroOffset3 = 0;
+            sessParams.setZeroOffset(3, 0);
         else{
             char buffer[20];
-            printf(buffer, "%li", sessParams.zeroOffset3);
+            printf(buffer, "%li", sessParams.getZeroOffset(3));
             ui->editOffset3->setPlainText(QString(buffer));
         }
     }else
-        sessParams.zeroOffset3 = tmpInt;
+        sessParams.setZeroOffset(3, tmpInt);
     changingOffsetText3 = false;
 }
 
@@ -266,11 +266,11 @@ void MainWindow::jumpVideo(qint64 offset){
     qint64 newGlobalTime = getGlobalTime() + offset;
 
     if( ui->chkPlay1->isChecked() )
-        ui->videoPlayer1->seek( newGlobalTime + sessParams.zeroOffset1 );
+        ui->videoPlayer1->seek( newGlobalTime + sessParams.getZeroOffset(1) );
     if( ui->chkPlay2->isChecked() )
-        ui->videoPlayer2->seek( newGlobalTime + sessParams.zeroOffset2 );
+        ui->videoPlayer2->seek( newGlobalTime + sessParams.getZeroOffset(2) );
     if( ui->chkPlay3->isChecked() )
-        ui->videoPlayer3->seek( newGlobalTime + sessParams.zeroOffset3 );
+        ui->videoPlayer3->seek( newGlobalTime + sessParams.getZeroOffset(3) );
     slot_updateTimeLabels();
 }
 
@@ -305,17 +305,17 @@ void MainWindow::getVideoFile(int playerIndex){
         case 0:
             ui->editFilename1->setPlainText(path);
             ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
-            sessParams.filename1 = ui->editFilename1->toPlainText().toStdString();
+            sessParams.setFilename(1, ui->editFilename1->toPlainText().toStdString());
             break;
         case 1:
             ui->editFilename2->setPlainText(path);
             ui->videoPlayer2->load(Phonon::MediaSource(ui->editFilename2->toPlainText()));
-            sessParams.filename2 = ui->editFilename2->toPlainText().toStdString();
+            sessParams.setFilename(2, ui->editFilename2->toPlainText().toStdString());
             break;
         case 2:
             ui->editFilename3->setPlainText(path);
             ui->videoPlayer3->load(Phonon::MediaSource(ui->editFilename3->toPlainText()));
-            sessParams.filename3 = ui->editFilename3->toPlainText().toStdString();
+            sessParams.setFilename(3, ui->editFilename3->toPlainText().toStdString());
             break;
     }
     slot_updateTimeLabels();
@@ -329,48 +329,48 @@ void MainWindow::slot_openSession(){
         return;
     sessParams.load(path.toStdString());
     // filenames
-    if( !sessParams.filename1.empty() ){
-        testFile.open(sessParams.filename1.c_str());
+    if( !sessParams.getFilename(1).empty() ){
+        testFile.open(sessParams.getFilename(1).c_str());
         if(testFile.is_open()){
             testFile.close();
-            ui->editFilename1->setPlainText(QString::fromStdString(sessParams.filename1));
+            ui->editFilename1->setPlainText(QString::fromStdString(sessParams.getFilename(1)));
             ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
         } else
-            LOG(ERROR) << "File " << sessParams.filename1 << " not found";
+            LOG(ERROR) << "File " << sessParams.getFilename(1) << " not found";
     }
-    if( !sessParams.filename2.empty() ){
-        testFile.open(sessParams.filename2.c_str());
+    if( !sessParams.getFilename(2).empty() ){
+        testFile.open(sessParams.getFilename(2).c_str());
         if(testFile.is_open()){
             testFile.close();
-            ui->editFilename2->setPlainText(QString::fromStdString(sessParams.filename2));
+            ui->editFilename2->setPlainText(QString::fromStdString(sessParams.getFilename(2)));
             ui->videoPlayer2->load(Phonon::MediaSource(ui->editFilename2->toPlainText()));
         } else
-            LOG(ERROR) << "File " << sessParams.filename2 << " not found";
+            LOG(ERROR) << "File " << sessParams.getFilename(2) << " not found";
     }
-    if( !sessParams.filename3.empty() ){
-        testFile.open(sessParams.filename3.c_str());
+    if( !sessParams.getFilename(3).empty() ){
+        testFile.open(sessParams.getFilename(3).c_str());
         if(testFile.is_open()){
             testFile.close();
-            ui->editFilename3->setPlainText(QString::fromStdString(sessParams.filename3));
+            ui->editFilename3->setPlainText(QString::fromStdString(sessParams.getFilename(3)));
             ui->videoPlayer3->load(Phonon::MediaSource(ui->editFilename3->toPlainText()));
         } else
-            LOG(ERROR) << "File " << sessParams.filename3 << " not found";
+            LOG(ERROR) << "File " << sessParams.getFilename(3) << " not found";
     }
 
-    if(sessParams.zeroOffset1 != -1){
-        sprintf(buffer,"%d", sessParams.zeroOffset1);
+    if(sessParams.getZeroOffset(1) != -1){
+        sprintf(buffer,"%d", sessParams.getZeroOffset(1));
         ui->editOffset1->setPlainText(QString::fromAscii(buffer));
-        startPos1 = sessParams.zeroOffset1;
+        startPos1 = sessParams.getZeroOffset(1);
     }
-    if(sessParams.zeroOffset1 != -1){
-        sprintf(buffer,"%d", sessParams.zeroOffset2);
+    if(sessParams.getZeroOffset(2) != -1){
+        sprintf(buffer,"%d", sessParams.getZeroOffset(2));
         ui->editOffset2->setPlainText(QString::fromAscii(buffer));
-        startPos2 = sessParams.zeroOffset2;
+        startPos2 = sessParams.getZeroOffset(2);
     }
-    if(sessParams.zeroOffset1 != -1){
-        sprintf(buffer,"%d", sessParams.zeroOffset3);
+    if(sessParams.getZeroOffset(3) != -1){
+        sprintf(buffer,"%d", sessParams.getZeroOffset(3));
         ui->editOffset3->setPlainText(QString::fromAscii(buffer));
-        startPos3 = sessParams.zeroOffset3;
+        startPos3 = sessParams.getZeroOffset(3);
     }
 }
 
@@ -414,15 +414,15 @@ qint64 MainWindow::getGlobalTime(){
     // find valid trackers and get a mean time to minimize error in missing ticks
     qint64 timeEst = 0, numOfCams = 0;
     if( ui->videoPlayer1->currentTime() < ui->videoPlayer1->totalTime() && ui->chkPlay1->isChecked() ){
-        timeEst += (ui->videoPlayer1->currentTime() - sessParams.zeroOffset1);
+        timeEst += (ui->videoPlayer1->currentTime() - sessParams.getZeroOffset(1));
         ++numOfCams;
     }
     if( ui->videoPlayer2->currentTime() < ui->videoPlayer2->totalTime() && ui->chkPlay2->isChecked() ){
-        timeEst += (ui->videoPlayer2->currentTime() - sessParams.zeroOffset2);
+        timeEst += (ui->videoPlayer2->currentTime() - sessParams.getZeroOffset(2));
         ++numOfCams;
     }
     if( ui->videoPlayer3->currentTime() < ui->videoPlayer3->totalTime() && ui->chkPlay3->isChecked() ){
-        timeEst += (ui->videoPlayer3->currentTime() - sessParams.zeroOffset3);
+        timeEst += (ui->videoPlayer3->currentTime() - sessParams.getZeroOffset(3));
         ++numOfCams;
     }
     DLOG(INFO) << "Global time is " << round( timeEst/numOfCams ) << " based on " << numOfCams << " cameras";

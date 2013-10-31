@@ -3,14 +3,18 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include "CTimeMark.h"
 #include "CPerson.h"
 
+#define MAX_NUM_OF_VIDEOS 20
+
 class CSessionParameters
 {
+protected:
+    std::map<int, int> zeroOffset; // camIdx -> offset in miliseconds
 public:
-    std::string filename1, filename2, filename3;
-    int zeroOffset1, zeroOffset2, zeroOffset3;
+    std::map<int,std::string> filename; // camIdx -> filename
     std::vector<CTimeMark>* pTimeMarks;
     std::map<int, CPerson*>* pPersons;
 
@@ -18,6 +22,12 @@ public:
 
     void load(std::string _filename);
     void save(std::string _filename);
+
+    int getZeroOffset(int _camIdx);
+    int setZeroOffset(int _camIdx, int _value);
+
+    std::string getFilename(int _camIdx);
+    void setFilename(int _camIdx, std::string _filename);
 };
 
 #endif // CSESSIONPARAMETERS_H
