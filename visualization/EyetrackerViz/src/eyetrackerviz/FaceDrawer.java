@@ -26,95 +26,11 @@ public class FaceDrawer {
 		for( HeadPositionProvider.FaceBoundingBox face : material ){
 			pa.rect(face.bbox.getX1(), face.bbox.getY1(), face.bbox.getWidth(), face.bbox.getHeight());
 			drawAngle(face.bbox, face.angle);
-//			switch( face.mixtureNo ){
-//				case 1:
-//					draw90l(face.bbox);
-//					break;
-//				case 2:
-//					draw60l(face.bbox);
-//					break;
-//				case 3:
-//					draw45l(face.bbox);
-//					break;
-//				case -4:
-//				case 4:
-//					draw0(face.bbox);
-//					break;
-//				case -3:
-//				case 5:
-//					draw45r(face.bbox);
-//					break;
-//				case -2:
-//				case 6:
-//					draw60r(face.bbox);
-//					break;
-//				case -1:
-//				case 7:
-//					draw90r(face.bbox);
-//					break;
-//			}
+
 			pa.text(String.format("%.1fdeg", face.angle), face.bbox.getCenterX(), face.bbox.getCenterY()-30);
 		}
 		pa.popStyle();
 	}
-	
-	private int mixToDeg( int mixNo ){
-		switch( mixNo ){
-			case 1:
-				return 90;
-			case 2:
-				return 60;
-			case 3:
-				return 45;
-			case -4:
-			case 4:
-				return 0;
-			case -3:
-				return -45;
-			case -2:
-				return -60;
-			case -1:
-				return -90;
-		}
-		return 0;
-	}
-	
-//	private void draw90l(Rect2d bbox){
-//		Arrows.arrowLine(pa, bbox.getX1(), bbox.getHeight()/2.0f+bbox.getY1(),
-//				bbox.getX1()-40.0f, bbox.getHeight()/2.0f+bbox.getY1(), 0.0f, arrowAngle, true);
-//	}
-//
-//	private void draw60l(Rect2d bbox){
-//		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth()/6.0f, bbox.getHeight()/2.0f+bbox.getY1()+10.0f,
-//				bbox.getX1()-20.0f, bbox.getHeight()/1.5f+bbox.getY1(), 0.0f, arrowAngle, true);
-//	}
-//
-//	private void draw45l(Rect2d bbox){
-//		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth()/4.0f, bbox.getHeight()/2.0f+bbox.getY1()+15.0f,
-//				bbox.getX1()-10.0f, bbox.getHeight()*0.75f+bbox.getY1(), 0.0f, arrowAngle, true);
-//	}
-//
-//	private void draw0(Rect2d bbox){
-//		float centerX = bbox.getX1()+bbox.getWidth()/2.0f,
-//			  centerY = bbox.getY1()+bbox.getHeight()/2.0f;
-//		pa.ellipse(centerX, centerY, 10.0f, 10.0f);
-//		pa.line(centerX, centerY, centerX, centerY);
-//	}
-//
-//	private void draw45r(Rect2d bbox){
-//		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth()*0.75f, bbox.getHeight()/2.0f+bbox.getY1()+15.0f,
-//				bbox.getX1()+bbox.getWidth()+10.0f, bbox.getHeight()*0.75f+bbox.getY1(), 0.0f, arrowAngle, true);
-//	}
-//
-//	private void draw60r(Rect2d bbox){
-//		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth()*0.86f, bbox.getHeight()/2.0f+bbox.getY1()+10.0f,
-//				bbox.getX1()+bbox.getWidth()+20.0f, bbox.getHeight()/1.5f+bbox.getY1(), 0.0f, arrowAngle, true);		
-//	}
-//
-//	private void draw90r(Rect2d bbox){
-//		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth(), bbox.getHeight()/2.0f+bbox.getY1(),
-//				bbox.getX1()+bbox.getWidth()+40.0f, bbox.getHeight()/2.0f+bbox.getY1(), 0.0f, arrowAngle, true);
-//	}
 	
 	private void drawAngle(Rect2d bbox, double angle){
 		Point2d endPt = new Point2d();

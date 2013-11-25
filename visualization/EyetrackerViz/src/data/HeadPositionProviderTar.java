@@ -12,14 +12,8 @@ import java.util.Vector;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.tools.ant.filters.StringInputStream;
-import org.apache.tools.tar.TarEntry;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
-
-import data.HeadPositionProvider.FaceBoundingBox;
-
-public class HeadPositionProviderTar {
+public class HeadPositionProviderTar implements HeadPositionProviderGeneric {
 	protected String tarFilename;
 	protected Map<Integer, byte[]> dataMap;
 	

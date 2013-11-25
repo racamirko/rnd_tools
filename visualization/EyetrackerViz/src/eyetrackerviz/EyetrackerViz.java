@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import data.CoordReader;
 import data.HeadPositionProvider;
+import data.HeadPositionProviderGeneric;
 import data.HeadPositionProviderTar;
 import data.Point2d;
 import processing.core.PApplet;
@@ -16,7 +17,7 @@ public class EyetrackerViz extends PApplet {
 	protected Movie eyeVideo;
 	protected CoordReader dataReader;
 	protected int lastTime;
-	protected HeadPositionProviderTar headSrc;
+	protected HeadPositionProviderGeneric headSrc;
 	protected FaceDrawer fdraw;
 	protected boolean moviePlaying;
 	protected PImage screenShotPause;
@@ -27,9 +28,9 @@ public class EyetrackerViz extends PApplet {
 //		String fnTrackTextFile = "/media/Local Disk/data/09_facedetect/04_eyetracker_exp2/mirko3_binocular_raw.txt";
 //		String ptrnHeadLocFiles = "/media/Local Disk/data/09_facedetect/04_eyetracker_exp2/result/faceLocData%d.txt";
 		
-		String fnTrackVideo = "/media/Local Disk/data/11_classroom_recording/05_131030_hpl_roland_02/02_videos/cam1/cropped_P1010266.MP4";
+		String fnTrackVideo = "/media/Local Disk/data/11_classroom_recording/05_131030_hpl_roland_02/02_videos/cam4/cropped_Video_8.mp4";
 //		String ptrnHeadLocFiles = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/faceDetect/facedetect_frame%06d.txt";
-		String ptrnHeadLocTar = "/media/Local Disk/data/11_classroom_recording/05_131030_hpl_roland_02/05_head_orient/cam1_converted.tar";
+		String ptrnHeadLocFilename = "/media/Local Disk/data/11_classroom_recording/05_131030_hpl_roland_02/02_videos/cam4/detections/facedetect_frame%06d.txt";
 //		String ptrnHeadLocTar = "/media/Local Disk/data/11_classroom_recording/05_131030_hpl_roland_02/02_videos/cam4/detections/facedetect_frame%06d.txt";
 //		String fnTrackTextFile = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/roland_eyetracker_data_pure_transf2.txt";
 		String fnTrackTextFile = "";
@@ -39,11 +40,15 @@ public class EyetrackerViz extends PApplet {
 		else
 			dataReader = new CoordReader(fnTrackTextFile, 3, 4, ",");
 		
-		if( ptrnHeadLocTar.length() == 0 ){
+		if( ptrnHeadLocFilename.length() == 0 ){
 			fdraw = null;
 			headSrc = null;
 		} else {
-			headSrc = new HeadPositionProviderTar(ptrnHeadLocTar);
+			if( ptrnHeadLocFilename.substring(ptrnHeadLocFilename.length()-3, ptrnHeadLocFilename.length()).equalsIgnoreCase("tar") ){
+				headSrc = new HeadPositionProviderTar(ptrnHeadLocFilename);
+			} else {
+				headSrc = new HeadPositionProvider(ptrnHeadLocFilename);
+			}
 			fdraw = new FaceDrawer(this);
 		}
 		

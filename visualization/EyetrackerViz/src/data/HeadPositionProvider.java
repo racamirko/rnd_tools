@@ -5,22 +5,8 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.Vector;
 
-public class HeadPositionProvider {
+public class HeadPositionProvider implements HeadPositionProviderGeneric {
 	protected String filePattern;
-	
-	static public class FaceBoundingBox {
-		public Rect2d bbox;
-		public float angle;
-		public float score;
-		public int frameNo;
-		
-		public FaceBoundingBox( Rect2d bbox, float angle, float score, int frameNo ){
-			this.bbox = bbox;
-			this.angle = angle;
-			this.score = score;
-			this.frameNo = frameNo;
-		}		
-	}
 	
 	// you have to find the whole bounding box of the data
 	public HeadPositionProvider(String frameFilePattern){
