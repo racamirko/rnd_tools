@@ -50,7 +50,7 @@ public class Rect2d {
 	}
 	
 	public float getWidth(){
-		return x2-x1;
+		return Math.abs(x2-x1);
 	}
 	
 	public void setWidth(float w){
@@ -58,7 +58,7 @@ public class Rect2d {
 	}
 	
 	public float getHeight(){
-		return y2-y1;
+		return Math.abs(y2-y1);
 	}
 	
 	public void setHeight(float h){

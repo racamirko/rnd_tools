@@ -10,13 +10,13 @@ public class HeadPositionProvider {
 	
 	static public class FaceBoundingBox {
 		public Rect2d bbox;
-		public int mixtureNo;
+		public float angle;
 		public float score;
 		public int frameNo;
 		
-		public FaceBoundingBox( Rect2d bbox, int mixtureNo, float score, int frameNo ){
+		public FaceBoundingBox( Rect2d bbox, float angle, float score, int frameNo ){
 			this.bbox = bbox;
-			this.mixtureNo = mixtureNo;
+			this.angle = angle;
 			this.score = score;
 			this.frameNo = frameNo;
 		}		
@@ -42,7 +42,7 @@ public class HeadPositionProvider {
 			String curLine = dataSrc.nextLine();
 			String[] parts = curLine.split(",");
 			// find the biggest bounding box
-			int mixtureNo = Integer.parseInt(parts[2].replaceAll(" ", ""));
+			float angle = Float.parseFloat(parts[2].replaceAll(" ", ""));
 			float score = Float.parseFloat(parts[3].replaceAll(" ", ""));
 			int frameNoInFile = Integer.parseInt(parts[0].replaceAll(" ", ""));
 			int maxComponents = Integer.parseInt(parts[1].replaceAll(" ", ""));
@@ -74,7 +74,7 @@ public class HeadPositionProvider {
 			bbox.setX2( bbox.getX2() + 10.0f );
 			bbox.setY2( bbox.getY2() + 10.0f );
 			// end of finding the total bounding box
-			FaceBoundingBox tmpFace = new FaceBoundingBox(bbox, mixtureNo, score, frameNoInFile);
+			FaceBoundingBox tmpFace = new FaceBoundingBox(bbox, angle, score, frameNoInFile);
 			output.add(tmpFace);
 		}
 		dataSrc.close();

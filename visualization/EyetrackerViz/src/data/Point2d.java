@@ -3,6 +3,11 @@ package data;
 public class Point2d {
 	private float x,y;
 
+	public Point2d(){
+		this.x = 0;
+		this.y = 0;
+	}
+	
 	public Point2d(float x, float y){
 		this.x = x;
 		this.y = y;

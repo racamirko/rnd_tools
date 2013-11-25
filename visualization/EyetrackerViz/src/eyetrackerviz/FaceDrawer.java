@@ -3,9 +3,9 @@ package eyetrackerviz;
 import java.util.Vector;
 
 import data.HeadPositionProvider;
+import data.Point2d;
 import data.Rect2d;
 import eyetrackerviz.utils.Arrows;
-
 import processing.core.PApplet;
 
 public class FaceDrawer {
@@ -25,31 +25,35 @@ public class FaceDrawer {
 		pa.strokeWeight(1.5f);
 		for( HeadPositionProvider.FaceBoundingBox face : material ){
 			pa.rect(face.bbox.getX1(), face.bbox.getY1(), face.bbox.getWidth(), face.bbox.getHeight());
-			switch( face.mixtureNo ){
-				case 1:
-					draw90l(face.bbox);
-					break;
-				case 2:
-					draw60l(face.bbox);
-					break;
-				case 3:
-					draw45l(face.bbox);
-					break;
-				case -4:
-				case 4:
-					draw0(face.bbox);
-					break;
-				case -3:
-					draw45r(face.bbox);
-					break;
-				case -2:
-					draw60r(face.bbox);
-					break;
-				case -1:
-					draw90r(face.bbox);
-					break;
-			}
-			pa.text(String.format("%ddeg", mixToDeg( face.mixtureNo)), face.bbox.getCenterX(), face.bbox.getCenterY()-30);
+			drawAngle(face.bbox, face.angle);
+//			switch( face.mixtureNo ){
+//				case 1:
+//					draw90l(face.bbox);
+//					break;
+//				case 2:
+//					draw60l(face.bbox);
+//					break;
+//				case 3:
+//					draw45l(face.bbox);
+//					break;
+//				case -4:
+//				case 4:
+//					draw0(face.bbox);
+//					break;
+//				case -3:
+//				case 5:
+//					draw45r(face.bbox);
+//					break;
+//				case -2:
+//				case 6:
+//					draw60r(face.bbox);
+//					break;
+//				case -1:
+//				case 7:
+//					draw90r(face.bbox);
+//					break;
+//			}
+			pa.text(String.format("%.1fdeg", face.angle), face.bbox.getCenterX(), face.bbox.getCenterY()-30);
 		}
 		pa.popStyle();
 	}
@@ -75,40 +79,54 @@ public class FaceDrawer {
 		return 0;
 	}
 	
-	private void draw90l(Rect2d bbox){
-		Arrows.arrowLine(pa, bbox.getX1(), bbox.getHeight()/2.0f+bbox.getY1(),
-				bbox.getX1()-40.0f, bbox.getHeight()/2.0f+bbox.getY1(), 0.0f, arrowAngle, true);
-	}
-
-	private void draw60l(Rect2d bbox){
-		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth()/6.0f, bbox.getHeight()/2.0f+bbox.getY1()+10.0f,
-				bbox.getX1()-20.0f, bbox.getHeight()/1.5f+bbox.getY1(), 0.0f, arrowAngle, true);
-	}
-
-	private void draw45l(Rect2d bbox){
-		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth()/4.0f, bbox.getHeight()/2.0f+bbox.getY1()+15.0f,
-				bbox.getX1()-10.0f, bbox.getHeight()*0.75f+bbox.getY1(), 0.0f, arrowAngle, true);
-	}
-
-	private void draw0(Rect2d bbox){
-		float centerX = bbox.getX1()+bbox.getWidth()/2.0f,
-			  centerY = bbox.getY1()+bbox.getHeight()/2.0f;
-		pa.ellipse(centerX, centerY, 10.0f, 10.0f);
-		pa.line(centerX, centerY, centerX, centerY);
-	}
-
-	private void draw45r(Rect2d bbox){
-		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth()*0.75f, bbox.getHeight()/2.0f+bbox.getY1()+15.0f,
-				bbox.getX1()+bbox.getWidth()+10.0f, bbox.getHeight()*0.75f+bbox.getY1(), 0.0f, arrowAngle, true);
-	}
-
-	private void draw60r(Rect2d bbox){
-		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth()*0.86f, bbox.getHeight()/2.0f+bbox.getY1()+10.0f,
-				bbox.getX1()+bbox.getWidth()+20.0f, bbox.getHeight()/1.5f+bbox.getY1(), 0.0f, arrowAngle, true);		
-	}
-
-	private void draw90r(Rect2d bbox){
-		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth(), bbox.getHeight()/2.0f+bbox.getY1(),
-				bbox.getX1()+bbox.getWidth()+40.0f, bbox.getHeight()/2.0f+bbox.getY1(), 0.0f, arrowAngle, true);
+//	private void draw90l(Rect2d bbox){
+//		Arrows.arrowLine(pa, bbox.getX1(), bbox.getHeight()/2.0f+bbox.getY1(),
+//				bbox.getX1()-40.0f, bbox.getHeight()/2.0f+bbox.getY1(), 0.0f, arrowAngle, true);
+//	}
+//
+//	private void draw60l(Rect2d bbox){
+//		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth()/6.0f, bbox.getHeight()/2.0f+bbox.getY1()+10.0f,
+//				bbox.getX1()-20.0f, bbox.getHeight()/1.5f+bbox.getY1(), 0.0f, arrowAngle, true);
+//	}
+//
+//	private void draw45l(Rect2d bbox){
+//		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth()/4.0f, bbox.getHeight()/2.0f+bbox.getY1()+15.0f,
+//				bbox.getX1()-10.0f, bbox.getHeight()*0.75f+bbox.getY1(), 0.0f, arrowAngle, true);
+//	}
+//
+//	private void draw0(Rect2d bbox){
+//		float centerX = bbox.getX1()+bbox.getWidth()/2.0f,
+//			  centerY = bbox.getY1()+bbox.getHeight()/2.0f;
+//		pa.ellipse(centerX, centerY, 10.0f, 10.0f);
+//		pa.line(centerX, centerY, centerX, centerY);
+//	}
+//
+//	private void draw45r(Rect2d bbox){
+//		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth()*0.75f, bbox.getHeight()/2.0f+bbox.getY1()+15.0f,
+//				bbox.getX1()+bbox.getWidth()+10.0f, bbox.getHeight()*0.75f+bbox.getY1(), 0.0f, arrowAngle, true);
+//	}
+//
+//	private void draw60r(Rect2d bbox){
+//		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth()*0.86f, bbox.getHeight()/2.0f+bbox.getY1()+10.0f,
+//				bbox.getX1()+bbox.getWidth()+20.0f, bbox.getHeight()/1.5f+bbox.getY1(), 0.0f, arrowAngle, true);		
+//	}
+//
+//	private void draw90r(Rect2d bbox){
+//		Arrows.arrowLine(pa, bbox.getX1()+bbox.getWidth(), bbox.getHeight()/2.0f+bbox.getY1(),
+//				bbox.getX1()+bbox.getWidth()+40.0f, bbox.getHeight()/2.0f+bbox.getY1(), 0.0f, arrowAngle, true);
+//	}
+	
+	private void drawAngle(Rect2d bbox, double angle){
+		Point2d endPt = new Point2d();
+		float OUTSIDE_OF_BOX_OFFSET = 40.0f;
+		if( angle == 0.0f ){
+			pa.ellipse(bbox.getCenterX(), bbox.getCenterY(), 10.0f, 10.0f);
+			pa.line(bbox.getCenterX(), bbox.getCenterY(), bbox.getCenterX(), bbox.getCenterY());
+			return;
+		} else {
+			endPt.setX( (float) (bbox.getCenterX() - (Math.sin( Math.toRadians(angle) ) * (bbox.getWidth()/2.0f+OUTSIDE_OF_BOX_OFFSET))) );
+			endPt.setY( (float) (bbox.getCenterY() + (Math.cos( Math.toRadians(angle) / Math.PI ) * (bbox.getHeight()/4.0f))));
+		}
+		Arrows.arrowLine(pa, bbox.getCenterX(), bbox.getCenterY(), endPt.getX(), endPt.getY(), 0.0f, arrowAngle, true);
 	}
 }

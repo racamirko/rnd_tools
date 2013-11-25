@@ -27,10 +27,12 @@ public class EyetrackerViz extends PApplet {
 //		String fnTrackTextFile = "/media/Local Disk/data/09_facedetect/04_eyetracker_exp2/mirko3_binocular_raw.txt";
 //		String ptrnHeadLocFiles = "/media/Local Disk/data/09_facedetect/04_eyetracker_exp2/result/faceLocData%d.txt";
 		
-		String fnTrackVideo = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/eyetracker_roland_video_reencoded.m4v";
+		String fnTrackVideo = "/media/Local Disk/data/11_classroom_recording/05_131030_hpl_roland_02/02_videos/cam1/cropped_P1010266.MP4";
 //		String ptrnHeadLocFiles = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/faceDetect/facedetect_frame%06d.txt";
-		String ptrnHeadLocTar = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/faceDetect_hpl_roland_01.tar";
-		String fnTrackTextFile = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/roland_eyetracker_data_pure_transf2.txt";
+		String ptrnHeadLocTar = "/media/Local Disk/data/11_classroom_recording/05_131030_hpl_roland_02/05_head_orient/cam1_converted.tar";
+//		String ptrnHeadLocTar = "/media/Local Disk/data/11_classroom_recording/05_131030_hpl_roland_02/02_videos/cam4/detections/facedetect_frame%06d.txt";
+//		String fnTrackTextFile = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/roland_eyetracker_data_pure_transf2.txt";
+		String fnTrackTextFile = "";
 		
 		if( fnTrackTextFile.length() == 0 )
 			dataReader = null;

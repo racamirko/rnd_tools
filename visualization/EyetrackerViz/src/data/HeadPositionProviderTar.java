@@ -45,7 +45,10 @@ public class HeadPositionProviderTar {
 			while ((entry = tarSrc.getNextTarEntry()) != null) {
 			    /* Get the name of the file */
 			    String filename = entry.getName();
-			    int frameNo = Integer.parseInt(filename.substring(16, 22));
+			    if(entry.getSize() == 0)
+			    	continue;
+			    int fnSize = filename.length();
+			    int frameNo = Integer.parseInt(filename.substring(fnSize-10, fnSize-4));
 			    byte[] content = new byte[(int) entry.getSize()];
 			    tarSrc.read(content, 0, (int) entry.getSize());
 			    dataMap.put(frameNo, content);
@@ -62,13 +65,14 @@ public class HeadPositionProviderTar {
 		Scanner dataSrc;
 		if( !dataMap.containsKey(frameNo) ){
 			System.out.println("Could not find: " + frameNo);
+			return;
 		}
 		dataSrc = new Scanner(new ByteArrayInputStream(dataMap.get(frameNo)));
 		while(dataSrc.hasNextLine()){
 			String curLine = dataSrc.nextLine();
 			String[] parts = curLine.split(",");
 			// find the biggest bounding box
-			int mixtureNo = Integer.parseInt(parts[2].replaceAll(" ", ""));
+			float angle = Float.parseFloat(parts[2].replaceAll(" ", ""));
 			float score = Float.parseFloat(parts[3].replaceAll(" ", ""));
 			int frameNoInFile = Integer.parseInt(parts[0].replaceAll(" ", ""));
 			int maxComponents = Integer.parseInt(parts[1].replaceAll(" ", ""));
@@ -100,7 +104,7 @@ public class HeadPositionProviderTar {
 			bbox.setX2( bbox.getX2() + 10.0f );
 			bbox.setY2( bbox.getY2() + 10.0f );
 			// end of finding the total bounding box
-			FaceBoundingBox tmpFace = new FaceBoundingBox(bbox, mixtureNo, score, frameNoInFile);
+			FaceBoundingBox tmpFace = new FaceBoundingBox(bbox, angle, score, frameNoInFile);
 			output.add(tmpFace);
 		}
 		dataSrc.close();
