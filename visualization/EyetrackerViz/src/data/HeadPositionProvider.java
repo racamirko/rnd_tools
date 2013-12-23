@@ -14,6 +14,7 @@ public class HeadPositionProvider implements HeadPositionProviderGeneric {
 	}
 	
 	public void getFaces(int frameNo, Vector<FaceBoundingBox> output){
+		System.out.println("Getting data for frame #"+frameNo);
 		output.clear();
 		// find filename
 		String fullFilename = String.format(filePattern, frameNo);
@@ -64,6 +65,7 @@ public class HeadPositionProvider implements HeadPositionProviderGeneric {
 			output.add(tmpFace);
 		}
 		dataSrc.close();
+		System.out.println("\tFound faces: " + output.size());
 	}
 	
 }

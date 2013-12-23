@@ -5,6 +5,7 @@ import java.util.Vector;
 import data.CoordReader;
 import data.HeadPositionProvider;
 import data.HeadPositionProviderGeneric;
+import data.HeadPositionProviderTLD;
 import data.HeadPositionProviderTar;
 import data.Point2d;
 import processing.core.PApplet;
@@ -28,9 +29,9 @@ public class EyetrackerViz extends PApplet {
 //		String fnTrackTextFile = "/media/Local Disk/data/09_facedetect/04_eyetracker_exp2/mirko3_binocular_raw.txt";
 //		String ptrnHeadLocFiles = "/media/Local Disk/data/09_facedetect/04_eyetracker_exp2/result/faceLocData%d.txt";
 		
-		String fnTrackVideo = "/media/Local Disk/data/11_classroom_recording/05_131030_hpl_roland_02/02_videos/cam4/cropped_Video_8.mp4";
+		String fnTrackVideo = "/media/data/11_classroom_recording/04_131023_hpl_roland_01/02_videos/cam4/cropped_MAH00086.mp4";
 //		String ptrnHeadLocFiles = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/faceDetect/facedetect_frame%06d.txt";
-		String ptrnHeadLocFilename = "/media/Local Disk/data/11_classroom_recording/05_131030_hpl_roland_02/02_videos/cam4/detections/facedetect_frame%06d.txt";
+		String ptrnHeadLocFilename = "/media/data/11_classroom_recording/04_131023_hpl_roland_01/04_gaze_data/teacher_tracking_take2.txt";
 //		String ptrnHeadLocTar = "/media/Local Disk/data/11_classroom_recording/05_131030_hpl_roland_02/02_videos/cam4/detections/facedetect_frame%06d.txt";
 //		String fnTrackTextFile = "/media/Local Disk/data/11_classroom_recording/01_131002_hpl_roland_01/roland_eyetracker_data_pure_transf2.txt";
 		String fnTrackTextFile = "";
@@ -44,10 +45,14 @@ public class EyetrackerViz extends PApplet {
 			fdraw = null;
 			headSrc = null;
 		} else {
-			if( ptrnHeadLocFilename.substring(ptrnHeadLocFilename.length()-3, ptrnHeadLocFilename.length()).equalsIgnoreCase("tar") ){
+			if( fileExtensionIs(  ptrnHeadLocFilename, "tar") ){
 				headSrc = new HeadPositionProviderTar(ptrnHeadLocFilename);
 			} else {
-				headSrc = new HeadPositionProvider(ptrnHeadLocFilename);
+				if( fileExtensionIs(  ptrnHeadLocFilename, "txt") ){
+					headSrc = new HeadPositionProviderTLD(ptrnHeadLocFilename);
+				}
+				else
+					headSrc = new HeadPositionProvider(ptrnHeadLocFilename);
 			}
 			fdraw = new FaceDrawer(this);
 		}
@@ -117,4 +122,9 @@ public class EyetrackerViz extends PApplet {
 			moviePlaying = !moviePlaying;
 		}
 	}
+	
+	public static boolean fileExtensionIs(String _filename, String _extension){
+		return _filename.substring(_filename.length()-3, _filename.length()).equalsIgnoreCase(_extension);
+	}
+	
 }
