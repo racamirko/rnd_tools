@@ -9,8 +9,8 @@ QT       += core gui phonon
 TARGET = film_syncr
 TEMPLATE = app
 
-INCLUDEPATH += /usr/local/include
-LIBS += -lglog -L/usr/local/lib -lopencv_core -lopencv_highgui -lopencv_video -lopencv_imgproc
+INCLUDEPATH += /usr/include
+LIBS += -lglog -L/usr/lib -lopencv_core -lopencv_highgui -lopencv_video -lopencv_imgproc
 
 SOURCES += main.cpp\
         mainwindow.cpp \

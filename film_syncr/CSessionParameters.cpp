@@ -139,6 +139,7 @@ int CSessionParameters::getZeroOffset(int _camIdx){
 }
 
 int CSessionParameters::setZeroOffset(int _camIdx, int _value){
+    LOG(INFO) << "ZeroOffset for cam #" << _camIdx << " : " << _value;
     zeroOffset[_camIdx] = _value;
 }
 

@@ -71,6 +71,8 @@ void MainWindow::setupHooks(){
     connect(ui->actionMark_region_c3, SIGNAL(triggered()), this, SLOT(slot_markRegionsCam3()));
 
     connect(ui->editOffset1, SIGNAL(textChanged()), this, SLOT(slot_changeOffset1Text()));
+    connect(ui->editOffset2, SIGNAL(textChanged()), this, SLOT(slot_changeOffset2Text()));
+    connect(ui->editOffset3, SIGNAL(textChanged()), this, SLOT(slot_changeOffset3Text()));
 
     connect(ui->actionDump_info, SIGNAL(triggered()), this, SLOT(slot_dumpPersonInfo()));
     // timers
@@ -324,7 +326,7 @@ void MainWindow::getVideoFile(int playerIndex){
 void MainWindow::slot_openSession(){
     char buffer[20]; ifstream testFile;
     LOG(INFO) << "slot_openSession";
-    QString path = QFileDialog::getOpenFileName(this, tr("Choose session filename to save"), QString("/home/raca/data/video_material/12.09.13 - talk2 - bc410/"), QString::Null());
+    QString path = QFileDialog::getOpenFileName(this, tr("Choose session filename to save"), QString("/media/data/11_classroom_recording"), QString::Null());
     if( path.isEmpty() )
         return;
     sessParams.load(path.toStdString());
@@ -375,7 +377,7 @@ void MainWindow::slot_openSession(){
 }
 
 void MainWindow::slot_saveSession(){
-    QString path = QFileDialog::getSaveFileName(this, tr("Choose session filename to save"), QString("/home/raca/data/video_material/12.09.13 - talk2 - bc410/"), QString::Null());
+    QString path = QFileDialog::getSaveFileName(this, tr("Choose session filename to save"), QString("/media/data/11_classroom_recording"), QString::Null());
     if(path.isEmpty())
         return;
     sessParams.pTimeMarks = &vecTimeMarks; // TODO: not cool, not cool at all
