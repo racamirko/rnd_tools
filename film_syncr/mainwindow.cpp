@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     tickTimer = new QTimer(this);
     sessParams.pTimeMarks = &vecTimeMarks;
     sessParams.pPersons = &mapPersons;
-//    regionSelectDialog = ;
+    dummyBuffer = NULL;
 
     setupHooks();
     setupAdditionalUI();
@@ -74,18 +74,41 @@ void MainWindow::setupHooks(){
     connect(ui->editOffset2, SIGNAL(textChanged()), this, SLOT(slot_changeOffset2Text()));
     connect(ui->editOffset3, SIGNAL(textChanged()), this, SLOT(slot_changeOffset3Text()));
 
+    connect(ui->comboCamSelect1, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_changeSelectedCam1()));
+    connect(ui->comboCamSelect2, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_changeSelectedCam2()));
+    connect(ui->comboCamSelect3, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_changeSelectedCam3()));
+
     connect(ui->actionDump_info, SIGNAL(triggered()), this, SLOT(slot_dumpPersonInfo()));
     // timers
     connect(tickTimer, SIGNAL(timeout()), this, SLOT(slot_updateTimeLabels()));
 
-    // just for quicker debugging
-    ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
-    ui->videoPlayer2->load(Phonon::MediaSource(ui->editFilename2->toPlainText()));
-    ui->videoPlayer3->load(Phonon::MediaSource(ui->editFilename3->toPlainText()));
+    ui->videoPlayer1->load(dummyBuffer);
+    ui->videoPlayer2->load(dummyBuffer);
+    ui->videoPlayer3->load(dummyBuffer);
+
+    // default values
+    camIdxShown1 = 1;
+    camIdxShown2 = 2;
+    camIdxShown3 = 3;
 }
 
 void MainWindow::setupAdditionalUI(){
     LOG(INFO) << "setupAdditionalUI";
+
+    fillCamSelections(ui->comboCamSelect1);
+    ui->comboCamSelect1->setCurrentIndex(0);
+    fillCamSelections(ui->comboCamSelect2);
+    ui->comboCamSelect2->setCurrentIndex(1);
+    fillCamSelections(ui->comboCamSelect3);
+    ui->comboCamSelect3->setCurrentIndex(2);
+}
+
+void MainWindow::fillCamSelections(QComboBox *_pCam){
+    char buff[20];
+    for(int i = 1; i <= 20; i++){
+        sprintf(buff, "%d", i);
+        _pCam->addItem(QString(buff));
+    }
 }
 
 void MainWindow::slot_play(){
@@ -302,22 +325,22 @@ void MainWindow::slot_filename3(){
 }
 
 void MainWindow::getVideoFile(int playerIndex){
-    QString path = QFileDialog::getOpenFileName(this, tr("Choose video file to play"), QString("/home/raca/data/video_material/12.09.13 - talk2 - bc410/"), QString::Null());
+    QString path = QFileDialog::getOpenFileName(this, tr("Choose video file to play"), QString("/media/data/11_classroom_recording/"), QString::Null());
     switch(playerIndex){
         case 0:
-            ui->editFilename1->setPlainText(path);
-            ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
-            sessParams.setFilename(1, ui->editFilename1->toPlainText().toStdString());
+            sessParams.setFilename(camIdxShown1, path.toStdString());
+            ui->editFilename1->setPlainText(path); // should display just the end filename
+            ui->videoPlayer1->load(Phonon::MediaSource(path));
             break;
         case 1:
-            ui->editFilename2->setPlainText(path);
-            ui->videoPlayer2->load(Phonon::MediaSource(ui->editFilename2->toPlainText()));
-            sessParams.setFilename(2, ui->editFilename2->toPlainText().toStdString());
+            sessParams.setFilename(camIdxShown2, path.toStdString());
+            ui->editFilename2->setPlainText(path); // should display just the end filename
+            ui->videoPlayer2->load(Phonon::MediaSource(path));
             break;
         case 2:
-            ui->editFilename3->setPlainText(path);
-            ui->videoPlayer3->load(Phonon::MediaSource(ui->editFilename3->toPlainText()));
-            sessParams.setFilename(3, ui->editFilename3->toPlainText().toStdString());
+            sessParams.setFilename(camIdxShown3, path.toStdString());
+            ui->editFilename3->setPlainText(path); // should display just the end filename
+            ui->videoPlayer3->load(Phonon::MediaSource(path));
             break;
     }
     slot_updateTimeLabels();
@@ -326,7 +349,7 @@ void MainWindow::getVideoFile(int playerIndex){
 void MainWindow::slot_openSession(){
     char buffer[20]; ifstream testFile;
     LOG(INFO) << "slot_openSession";
-    QString path = QFileDialog::getOpenFileName(this, tr("Choose session filename to save"), QString("/media/data/11_classroom_recording"), QString::Null());
+    QString path = QFileDialog::getOpenFileName(this, tr("Choose session filename to save"), QString("/media/data/11_classroom_recording/"), QString::Null());
     if( path.isEmpty() )
         return;
     sessParams.load(path.toStdString());
@@ -456,19 +479,19 @@ void MainWindow::slot_seek_m5m(){
 void MainWindow::slot_markRegionsCam1(){
     DLOG(INFO) << "marking regions in cam1";
     DLOG(INFO) << "Marking at global time: " << getGlobalTime() << " which is for video1: " << ui->videoPlayer1->currentTime();
-    regionSelectDialog.getAreas(&mapPersons, 1, string( ui->editFilename1->toPlainText().toAscii() ), ui->videoPlayer1->currentTime(), getGlobalTime());
+    regionSelectDialog.getAreas(&mapPersons, camIdxShown1, sessParams.getFilename(camIdxShown1), ui->videoPlayer1->currentTime(), getGlobalTime());
 }
 
 void MainWindow::slot_markRegionsCam2(){
     DLOG(INFO) << "marking regions in cam2";
     DLOG(INFO) << "Marking at global time: " << getGlobalTime() << " which is for video2: " << ui->videoPlayer2->currentTime();
-    regionSelectDialog.getAreas(&mapPersons, 2, string( ui->editFilename2->toPlainText().toAscii() ), ui->videoPlayer2->currentTime(), getGlobalTime());
+    regionSelectDialog.getAreas(&mapPersons, camIdxShown2, sessParams.getFilename(camIdxShown2), ui->videoPlayer2->currentTime(), getGlobalTime());
 }
 
 void MainWindow::slot_markRegionsCam3(){
     DLOG(INFO) << "marking regions in cam3";
     DLOG(INFO) << "Marking at global time: " << getGlobalTime() << " which is for video3: " << ui->videoPlayer3->currentTime();
-    regionSelectDialog.getAreas(&mapPersons, 3, string( ui->editFilename3->toPlainText().toAscii() ), ui->videoPlayer3->currentTime(), getGlobalTime());
+    regionSelectDialog.getAreas(&mapPersons, camIdxShown3, sessParams.getFilename(camIdxShown3), ui->videoPlayer3->currentTime(), getGlobalTime());
 }
 
 void MainWindow::slot_dumpPersonInfo(){
@@ -486,3 +509,82 @@ void MainWindow::slot_dumpPersonInfo(){
         }
     }
 }
+
+void MainWindow::slot_changeSelectedCam1(){
+    DLOG(INFO) << "Changing cam displayed in section 1";
+    DLOG(INFO) << "Previous cam index: " << camIdxShown1;
+    changingOffsetText1 = true;
+    camIdxShown1 = ui->comboCamSelect1->currentIndex()+1;
+    // update the video display
+    std::string curText = sessParams.getFilename(camIdxShown1);
+    char buffer[100];
+    if(curText.length() > 0){
+        DLOG(INFO) << "Video set for cam #" << camIdxShown1 << " : " << curText;
+        DLOG(INFO) << "\tNew offset: " << sessParams.getZeroOffset(camIdxShown1);
+        ui->editFilename1->setPlainText(QString::fromStdString(curText));
+        ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
+        sprintf(buffer,"%d", sessParams.getZeroOffset(camIdxShown1));
+        ui->editOffset1->setPlainText(QString::fromAscii(buffer));
+        startPos1 = sessParams.getZeroOffset(camIdxShown1);
+        if( ui->chkPlay1->isChecked() )
+            ui->videoPlayer1->seek( getGlobalTime() + startPos1 );
+    } else {
+        DLOG(INFO) << "No video set for cam #" << camIdxShown1;
+        ui->videoPlayer1->load(dummyBuffer);
+    }
+    changingOffsetText1 = false;
+    DLOG(INFO) << "New cam index: " << camIdxShown1;
+}
+
+void MainWindow::slot_changeSelectedCam2(){
+    DLOG(INFO) << "Changing cam displayed in section 2";
+    DLOG(INFO) << "Previous cam index: " << camIdxShown2;
+    changingOffsetText2 = true;
+    camIdxShown2 = ui->comboCamSelect2->currentIndex()+1;
+    // update the video display
+    std::string curText = sessParams.getFilename(camIdxShown2);
+    char buffer[100];
+    if(curText.length() > 0){
+        DLOG(INFO) << "Video set for cam #" << camIdxShown2 << " : " << curText;
+        DLOG(INFO) << "\tNew offset: " << sessParams.getZeroOffset(camIdxShown2);
+        ui->editFilename2->setPlainText(QString::fromStdString(curText));
+        ui->videoPlayer2->load(Phonon::MediaSource(ui->editFilename2->toPlainText()));
+        sprintf(buffer,"%d", sessParams.getZeroOffset(camIdxShown2));
+        ui->editOffset2->setPlainText(QString::fromAscii(buffer));
+        startPos2 = sessParams.getZeroOffset(camIdxShown2);
+        if( ui->chkPlay2->isChecked() )
+            ui->videoPlayer2->seek( getGlobalTime() + startPos2 );
+    } else {
+        DLOG(INFO) << "No video set for cam #" << camIdxShown2;
+        ui->videoPlayer2->load(dummyBuffer);
+    }
+    changingOffsetText2 = false;
+    DLOG(INFO) << "New cam index: " << camIdxShown2;
+}
+
+void MainWindow::slot_changeSelectedCam3(){
+    DLOG(INFO) << "Changing cam displayed in section 3";
+    DLOG(INFO) << "Previous cam index: " << camIdxShown3;
+    changingOffsetText3 = true;
+    camIdxShown3 = ui->comboCamSelect3->currentIndex()+1;
+    // update the video display
+    std::string curText = sessParams.getFilename(camIdxShown3);
+    char buffer[100];
+    if(curText.length() > 0){
+        DLOG(INFO) << "Video set for cam #" << camIdxShown3 << " : " << curText;
+        DLOG(INFO) << "\tNew offset: " << sessParams.getZeroOffset(camIdxShown3);
+        ui->editFilename3->setPlainText(QString::fromStdString(curText));
+        ui->videoPlayer3->load(Phonon::MediaSource(ui->editFilename3->toPlainText()));
+        sprintf(buffer,"%d", sessParams.getZeroOffset(camIdxShown3));
+        ui->editOffset3->setPlainText(QString::fromAscii(buffer));
+        startPos3 = sessParams.getZeroOffset(camIdxShown3);
+        if( ui->chkPlay3->isChecked() )
+            ui->videoPlayer3->seek( getGlobalTime() + startPos3 );
+    } else {
+        DLOG(INFO) << "No video set for cam #" << camIdxShown2;
+        ui->videoPlayer3->load(dummyBuffer);
+    }
+    changingOffsetText3 = false;
+    DLOG(INFO) << "New cam index: " << camIdxShown3;
+}
+

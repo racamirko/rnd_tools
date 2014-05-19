@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTimer>
+#include <QComboBox>
 #include <vector>
 #include <map>
 #include "CSessionParameters.h"
@@ -27,6 +28,7 @@ public:
 private:
     CSessionParameters sessParams;
     qint64 startPos1, startPos2, startPos3;
+    int camIdxShown1, camIdxShown2,camIdxShown3;
     std::vector<CTimeMark> vecTimeMarks;
     std::map<int, CPerson*> mapPersons;
 
@@ -41,6 +43,9 @@ private:
     void getVideoFile(int playerIndex);
     qint64 getGlobalTime();
     void jumpVideo(qint64 offset);
+    void fillCamSelections(QComboBox *_pCam);
+
+    QBuffer *dummyBuffer;
 
     bool changingOffsetText1, changingOffsetText2, changingOffsetText3;
 
@@ -78,6 +83,10 @@ private slots:
     void slot_changeOffset1Text();
     void slot_changeOffset2Text();
     void slot_changeOffset3Text();
+
+    void slot_changeSelectedCam1();
+    void slot_changeSelectedCam2();
+    void slot_changeSelectedCam3();
 
     // helpers (to be removed)
     void slot_dumpPersonInfo();

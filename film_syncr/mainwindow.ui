@@ -43,6 +43,9 @@
              </widget>
             </item>
             <item>
+             <widget class="QComboBox" name="comboCamSelect3"/>
+            </item>
+            <item>
              <widget class="QPlainTextEdit" name="editFilename3">
               <property name="maximumSize">
                <size>
@@ -68,7 +71,7 @@
            </layout>
           </item>
           <item>
-           <widget class="Phonon::VideoPlayer" name="videoPlayer3"/>
+           <widget class="Phonon::VideoPlayer" name="videoPlayer3" native="true"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -140,6 +143,9 @@
              </widget>
             </item>
             <item>
+             <widget class="QComboBox" name="comboCamSelect1"/>
+            </item>
+            <item>
              <widget class="QPlainTextEdit" name="editFilename1">
               <property name="maximumSize">
                <size>
@@ -165,7 +171,7 @@
            </layout>
           </item>
           <item>
-           <widget class="Phonon::VideoPlayer" name="videoPlayer1"/>
+           <widget class="Phonon::VideoPlayer" name="videoPlayer1" native="true"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -258,6 +264,9 @@
              </widget>
             </item>
             <item>
+             <widget class="QComboBox" name="comboCamSelect2"/>
+            </item>
+            <item>
              <widget class="QPlainTextEdit" name="editFilename2">
               <property name="maximumSize">
                <size>
@@ -283,7 +292,7 @@
            </layout>
           </item>
           <item>
-           <widget class="Phonon::VideoPlayer" name="videoPlayer2"/>
+           <widget class="Phonon::VideoPlayer" name="videoPlayer2" native="true"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -410,13 +419,6 @@
            </size>
           </property>
          </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>Dummy button</string>
-          </property>
-         </widget>
         </item>
        </layout>
       </item>
