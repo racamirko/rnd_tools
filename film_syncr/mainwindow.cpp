@@ -189,18 +189,18 @@ void MainWindow::slot_changeOffset1Text(){
     tmpStr = tmpStr.trimmed();
 //    ui->editOffset1->setPlainText(tmpStr);
     if( tmpStr.length() == 0 )
-        sessParams.setZeroOffset(1,0);
+        sessParams.setZeroOffset(camIdxShown1,0);
     int tmpInt = atoi(tmpStr.toAscii().constData());
     if( tmpInt == 0 ){
         if( strcmp("0", ui->editOffset1->toPlainText().toAscii().constData()) == 0 )
-            sessParams.setZeroOffset(1, 0);
+            sessParams.setZeroOffset(camIdxShown1, 0);
         else{
             char buffer[20];
-            printf(buffer, "%li", sessParams.getZeroOffset(1));
+            printf(buffer, "%li", sessParams.getZeroOffset(camIdxShown1));
             ui->editOffset1->setPlainText(QString(buffer));
         }
     }else
-        sessParams.setZeroOffset(1,tmpInt);
+        sessParams.setZeroOffset(camIdxShown1,tmpInt);
 //    cursorPos = min(cursorPos,tmpStr.length());
 //    ui->editOffset1->textCursor().setPosition(cursorPos,QTextCursor::MoveAnchor);
     changingOffsetText1 = false;
@@ -214,18 +214,18 @@ void MainWindow::slot_changeOffset2Text(){
     QString tmpStr = ui->editOffset2->toPlainText();
     tmpStr = tmpStr.trimmed();
     if( tmpStr.length() == 0 )
-        sessParams.setZeroOffset(2, 0);
+        sessParams.setZeroOffset(camIdxShown2, 0);
     int tmpInt = atoi(tmpStr.toAscii().constData());
     if( tmpInt == 0 ){
         if( strcmp("0", ui->editOffset2->toPlainText().toAscii().constData()) == 0 )
-            sessParams.setZeroOffset(2, 0);
+            sessParams.setZeroOffset(camIdxShown2, 0);
         else{
             char buffer[20];
-            printf(buffer, "%li", sessParams.getZeroOffset(2));
+            printf(buffer, "%li", sessParams.getZeroOffset(camIdxShown2));
             ui->editOffset2->setPlainText(QString(buffer));
         }
     }else
-        sessParams.setZeroOffset(2, tmpInt);
+        sessParams.setZeroOffset(camIdxShown2, tmpInt);
     changingOffsetText2 = false;
 }
 
@@ -237,18 +237,18 @@ void MainWindow::slot_changeOffset3Text(){
     QString tmpStr = ui->editOffset3->toPlainText();
     tmpStr = tmpStr.trimmed();
     if( tmpStr.length() == 0 )
-        sessParams.setZeroOffset(3, 0);
+        sessParams.setZeroOffset(camIdxShown3, 0);
     int tmpInt = atoi(tmpStr.toAscii().constData());
     if( tmpInt == 0 ){
         if( strcmp("0", ui->editOffset3->toPlainText().toAscii().constData()) == 0 )
-            sessParams.setZeroOffset(3, 0);
+            sessParams.setZeroOffset(camIdxShown3, 0);
         else{
             char buffer[20];
-            printf(buffer, "%li", sessParams.getZeroOffset(3));
+            printf(buffer, "%li", sessParams.getZeroOffset(camIdxShown3));
             ui->editOffset3->setPlainText(QString(buffer));
         }
     }else
-        sessParams.setZeroOffset(3, tmpInt);
+        sessParams.setZeroOffset(camIdxShown3, tmpInt);
     changingOffsetText3 = false;
 }
 
@@ -291,11 +291,11 @@ void MainWindow::jumpVideo(qint64 offset){
     qint64 newGlobalTime = getGlobalTime() + offset;
 
     if( ui->chkPlay1->isChecked() )
-        ui->videoPlayer1->seek( newGlobalTime + sessParams.getZeroOffset(1) );
+        ui->videoPlayer1->seek( newGlobalTime + sessParams.getZeroOffset(camIdxShown1) );
     if( ui->chkPlay2->isChecked() )
-        ui->videoPlayer2->seek( newGlobalTime + sessParams.getZeroOffset(2) );
+        ui->videoPlayer2->seek( newGlobalTime + sessParams.getZeroOffset(camIdxShown2) );
     if( ui->chkPlay3->isChecked() )
-        ui->videoPlayer3->seek( newGlobalTime + sessParams.getZeroOffset(3) );
+        ui->videoPlayer3->seek( newGlobalTime + sessParams.getZeroOffset(camIdxShown3) );
     slot_updateTimeLabels();
 }
 
@@ -354,17 +354,17 @@ void MainWindow::slot_openSession(){
         return;
     sessParams.load(path.toStdString());
     // filenames
-    if( !sessParams.getFilename(1).empty() ){
-        testFile.open(sessParams.getFilename(1).c_str());
+    if( !sessParams.getFilename(camIdxShown1).empty() ){
+        testFile.open(sessParams.getFilename(camIdxShown1).c_str());
         if(testFile.is_open()){
             testFile.close();
-            ui->editFilename1->setPlainText(QString::fromStdString(sessParams.getFilename(1)));
+            ui->editFilename1->setPlainText(QString::fromStdString(sessParams.getFilename(camIdxShown1)));
             ui->videoPlayer1->load(Phonon::MediaSource(ui->editFilename1->toPlainText()));
         } else
-            LOG(ERROR) << "File " << sessParams.getFilename(1) << " not found";
+            LOG(ERROR) << "File " << sessParams.getFilename(camIdxShown1) << " not found";
     }
-    if( !sessParams.getFilename(2).empty() ){
-        testFile.open(sessParams.getFilename(2).c_str());
+    if( !sessParams.getFilename(camIdxShown2).empty() ){
+        testFile.open(sessParams.getFilename(camIdxShown2).c_str());
         if(testFile.is_open()){
             testFile.close();
             ui->editFilename2->setPlainText(QString::fromStdString(sessParams.getFilename(2)));
@@ -372,8 +372,8 @@ void MainWindow::slot_openSession(){
         } else
             LOG(ERROR) << "File " << sessParams.getFilename(2) << " not found";
     }
-    if( !sessParams.getFilename(3).empty() ){
-        testFile.open(sessParams.getFilename(3).c_str());
+    if( !sessParams.getFilename(camIdxShown3).empty() ){
+        testFile.open(sessParams.getFilename(camIdxShown3).c_str());
         if(testFile.is_open()){
             testFile.close();
             ui->editFilename3->setPlainText(QString::fromStdString(sessParams.getFilename(3)));
@@ -382,21 +382,23 @@ void MainWindow::slot_openSession(){
             LOG(ERROR) << "File " << sessParams.getFilename(3) << " not found";
     }
 
-    if(sessParams.getZeroOffset(1) != -1){
-        sprintf(buffer,"%d", sessParams.getZeroOffset(1));
+    if(sessParams.getZeroOffset(camIdxShown1) != -1){
+        sprintf(buffer,"%d", sessParams.getZeroOffset(camIdxShown1));
         ui->editOffset1->setPlainText(QString::fromAscii(buffer));
-        startPos1 = sessParams.getZeroOffset(1);
+        startPos1 = sessParams.getZeroOffset(camIdxShown1);
     }
     if(sessParams.getZeroOffset(2) != -1){
-        sprintf(buffer,"%d", sessParams.getZeroOffset(2));
+        sprintf(buffer,"%d", sessParams.getZeroOffset(camIdxShown2));
         ui->editOffset2->setPlainText(QString::fromAscii(buffer));
-        startPos2 = sessParams.getZeroOffset(2);
+        startPos2 = sessParams.getZeroOffset(camIdxShown2);
     }
     if(sessParams.getZeroOffset(3) != -1){
-        sprintf(buffer,"%d", sessParams.getZeroOffset(3));
+        sprintf(buffer,"%d", sessParams.getZeroOffset(camIdxShown3));
         ui->editOffset3->setPlainText(QString::fromAscii(buffer));
-        startPos3 = sessParams.getZeroOffset(3);
+        startPos3 = sessParams.getZeroOffset(camIdxShown3);
     }
+    // update windows title
+    this->setWindowTitle(QString("FilmSyncr [") + path.right(path.length()-path.lastIndexOf("/")+1) + QString("]"));
 }
 
 void MainWindow::slot_saveSession(){
@@ -420,38 +422,49 @@ void MainWindow::slot_checkPlay3(){
 }
 
 void MainWindow::slot_updateTimeLabels(){
-    char buffer[20];
+    char buffer[70];
     if( ui->chkPlay1->isChecked() ){
         sprintf(buffer,"%ld", ui->videoPlayer1->currentTime());
         ui->editFrame1->setPlainText(QString(buffer));
+        ui->pbVideo1->setValue( (int) ((float)ui->videoPlayer1->currentTime())/((float)ui->videoPlayer1->totalTime())*100.0f );
     }
     if( ui->chkPlay2->isChecked() ){
         sprintf(buffer,"%ld", ui->videoPlayer2->currentTime());
         ui->editFrame2->setPlainText(QString(buffer));
+        ui->pbVideo2->setValue( (int) ((float)ui->videoPlayer2->currentTime())/((float)ui->videoPlayer2->totalTime())*100.0f );
     }
     if( ui->chkPlay3->isChecked() ){
         sprintf(buffer,"%ld", ui->videoPlayer3->currentTime());
         ui->editFrame3->setPlainText(QString(buffer));
+        ui->pbVideo3->setValue( (int) ((float)ui->videoPlayer3->currentTime())/((float)ui->videoPlayer3->totalTime())*100.0f );
     }
+    qint64 globTime = getGlobalTime();
+    int hour = globTime / 3600000, min = globTime / 60000, sec = (globTime % 60000) / 1000, msec = globTime % 1000;
+    sprintf(buffer,"Global time %02d : %02d : %02d : %03d", hour, min, sec, msec);
+    ui->lblGlobalTime->setText(QString(buffer));
 }
 
 qint64 MainWindow::getGlobalTime(){
     // find valid trackers and get a mean time to minimize error in missing ticks
     qint64 timeEst = 0, numOfCams = 0;
     if( ui->videoPlayer1->currentTime() < ui->videoPlayer1->totalTime() && ui->chkPlay1->isChecked() ){
-        timeEst += (ui->videoPlayer1->currentTime() - sessParams.getZeroOffset(1));
+        timeEst += (ui->videoPlayer1->currentTime() - sessParams.getZeroOffset(camIdxShown1));
         ++numOfCams;
     }
     if( ui->videoPlayer2->currentTime() < ui->videoPlayer2->totalTime() && ui->chkPlay2->isChecked() ){
-        timeEst += (ui->videoPlayer2->currentTime() - sessParams.getZeroOffset(2));
+        timeEst += (ui->videoPlayer2->currentTime() - sessParams.getZeroOffset(camIdxShown2));
         ++numOfCams;
     }
     if( ui->videoPlayer3->currentTime() < ui->videoPlayer3->totalTime() && ui->chkPlay3->isChecked() ){
-        timeEst += (ui->videoPlayer3->currentTime() - sessParams.getZeroOffset(3));
+        timeEst += (ui->videoPlayer3->currentTime() - sessParams.getZeroOffset(camIdxShown3));
         ++numOfCams;
     }
-    DLOG(INFO) << "Global time is " << round( timeEst/numOfCams ) << " based on " << numOfCams << " cameras";
-    return round( timeEst/numOfCams ); // TODO: check this
+    qint64 globTime = 0;
+    if( numOfCams > 0 ){
+        globTime = round( timeEst/numOfCams );
+    }
+    DLOG(INFO) << "Global time is " << globTime << " based on " << numOfCams << " cameras";
+    return globTime; // TODO: check this
 }
 
 void MainWindow::slot_addMark(){
@@ -581,7 +594,7 @@ void MainWindow::slot_changeSelectedCam3(){
         if( ui->chkPlay3->isChecked() )
             ui->videoPlayer3->seek( getGlobalTime() + startPos3 );
     } else {
-        DLOG(INFO) << "No video set for cam #" << camIdxShown2;
+        DLOG(INFO) << "No video set for cam #" << camIdxShown3;
         ui->videoPlayer3->load(dummyBuffer);
     }
     changingOffsetText3 = false;

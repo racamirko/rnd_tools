@@ -151,7 +151,10 @@ std::string CSessionParameters::getFilename(int _camIdx){
 }
 
 void CSessionParameters::setFilename(int _camIdx, std::string _filename){
+    DLOG(INFO) << "Camera " << _camIdx << " filename set: " << _filename;
     filename[_camIdx] = _filename;
+    if( zeroOffset.count(_camIdx) == 0 )
+        setZeroOffset(_camIdx, 0);
 }
 
 
